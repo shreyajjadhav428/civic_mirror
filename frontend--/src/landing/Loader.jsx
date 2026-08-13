@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 
 export default function Loader({ onComplete }) {
   const [progress, setProgress] = useState(0);
-  const [visible, setVisible] = useState(true);
+  const [isLeaving, setIsLeaving] = useState(false);
+  const [isDestroyed, setIsDestroyed] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -18,10 +19,11 @@ export default function Loader({ onComplete }) {
   useEffect(() => {
     if (reducedMotion) {
       setProgress(100);
-
+      setIsLeaving(true);
       const finishTimer = window.setTimeout(() => {
-        setVisible(false);
-      }, 500);
+        setIsDestroyed(true);
+        onComplete?.();
+      }, 300);
 
       return () => window.clearTimeout(finishTimer);
     }
@@ -30,12 +32,11 @@ export default function Loader({ onComplete }) {
     let pauseTimer;
     let fadeTimer;
 
-    const duration = 2200;
+    const duration = 4000;
     const startTime = performance.now();
 
     const animate = (time) => {
       const elapsed = time - startTime;
-
       const nextProgress = Math.min(
         100,
         Math.round((elapsed / duration) * 100)
@@ -47,12 +48,13 @@ export default function Loader({ onComplete }) {
         frameId = requestAnimationFrame(animate);
       } else {
         pauseTimer = window.setTimeout(() => {
-          setVisible(false);
+          setIsLeaving(true);
 
           fadeTimer = window.setTimeout(() => {
+            setIsDestroyed(true);
             onComplete?.();
-          }, 500);
-        }, 450);
+          }, 400);
+        }, 200);
       }
     };
 
@@ -65,7 +67,7 @@ export default function Loader({ onComplete }) {
     };
   }, [onComplete, reducedMotion]);
 
-  if (!visible) return null;
+  if (isDestroyed) return null;
 
   return (
     <>
@@ -150,7 +152,7 @@ export default function Loader({ onComplete }) {
             Arial,
             sans-serif;
 
-          font-size: clamp(2rem, 8vw, 4.25rem);
+          font-size: clamp(2.54rem, 10.16vw, 5.40rem);
           font-weight: 900;
 
           letter-spacing: 0.035em;
@@ -347,7 +349,7 @@ export default function Loader({ onComplete }) {
 
       <div
         className={`civicmirror-loader${
-          visible ? "" : " civicmirror-loader--leaving"
+          isLeaving ? " civicmirror-loader--leaving" : ""
         }`}
         role="status"
         aria-live="polite"

@@ -1,14 +1,30 @@
 import React from "react";
 
 export default function Footer() {
+  const scrollToSection = (e, targetId) => {
+    if (e) e.preventDefault();
+    if (!targetId || targetId === "hero" || targetId === "top") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    const target = document.getElementById(targetId);
+    if (target) {
+      const headerOffset = 70;
+      const targetPosition =
+        target.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+      window.scrollTo({ top: targetPosition, behavior: "smooth" });
+    }
+  };
+
   return (
     <footer className="bg-[#0D1B2A] px-5 py-14 text-white sm:px-8 sm:py-16 lg:px-12 lg:py-20">
       <div className="mx-auto max-w-[1500px]">
         <div className="flex flex-col gap-10 border-b border-white/15 pb-10 md:flex-row md:items-end md:justify-between md:gap-16 md:pb-12">
           <div className="max-w-md">
             <a
-              href="/"
-              className="inline-block text-lg font-black tracking-[0.08em] transition-colors duration-200 hover:text-[#2D7FF9]"
+              href="#hero"
+              onClick={(e) => scrollToSection(e, "hero")}
+              className="inline-block text-[1.24rem] font-black tracking-[0.08em] transition-colors duration-200 hover:text-[#2D7FF9]"
             >
               CIVIC<span className="text-[#2D7FF9]">MIRROR</span>
             </a>
@@ -24,6 +40,7 @@ export default function Footer() {
               <li>
                 <a
                   href="#about"
+                  onClick={(e) => scrollToSection(e, "about")}
                   className="text-white/70 transition-colors duration-200 hover:text-[#2D7FF9]"
                 >
                   About
@@ -32,6 +49,7 @@ export default function Footer() {
               <li>
                 <a
                   href="#how-it-works"
+                  onClick={(e) => scrollToSection(e, "how-it-works")}
                   className="text-white/70 transition-colors duration-200 hover:text-[#2D7FF9]"
                 >
                   How It Works
