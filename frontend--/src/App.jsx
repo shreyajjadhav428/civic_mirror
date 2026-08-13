@@ -1,122 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React from "react";
 
-function App() {
-  const [count, setCount] = useState(0)
+import Loader from "./landing/loader";
+import Mission from "./landing/Mission";
+import HowItWorks from "./landing/HowItWorks";
+import Footer from "./landing/Footer";
 
+function TemporaryHero() {
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0D1B2A] text-white">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_40%,rgba(45,127,249,0.22),transparent_35%)]" />
 
-      <div className="ticks"></div>
+      <div className="relative z-10 px-6 text-center">
+        <p className="mb-4 text-xs font-bold tracking-[0.3em] text-[#8DBBFF]">
+          TEMPORARY HERO
+        </p>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        <h1 className="text-6xl font-black tracking-tight sm:text-7xl lg:text-8xl">
+          HERO
+        </h1>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        <p className="mx-auto mt-6 max-w-xl text-sm leading-7 text-white/65 sm:text-base">
+          Your friend&apos;s final CivicMirror hero section will replace this
+          placeholder.
+        </p>
+      </div>
+
+      <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 text-white/60">
+        <span className="text-[10px] font-bold tracking-[0.2em]">
+          SCROLL TO EXPLORE
+        </span>
+        <span className="animate-bounce text-lg">↓</span>
+      </div>
+    </section>
+  );
 }
 
-export default App
+export default function App() {
+  return (
+    <main className="min-h-screen bg-[#FAFAFC]">
+      <Loader />
+
+      <TemporaryHero />
+
+      <Mission />
+
+      <HowItWorks />
+      <Footer/>
+    </main>
+  );
+}
