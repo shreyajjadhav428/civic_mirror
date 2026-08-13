@@ -3,6 +3,7 @@ import cors from 'cors';
 import healthRoute from './routes/health.route.js';
 import projectRoute from './routes/project.route.js';
 import complaintRoute from './routes/complaint.route.js';
+import aiRoute from './routes/ai.route.js';
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use('/api/health', healthRoute);
 app.use('/api/projects', projectRoute);
 app.use('/api/complaints', complaintRoute);
+app.use('/api/ai', aiRoute); // Mounted AI Route
 
 // Global Error Handler
 app.use((err, req, res, next) => {
