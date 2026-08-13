@@ -83,7 +83,7 @@ const steps = [
 
 export default function HowItWorks() {
   const sectionRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const element = sectionRef.current;
@@ -106,6 +106,7 @@ export default function HowItWorks() {
 
   return (
     <section
+      id="how-it-works"
       ref={sectionRef}
       aria-labelledby="how-it-works-heading"
       className="overflow-hidden bg-[#FAFAFC] px-5 py-20 text-[#0D1B2A] sm:px-8 md:py-28 lg:px-12 lg:py-32"

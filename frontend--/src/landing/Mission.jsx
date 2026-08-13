@@ -30,7 +30,7 @@ const themes = [
 
 export default function Mission() {
   const sectionRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const node = sectionRef.current;
@@ -81,6 +81,7 @@ export default function Mission() {
       ===================================================== */}
 
       <div
+        id="about"
         className={`
           grid
           w-full
@@ -272,6 +273,7 @@ export default function Mission() {
       ===================================================== */}
 
       <div
+        id="mission"
         className={`
           grid
           w-full
