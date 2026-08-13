@@ -1,9 +1,18 @@
 import jwt from 'jsonwebtoken';
 
+// ── DEV AUTH BYPASS ──────────────────────────────────────────────────
+// Set process.env.DISABLE_AUTH_DEV='false' to enforce strict auth in backend
+const DEV_BYPASS_AUTH = process.env.DISABLE_AUTH_DEV !== 'false';
+
 /**
  * Middleware to verify JWT token in the Authorization header.
  */
 export const verifyToken = (req, res, next) => {
+  if (DEV_BYPASS_AUTH) {
+    req.user = { userId: 'dev_user_1', role: 'admin' };
+    return next();
+  }
+
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -32,6 +41,10 @@ export const verifyToken = (req, res, next) => {
  */
 export const requireRole = (role) => {
   return (req, res, next) => {
+    if (DEV_BYPASS_AUTH) {
+      return next();
+    }
+
     if (!req.user || req.user.role !== role) {
       return res.status(403).json({
         error: 'Forbidden',
