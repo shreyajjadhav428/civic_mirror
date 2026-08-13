@@ -1,6 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Footer() {
+  const navigate = useNavigate();
   const scrollToSection = (e, targetId) => {
     if (e) e.preventDefault();
     if (!targetId || targetId === "hero" || targetId === "top") {
@@ -60,7 +62,7 @@ export default function Footer() {
                   href="/login"
                   onClick={(e) => {
                     e.preventDefault();
-                    window.history.pushState({}, "", "/login");
+                    navigate("/login");
                   }}
                   className="text-white/70 transition-colors duration-200 hover:text-[#2D7FF9]"
                 >

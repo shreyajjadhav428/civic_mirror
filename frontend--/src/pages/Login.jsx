@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 export default function Login() {
+  const navigate = useNavigate();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -17,11 +20,12 @@ export default function Login() {
   }, []);
 
   const handleClose = () => {
-    setMounted(false);
-    setTimeout(() => {
-      window.history.pushState({}, "", "/");
-    }, 550);
-  };
+  setMounted(false);
+
+  setTimeout(() => {
+    navigate("/");
+  }, 550);
+};
 
   const handleSubmit = async (event) => {
     event.preventDefault();
