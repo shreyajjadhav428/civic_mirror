@@ -1,10 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function Login() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [userRole, setUserRole] = useState("user");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleClose = () => {
+    setMounted(false);
+    setTimeout(() => {
+      window.history.pushState({}, "", "/");
+    }, 550);
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -12,7 +25,32 @@ export default function Login() {
 
   return (
     <main className="h-screen overflow-hidden bg-[#FAFAFC] px-4 py-4 font-['Inter',sans-serif] text-[#0D1B2A] sm:px-6 sm:py-6 lg:px-10 lg:py-8">
-      <div className="relative mx-auto grid h-full w-full max-w-[1480px] overflow-hidden border border-[#D6E6F7] bg-white shadow-[0_30px_100px_rgba(13,27,42,0.14)] lg:grid-cols-[1.08fr_0.92fr]">
+      <div className={`relative mx-auto grid h-full w-full max-w-[1480px] overflow-hidden border border-[#D6E6F7] bg-white shadow-[0_30px_100px_rgba(13,27,42,0.14)] lg:grid-cols-[1.08fr_0.92fr] transition-all duration-700 ease-out ${
+        mounted ? "translate-y-0 opacity-100 scale-100" : "translate-y-4 opacity-0 scale-[0.985]"
+      }`}>
+        
+        {/* Cancel Button */}
+        <button
+          onClick={handleClose}
+          className={`absolute top-5 right-5 sm:top-7 sm:right-7 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition-all duration-500 hover:rotate-90 hover:scale-105 hover:bg-slate-50 hover:text-slate-800 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#2D7FF9]/40 ${
+            mounted ? "translate-y-0 opacity-100 scale-100" : "-translate-y-3 opacity-0 scale-95"
+          }`}
+          aria-label="Close login page"
+        >
+          <svg
+            className="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
 
         {/* =========================================================
             LEFT BRAND PANEL
@@ -72,10 +110,13 @@ export default function Login() {
           <div className="relative z-10">
             <a
               href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                handleClose();
+              }}
               className="inline-flex items-center text-xl font-black tracking-[0.08em] outline-none transition-opacity hover:opacity-80 focus-visible:ring-4 focus-visible:ring-[#2D7FF9]/30"
             >
-              <span className="text-white">CIVIC</span>
-              <span className="text-[#2D7FF9]">MIRROR</span>
+              <span className="text-white">CIVIC</span><span className="relative inline-block text-[#2D7FF9] after:absolute after:bottom-[-2.5px] after:left-0 after:h-[2px] after:w-full after:origin-center after:scale-x-0 after:bg-white after:transition-transform after:duration-300 after:ease-out hover:after:scale-x-100">MIRROR</span>
             </a>
           </div>
 
@@ -198,6 +239,32 @@ export default function Login() {
 
             </div>
 
+            {/* User / Admin Toggle Control */}
+            <div className="mb-6 flex rounded-lg bg-slate-100 p-1">
+              <button
+                type="button"
+                onClick={() => setUserRole("user")}
+                className={`flex-1 py-2 text-center text-xs font-black tracking-wider uppercase rounded-md transition-all duration-200 ${
+                  userRole === "user"
+                    ? "bg-white text-[#0D1B2A] shadow-sm"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                Resident / User
+              </button>
+              <button
+                type="button"
+                onClick={() => setUserRole("admin")}
+                className={`flex-1 py-2 text-center text-xs font-black tracking-wider uppercase rounded-md transition-all duration-200 ${
+                  userRole === "admin"
+                    ? "bg-white text-[#0D1B2A] shadow-sm"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                Government / Admin
+              </button>
+            </div>
+
             {/* Login form */}
             <form onSubmit={handleSubmit} className="space-y-5">
 
@@ -312,23 +379,7 @@ export default function Login() {
 
             </form>
 
-            {/* Trust statement */}
-            <div className="mt-8 border-t border-[#D6E6F7] pt-4">
 
-              <div className="flex items-center justify-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#00A68E]" />
-
-                <span className="text-xs font-bold tracking-[0.12em] text-[#1E4FA3]">
-                  TRUSTED CIVIC ACCESS
-                </span>
-              </div>
-
-              <p className="mt-2 text-center text-sm leading-6 text-[#4B5563]">
-                CivicMirror is designed to make public information more
-                understandable, transparent, and explainable.
-              </p>
-
-            </div>
 
           </div>
         </section>

@@ -175,7 +175,26 @@ export default function Hero() {
           color: #FFFFFF;
           white-space: nowrap;
         }
-        .cm-header__brand-mirror { color: #2D7FF9; }
+        .cm-header__brand-mirror {
+          color: #2D7FF9;
+          position: relative;
+          display: inline-block;
+        }
+        .cm-header__brand-mirror::after {
+          content: "";
+          position: absolute;
+          left: 0;
+          bottom: -2px;
+          width: 100%;
+          height: 2.5px;
+          background-color: #FFFFFF;
+          transform: scaleX(0);
+          transform-origin: center;
+          transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .cm-header__brand-mirror:hover::after {
+          transform: scaleX(1);
+        }
 
         .cm-header__desktop-nav-container {
           display: flex;
@@ -344,7 +363,27 @@ export default function Hero() {
           filter: drop-shadow(0 12px 36px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 65px rgba(0, 0, 0, 0.85));
         }
         .cm-hero__wordmark-civic { color: #FFFFFF; }
-        .cm-hero__wordmark-mirror { color: #2D7FF9; }
+        .cm-hero__wordmark-mirror {
+          color: #2D7FF9;
+          position: relative;
+          cursor: pointer;
+          display: inline-block;
+        }
+        .cm-hero__wordmark-mirror::after {
+          content: "";
+          position: absolute;
+          left: 0;
+          bottom: -4px;
+          width: 100%;
+          height: 6px;
+          background-color: #FFFFFF;
+          transform: scaleX(0);
+          transform-origin: center;
+          transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .cm-hero__wordmark-mirror:hover::after {
+          transform: scaleX(1);
+        }
 
         /* ── TRANSITION CONTAINERS (Tagline/Progress Centered exactly at 50%) ── */
         .cm-hero__transition-area {
@@ -627,7 +666,14 @@ export default function Hero() {
             </nav>
 
             <div className="cm-header__right-actions">
-              <a href="/login" className="cm-header__login cm-header__login--desktop">
+              <a
+                href="/login"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.history.pushState({}, "", "/login");
+                }}
+                className="cm-header__login cm-header__login--desktop"
+              >
                 Login
               </a>
               <button
@@ -678,7 +724,11 @@ export default function Hero() {
               </a>
               <a
                 href="/login"
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsMobileMenuOpen(false);
+                  window.history.pushState({}, "", "/login");
+                }}
                 className="cm-header__login cm-header__login--mobile"
               >
                 Login
