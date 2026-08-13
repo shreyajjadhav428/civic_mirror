@@ -1,56 +1,75 @@
 import { Type } from '@google/genai';
 
-/**
- * Schema for the Explainable Decision Cards required by the React frontend.
- */
 export const explainableDecisionSchema = {
   type: Type.OBJECT,
   properties: {
-    summary: {
-      type: Type.STRING,
-      description: "A concise 1-2 sentence summary of the issue and current standing."
+    summary: { type: Type.STRING },
+    reason: { type: Type.STRING },
+    status: { type: Type.STRING },
+    priority: { type: Type.STRING },
+    expectedAction: { type: Type.STRING },
+    estimatedTimeline: { type: Type.STRING },
+    evidence: {
+      type: Type.ARRAY,
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          reference_id: { type: Type.STRING },
+          detail: { type: Type.STRING }
+        },
+        required: ["reference_id", "detail"]
+      }
+    }
+  },
+  required: ["summary", "reason", "status", "priority", "expectedAction", "estimatedTimeline", "evidence"]
+};
+
+/**
+ * Schema for Comparative Decision Intelligence (Officer & Citizen Priority Explanations)
+ */
+export const decisionComparisonSchema = {
+  type: Type.OBJECT,
+  properties: {
+    recommendation: { 
+      type: Type.STRING, 
+      description: "Clear, neutral recommendation on which project or issue should take precedence." 
     },
-    reason: {
-      type: Type.STRING,
-      description: "A clear explanation of why the situation is as it currently stands based on municipal evidence."
+    primaryReason: { 
+      type: Type.STRING, 
+      description: "The core driving factor behind the prioritization decision." 
     },
-    status: {
-      type: Type.STRING,
-      description: "Current status of the work (e.g., 'In Progress', 'Pending Admin Review', 'Scheduled')."
+    comparisons: {
+      type: Type.ARRAY,
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          project_code: { type: Type.STRING },
+          title: { type: Type.STRING },
+          location: { type: Type.STRING },
+          safety_risk_level: { type: Type.STRING, description: "e.g., High, Medium, Low" },
+          affected_population: { type: Type.STRING },
+          hospital_access_impact: { type: Type.BOOLEAN },
+          priority_score: { type: Type.STRING, description: "Relative priority designation, e.g., 'High Priority', 'Secondary'" }
+        },
+        required: ["project_code", "title", "location", "safety_risk_level", "affected_population", "priority_score"]
+      }
     },
-    priority: {
-      type: Type.STRING,
-      description: "Priority classification ('Low', 'Medium', 'High', 'Critical')."
-    },
-    expectedAction: {
-      type: Type.STRING,
-      description: "Next concrete action being taken by the municipality."
-    },
-    estimatedTimeline: {
-      type: Type.STRING,
-      description: "Expected resolution date or timeframe (e.g., 'August 18, 2026')."
+    keyTradeOffs: {
+      type: Type.ARRAY,
+      items: { type: Type.STRING },
+      description: "List of explicit trade-offs associated with this decision."
     },
     evidence: {
       type: Type.ARRAY,
       items: {
         type: Type.OBJECT,
         properties: {
-          type: { type: Type.STRING, description: "Type of evidence, e.g., 'Project', 'Budget', 'Work Order'" },
-          code: { type: Type.STRING, description: "Project or document reference code, e.g., 'EL-204'" },
-          detail: { type: Type.STRING, description: "Specific factual detail supporting the decision." }
+          reference_id: { type: Type.STRING },
+          detail: { type: Type.STRING }
         },
-        required: ["type", "code", "detail"]
-      },
-      description: "List of concrete municipal records used as evidence."
+        required: ["reference_id", "detail"]
+      }
     }
   },
-  required: [
-    "summary",
-    "reason",
-    "status",
-    "priority",
-    "expectedAction",
-    "estimatedTimeline",
-    "evidence"
-  ]
+  required: ["recommendation", "primaryReason", "comparisons", "keyTradeOffs", "evidence"]
 };

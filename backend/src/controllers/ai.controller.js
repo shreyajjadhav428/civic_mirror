@@ -1,46 +1,54 @@
-import { generateExplainableAnswer } from '../services/gemini.service.js';
+import { analyzePromptForTools, generateExplainableAnswer } from '../services/gemini.service.js';
 import { supabase } from '../config/supabase.js';
+import { packageEvidenceForAI } from '../utils/evidence.formatter.js';
 
-/**
- * POST /api/ai/ask
- * Returns guaranteed structured decision JSON for the frontend UI.
- */
 export const askCivicMirror = async (req, res) => {
   try {
-    const { prompt, pincode } = req.body;
+    const { prompt } = req.body;
 
-    if (!prompt || !pincode) {
-      return res.status(400).json({
-        error: 'BadRequest',
-        message: 'Both prompt and pincode are required.'
-      });
+    if (!prompt) {
+      return res.status(400).json({ error: 'BadRequest', message: 'A prompt is required.' });
     }
 
-    // Retrieve active projects with complete fields for pincode
-    const { data: localProjects, error: dbError } = await supabase
-      .from('projects')
-      .select(`
-        project_code, 
-        title, 
-        category, 
-        pincode,
-        status, 
-        progress, 
-        expected_completion, 
-        departments(name),
-        budgets(total_allocated, spent)
-      `)
-      .eq('pincode', pincode)
-      .in('status', ['In Progress', 'Planning']);
+    let localProjects = [];
+    let localDocuments = []; // Future-proofing for RAG tool calls
 
-    if (dbError) throw dbError;
+    const analysisResponse = await analyzePromptForTools(prompt);
 
-    // Generate structured JSON decision card content
-    const decisionCardData = await generateExplainableAnswer(prompt, localProjects || []);
+    if (analysisResponse.functionCalls && analysisResponse.functionCalls.length > 0) {
+      const call = analysisResponse.functionCalls[0];
+      
+      if (call.name === 'search_projects') {
+        const { pincode, category } = call.args;
+        let query = supabase
+          .from('projects')
+          .select('project_code, title, category, status, progress, expected_completion, departments(name), budgets(total_allocated, spent)')
+          .eq('pincode', pincode)
+          .in('status', ['In Progress', 'Planning']);
+          
+        if (category) query = query.ilike('category', `%${category}%`);
+        
+        const { data } = await query;
+        localProjects = data || [];
+      }
+    }
 
+    // 1. Package the evidence tightly for Gemini
+    const packagedEvidence = packageEvidenceForAI(localProjects, localDocuments);
+
+    // 2. Generate the explanation
+    const decisionCardData = await generateExplainableAnswer(prompt, packagedEvidence);
+
+    // 3. Return the AI reasoning PLUS the raw data payload for the frontend drawer
     return res.status(200).json({
       status: 'success',
-      data: decisionCardData
+      data: {
+        explanation: decisionCardData,
+        raw_sources: {
+          projects: localProjects,
+          documents: localDocuments
+        }
+      }
     });
 
   } catch (error) {
