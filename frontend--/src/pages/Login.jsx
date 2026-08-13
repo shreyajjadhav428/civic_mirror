@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const [identifier, setIdentifier] = useState("");
@@ -7,6 +9,8 @@ export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [userRole, setUserRole] = useState("user");
   const [mounted, setMounted] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setMounted(true);
@@ -19,8 +23,21 @@ export default function Login() {
     }, 550);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    try {
+      // Call backend login
+      const user = await login(email, password);
+      
+      // Auto-route based on role returned from backend!
+      if (user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/citizen');
+      }
+    } catch (err) {
+      alert(err.message || 'Invalid credentials');
+    }
   };
 
   return (
