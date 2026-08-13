@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import hero1Image from "../assets/hero1.png";
+import hero1Image from "../assets/hero1 .jpg";
 
 const HAS_LOADED_KEY = "cm_hero_loaded";
 
@@ -111,38 +111,54 @@ export default function Hero() {
           transition: opacity 0.4s ease-out;
         }
 
-        .cm-hero__bg--visible {
-          opacity: 1;
-        }
-
-        @keyframes cm-drift {
-          from { transform: scale(1.00) translateY(0px); }
-          to   { transform: scale(1.05) translateY(-12px); }
-        }
-
-        /* ── OVERLAY LAYERS REMOVED (Background image rendered naturally) ────── */
-
-        /* ── FLOATING HEADER (Fades in absolute at top) ──── */
+        /* ── TOP NAVBAR (Full width transparent without outline/blur, animated hover bottom line) ──── */
         .cm-header {
-          position: fixed;
-          top: 16px;
-          left: 5%;
-          right: 5%;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          width: 100%;
           z-index: 1000;
-          padding: 20px 32px;
+          padding: 18px 5%;
           display: flex;
           flex-direction: column;
           gap: 0;
-          background: rgba(13, 27, 42, 0.75);
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 24px;
-          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+          background: transparent;
+          backdrop-filter: none;
+          -webkit-backdrop-filter: none;
+          border: none;
+          border-radius: 0;
+          box-shadow: none;
           opacity: 1;
           pointer-events: auto;
           transform: translateY(0);
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease-out, transform 0.3s ease-out;
+          overflow: hidden;
+          transition: background 0.3s ease;
+        }
+
+        .cm-header--open {
+          background: rgba(13, 27, 42, 0.95);
+        }
+
+        /* Animated bottom outline line on hover (Full width) */
+        .cm-header::after {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 2.5px;
+          background: linear-gradient(90deg, rgba(45, 127, 249, 0.1) 0%, #2D7FF9 50%, rgba(45, 127, 249, 0.1) 100%);
+          box-shadow: 0 0 12px rgba(45, 127, 249, 0.85), 0 0 20px rgba(45, 127, 249, 0.45);
+          transform: scaleX(0);
+          transform-origin: center;
+          opacity: 0;
+          transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+        }
+
+        .cm-header:hover::after {
+          transform: scaleX(1);
+          opacity: 1;
         }
 
         .cm-header--visible {
@@ -328,190 +344,134 @@ export default function Hero() {
           }
         }
 
-        /* ── CENTER STACK ────────────────────────────────── */
-        .cm-hero__center-stack {
-          position: relative;
-          z-index: 5;
-          width: 100%;
-          height: 100svh;
+        /* ── HERO LEFT-ALIGNED CONTENT CONTAINER (Just below navbar) ── */
+        .cm-hero__left-content {
+          position: absolute;
+          top: clamp(104px, 15vh, 140px);
+          left: clamp(24px, 5vw, 64px);
+          max-width: 660px;
+          z-index: 10;
           display: flex;
-          align-items: center;
-          justify-content: center;
+          flex-direction: column;
+          align-items: flex-start;
+          text-align: left;
+          gap: 14px;
+          pointer-events: auto;
         }
 
-        /* ── BRAND WORDMARK (Symmetrically Positioned Above Center) ── */
+        /* ── BRAND WORDMARK (Strict Left Alignment, No dark shadow) ── */
         .cm-hero__wordmark {
-          position: absolute;
-          bottom: calc(50% + clamp(3.2rem, 8vw, 4.5rem));
-          left: 50%;
-          transform: translateX(-50%);
           margin: 0;
           padding: 0;
           font-family: Inter, "Helvetica Neue", Arial, sans-serif;
-          font-size: clamp(3.05rem, 12.19vw, 6.48rem);
+          font-size: clamp(2.5rem, 5.8vw, 4.5rem);
           font-weight: 900;
-          letter-spacing: 0.035em;
-          line-height: 1;
+          letter-spacing: 0.04em;
+          line-height: 1.05;
           text-transform: uppercase;
           white-space: nowrap;
-          width: 100%;
-          text-align: center;
+          text-align: left !important;
           display: flex;
           align-items: center;
-          justify-content: center;
-          text-shadow: 0 10px 35px rgba(0, 0, 0, 0.95), 0 0 60px rgba(0, 0, 0, 0.9);
-          filter: drop-shadow(0 12px 36px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 65px rgba(0, 0, 0, 0.85));
+          justify-content: flex-start !important;
+          gap: 0.22em;
+          color: #FFFFFF;
+          text-shadow: none !important;
+          filter: none !important;
+          opacity: 0;
+          transform: translateY(28px);
+          transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
         }
+
+        .cm-hero__wordmark--visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
         .cm-hero__wordmark-civic { color: #FFFFFF; }
         .cm-hero__wordmark-mirror {
           color: #2D7FF9;
           position: relative;
-          cursor: pointer;
           display: inline-block;
+          cursor: pointer;
         }
+
         .cm-hero__wordmark-mirror::after {
           content: "";
           position: absolute;
           left: 0;
           bottom: -4px;
           width: 100%;
-          height: 6px;
+          height: 5px;
           background-color: #FFFFFF;
+          border-radius: 2px;
           transform: scaleX(0);
           transform-origin: center;
-          transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
+
         .cm-hero__wordmark-mirror:hover::after {
           transform: scaleX(1);
         }
 
-        /* ── TRANSITION CONTAINERS (Tagline/Progress Centered exactly at 50%) ── */
-        .cm-hero__transition-area {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 100%;
-          max-width: 620px;
-          padding: 0 24px;
-          display: grid;
-          grid-template-areas: "stack";
-          align-items: center;
-          justify-items: center;
-        }
-
-        /* Loading Progress Area */
-        .cm-hero__progress-container {
-          grid-area: stack;
-          width: 100%;
-          max-width: 440px;
-          opacity: 1;
-          transform: scale(1);
-          transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.6s;
-          visibility: visible;
-        }
-
-        .cm-hero__progress-container--hidden {
-          opacity: 0;
-          transform: scale(0.96);
-          pointer-events: none;
-          visibility: hidden;
-        }
-
-        .cm-hero__progress-track {
-          width: 100%;
-          height: 6px;
-          background: rgba(255, 255, 255, 0.08);
-          border: 1px solid rgba(255, 255, 255, 0.85);
-          border-radius: 999px;
-          padding: 1px;
-          overflow: hidden;
-        }
-
-        .cm-hero__progress-fill {
-          height: 100%;
-          background: #2D7FF9;
-          border-radius: 999px;
-          transition: width 80ms linear;
-        }
-
-        .cm-hero__progress-label {
-          margin: 14px 0 0;
-          color: rgba(255, 255, 255, 0.8);
-          font-family: Inter, sans-serif;
-          font-size: 0.85rem;
-          font-weight: 700;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-        }
-
-        /* Tagline (Loaded state) */
+        /* ── TAGLINE (Strict Left Alignment, Refined Lazy-Loading reveal) ── */
         .cm-hero__tagline {
-          grid-area: stack;
           width: 100%;
           font-family: Inter, "Helvetica Neue", Arial, sans-serif;
-          font-size: clamp(1rem, 2.5vw, 1.25rem);
-          font-weight: 500;
-          line-height: 1.65;
+          font-size: clamp(0.95rem, 1.4vw, 1.2rem);
+          font-weight: 450;
+          line-height: 1.6;
           letter-spacing: 0.015em;
-          color: #FFFFFF;
-          text-shadow: 0 4px 18px rgba(0, 0, 0, 0.95), 0 1px 6px rgba(0, 0, 0, 0.9);
-          filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.85));
+          color: rgba(255, 255, 255, 0.92);
+          text-shadow: none !important;
+          filter: none !important;
           margin: 0;
           max-width: 580px;
-          text-align: center;
-          opacity: 1;
-          transform: translateY(90px);
-          visibility: visible;
-          transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+          text-align: left !important;
+          opacity: 0;
+          transform: translateY(28px);
+          transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.2s, transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
         }
 
         .cm-hero__tagline--visible {
           opacity: 1;
-          transform: translateY(90px);
-          visibility: visible;
+          transform: translateY(0);
         }
 
-        /* Primary CTA (Symmetrically Positioned Below Center) */
+        /* Primary CTA (Left-aligned underneath tagline) */
         .cm-hero__cta {
-          position: absolute;
-          top: calc(50% + clamp(3.2rem, 8vw, 4.5rem));
-          left: 50%;
-          transform: translate(-50%, 0);
+          margin-top: 6px;
           display: inline-flex;
           align-items: center;
           gap: 10px;
           font-family: Inter, sans-serif;
-          font-size: 0.9rem;
+          font-size: 0.82rem;
           font-weight: 700;
-          letter-spacing: 0.14em;
+          letter-spacing: 0.12em;
           text-transform: uppercase;
           text-decoration: none;
           color: #FFFFFF;
-          padding: 16px 42px;
+          padding: 13px 32px;
           background: #2D7FF9;
           border-radius: 8px;
           border: 1px solid rgba(45, 127, 249, 0.5);
-          opacity: 1;
-          visibility: visible;
+          opacity: 0;
+          transform: translateY(28px);
           pointer-events: auto;
-          transition: opacity 0.3s ease, transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+          transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.38s, transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.38s, background 0.2s ease, box-shadow 0.2s ease;
         }
 
         .cm-hero__cta--visible {
           opacity: 1;
-          transform: translate(-50%, 0);
-          visibility: visible;
-          pointer-events: auto;
-          transition: opacity 0.3s ease, transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+          transform: translateY(0);
         }
 
         .cm-hero__cta:hover {
           background: #1E4FA3;
-          box-shadow: 0 8px 32px rgba(45, 127, 249, 0.5);
-          transform: translate(-50%, -2px);
+          box-shadow: 0 8px 28px rgba(45, 127, 249, 0.45);
+          transform: translateY(-2px);
         }
-        .cm-hero__cta:active { transform: translate(-50%, 0); }
+        .cm-hero__cta:active { transform: translateY(0); }
         .cm-hero__cta-arrow {
           font-size: 1rem;
           transition: transform 0.2s ease;
@@ -520,13 +480,12 @@ export default function Hero() {
           transform: translateX(4px);
         }
 
-        /* ── SCROLL INDICATOR ────────────────────────────── */
+        /* ── SCROLL INDICATOR (Bottom-Right Positioned) ────── */
         .cm-scroll {
           position: absolute;
-          bottom: 32px;
-          left: 50%;
-          transform: translateX(-50%);
-          z-index: 5;
+          bottom: clamp(32px, 5vh, 52px);
+          right: clamp(24px, 5vw, 64px);
+          z-index: 10;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -537,15 +496,16 @@ export default function Hero() {
           color: rgba(255, 255, 255, 0.8);
           padding: 8px 12px;
           text-decoration: none;
-          opacity: 1;
+          opacity: 0;
+          transform: translateY(16px);
           pointer-events: auto;
-          transition: color 0.2s ease, opacity 0.3s ease;
+          transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.5s, transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.5s, color 0.2s ease;
         }
         .cm-scroll--visible {
           opacity: 1;
-          pointer-events: auto;
+          transform: translateY(0);
         }
-        .cm-scroll:hover { color: rgba(255, 255, 255, 0.8); }
+        .cm-scroll:hover { color: rgba(255, 255, 255, 1); }
 
         .cm-scroll__label {
           font-family: Inter, sans-serif;
@@ -577,6 +537,15 @@ export default function Hero() {
           .cm-header__nav {
             gap: 20px;
           }
+          .cm-hero__left-content {
+            top: clamp(96px, 13vh, 120px);
+            left: 4vw;
+            right: 4vw;
+            max-width: 100%;
+          }
+          .cm-scroll {
+            display: none;
+          }
         }
 
         @media (max-width: 640px) {
@@ -586,6 +555,9 @@ export default function Hero() {
           .cm-header__hamburger {
             display: flex;
           }
+          .cm-hero__wordmark {
+            font-size: clamp(2rem, 8vw, 3rem);
+          }
         }
 
         /* ── REDUCED MOTION ──────────────────────────────── */
@@ -593,13 +565,14 @@ export default function Hero() {
           .cm-hero__bg {
             animation: none;
           }
+          .cm-hero__wordmark,
           .cm-hero__tagline,
           .cm-hero__cta,
           .cm-header,
           .cm-scroll {
             transition: none;
             opacity: 1;
-            transform: translate(-50%, 0) !important;
+            transform: none !important;
           }
           .cm-scroll__arrow {
             animation: none;
@@ -616,8 +589,6 @@ export default function Hero() {
           style={{ backgroundImage: `url(${hero1Image})` }}
         />
 
-        {/* Natural background without dark overlay cast */}
-
         {/* Floating transparent Header */}
         <header className={`cm-header ${isLoaded ? "cm-header--visible" : ""} ${isMobileMenuOpen ? "cm-header--open" : ""}`} role="banner">
           <div className="cm-header__top-row">
@@ -630,7 +601,7 @@ export default function Hero() {
               className="cm-header__brand"
               aria-label="CivicMirror — home"
             >
-              CIVIC<span className="cm-header__brand-mirror">MIRROR</span>
+              C<span className="cm-header__brand-mirror">M</span>
             </a>
 
             <nav aria-label="Primary navigation" className="cm-header__desktop-nav-container">
@@ -737,25 +708,40 @@ export default function Hero() {
           )}
         </header>
 
-        {/* Unified Centered Layout Stack */}
-        <div className="cm-hero__center-stack">
-          {/* Main Wordmark (Symmetrically positioned above tagline) */}
-          <h1 className="cm-hero__wordmark" aria-label="CivicMirror">
+        {/* Hero Left-Aligned Content Container */}
+        <div className="cm-hero__left-content">
+          {/* Main Wordmark (Left-aligned, clean typography) */}
+          <h1
+            className={`cm-hero__wordmark ${isLoaded ? "cm-hero__wordmark--visible" : ""}`}
+            aria-label="CivicMirror"
+          >
             <span className="cm-hero__wordmark-civic">CIVIC</span>
             <span className="cm-hero__wordmark-mirror">MIRROR</span>
           </h1>
 
-          {/* Transition area: centered at exactly 50% vertically */}
-          <div className="cm-hero__transition-area">
-            {/* Tagline: Centered at exactly 50% vertically */}
-            <p className="cm-hero__tagline cm-hero__tagline--visible">
-              Making Public Decisions Understandable, Transparent, and Explainable through
-              Artificial Intelligence.
-            </p>
-          </div>
+          {/* Project Tagline (Left-aligned) */}
+          <p
+            className={`cm-hero__tagline ${isLoaded ? "cm-hero__tagline--visible" : ""}`}
+          >
+            Making Public Decisions Understandable, Transparent, and Explainable through
+            Artificial Intelligence.
+          </p>
+
+          {/* Primary CTA button (Left-aligned) */}
+          <a
+            href="/login"
+            onClick={(e) => {
+              e.preventDefault();
+              window.history.pushState({}, "", "/login");
+            }}
+            className={`cm-hero__cta ${isLoaded ? "cm-hero__cta--visible" : ""}`}
+          >
+            <span>Explore Platform</span>
+            <span className="cm-hero__cta-arrow" aria-hidden="true">→</span>
+          </a>
         </div>
 
-        {/* Scroll Indicator */}
+        {/* Scroll Indicator (Bottom-Right) */}
         <button
           className={`cm-scroll ${isLoaded ? "cm-scroll--visible" : ""}`}
           onClick={(e) => scrollToSection(e, "mission")}
