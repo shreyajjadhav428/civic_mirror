@@ -82,7 +82,7 @@ export default function Hero() {
           overflow: hidden;
           color: #FFFFFF;
           isolation: isolate;
-          background-color: #0D1B2A;
+          background-color: #F7F8F6;
         }
 
         /* ── CINEMATIC BACKGROUND LAYER ──────────────────── */

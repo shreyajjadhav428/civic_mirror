@@ -76,387 +76,48 @@ export default function Mission() {
       "
     >
 
-      {/* =====================================================
-          VISION
-      ===================================================== */}
-
       <div
-        className={`
-          grid
-          w-full
-          grid-cols-1
-          lg:grid-cols-[40%_60%]
-          transition-all
-          duration-700
-          ease-out
-          ${
-            isVisible
-              ? "translate-y-0 opacity-100"
-              : "translate-y-5 opacity-0"
-          }
-        `}
+        className={`grid w-full grid-cols-1 bg-[#16405F] text-white transition-all duration-700 ease-out lg:grid-cols-2 ${
+          isVisible ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0"
+        }`}
       >
-
-        {/* BLUE VISION RECTANGLE */}
-
-        <div
-          className="
-            relative
-            flex
-            min-h-[230px]
-            items-center
-            justify-center
-            bg-[#2D7FF9]
-            px-8
-            py-10
-            sm:min-h-[270px]
-            sm:px-10
-            lg:min-h-[310px]
-            lg:justify-end
-            lg:px-14
-          "
-        >
-
-          {/* Decorative symbol */}
-
-          <div
-            className="
-              absolute
-              left-7
-              top-7
-              h-9
-              w-9
-              rounded-full
-              border
-              border-white/40
-              sm:left-9
-              sm:top-9
-            "
-          >
-            <div
-              className="
-                absolute
-                left-1/2
-                top-1/2
-                h-2
-                w-2
-                -translate-x-1/2
-                -translate-y-1/2
-                rounded-full
-                bg-white
-              "
-            />
+        <article className="flex min-h-[290px] items-center px-7 py-10 sm:px-12 lg:min-h-[330px] lg:px-[10%] lg:py-12">
+          <div className="flex w-full max-w-[620px] items-start gap-5 sm:gap-7">
+            <svg viewBox="0 0 112 112" className="mt-1 h-16 w-16 shrink-0 text-red-500 sm:h-20 sm:w-20" fill="none" aria-hidden="true">
+              <circle cx="56" cy="56" r="38" stroke="currentColor" strokeWidth="2" opacity=".45" />
+              <circle cx="56" cy="56" r="25" stroke="currentColor" strokeWidth="2" opacity=".7" />
+              <circle cx="56" cy="56" r="11" stroke="currentColor" strokeWidth="2.5" />
+              <circle cx="56" cy="56" r="4" fill="currentColor" className="motion-safe:animate-pulse" />
+              <path d="M17 27 48 50" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+              <path d="m17 27 12 2-5 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <div>
+              <span className="text-xs font-bold tracking-[0.2em] text-red-400">MISSION</span>
+              <h2 className="mt-3 text-[clamp(1.8rem,3vw,2.55rem)] font-semibold leading-none tracking-[-0.04em]">Better public systems.</h2>
+              <p className="mt-5 max-w-[510px] text-[1rem] leading-[1.7] text-white/70 sm:text-[1.05rem]">
+                CivicMirror exists to <span className="font-semibold text-red-400">improve trust</span>, make public decisions transparent, reduce repetitive administrative work, and help governments prioritize resources intelligently.
+              </p>
+            </div>
           </div>
+        </article>
 
-          {/* Vision title */}
-
-          <div className="w-full max-w-[400px] lg:ml-auto">
-
-            <span
-              className="
-                block
-                text-[0.78rem]
-                font-bold
-                tracking-[0.2em]
-                text-white/70
-              "
-            >
-              01
-            </span>
-
-            <h2
-              className="
-                mt-3
-                whitespace-nowrap
-                text-[2.2rem]
-                font-bold
-                uppercase
-                leading-none
-                tracking-[-0.045em]
-                text-white
-                sm:text-[2.7rem]
-                lg:text-[3.15rem]
-              "
-            >
-              Our Vision
-            </h2>
-
+        <article className="flex min-h-[290px] items-center border-t border-white/35 px-7 py-10 sm:px-12 lg:min-h-[330px] lg:border-l lg:border-t-0 lg:px-[10%] lg:py-12">
+          <div className="flex w-full max-w-[620px] items-start gap-5 sm:gap-7">
+            <svg viewBox="0 0 112 112" className="mt-1 h-16 w-16 shrink-0 text-[#FFC107] sm:h-20 sm:w-20" fill="none" aria-hidden="true">
+              <path d="M56 21v-8M31 31l-6-6M81 31l6-6M22 56h-8M90 56h8M31 81l-6 6M81 81l6 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" opacity=".8" />
+              <path d="M56 31a25 25 0 0 0-15 45c4 3 6 7 6 12h18c0-5 2-9 6-12a25 25 0 0 0-15-45Z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" />
+              <path d="M46 95h20M49 102h14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M44 59c0-7 5-13 12-13" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="motion-safe:animate-pulse" />
+            </svg>
+            <div>
+              <span className="text-xs font-bold tracking-[0.2em] text-[#FFC107]">VISION</span>
+              <h2 className="mt-3 text-[clamp(1.8rem,3vw,2.55rem)] font-semibold leading-none tracking-[-0.04em]">Decisions people understand.</h2>
+              <p className="mt-5 max-w-[510px] text-[1rem] leading-[1.7] text-white/70 sm:text-[1.05rem]">
+                A future where public decisions can be <span className="font-semibold text-[#FFC107]">clearly backed by evidence</span> and explained to citizens.
+              </p>
+            </div>
           </div>
-        </div>
-
-
-        {/* VISION CONTENT */}
-
-        <div
-          className="
-            flex
-            min-h-[230px]
-            items-center
-            px-7
-            py-10
-            sm:min-h-[270px]
-            sm:px-12
-            sm:py-11
-            lg:min-h-[310px]
-            lg:px-[7%]
-            lg:py-12
-          "
-        >
-
-          <div className="max-w-[700px]">
-
-            <div
-              className="
-                mb-5
-                h-px
-                w-14
-                bg-[#2D7FF9]
-              "
-            />
-
-            <h3
-              className="
-                m-0
-                whitespace-nowrap
-                text-[2rem]
-                font-semibold
-                leading-none
-                tracking-[-0.04em]
-                text-[#0D1B2A]
-                sm:text-[2.35rem]
-                lg:text-[2.7rem]
-              "
-            >
-              Decisions people understand.
-            </h3>
-
-            <p
-              className="
-                mt-5
-                max-w-[650px]
-                text-[1.02rem]
-                leading-[1.7]
-                text-[#0D1B2A]/[0.7]
-                sm:text-[1.08rem]
-              "
-            >
-              A future where public decisions can be{" "}
-              <span className="font-semibold text-[#00A68E]">
-                clearly backed by evidence
-              </span>{" "}
-              and explained to citizens.
-            </p>
-
-          </div>
-        </div>
-
-      </div>
-
-
-      {/* =====================================================
-          CENTER DIVIDER
-      ===================================================== */}
-
-      <div
-        className="
-          mx-auto
-          h-px
-          w-full
-          bg-[#0D1B2A]/[0.12]
-        "
-      />
-
-
-      {/* =====================================================
-          MISSION
-      ===================================================== */}
-
-      <div
-        className={`
-          grid
-          w-full
-          grid-cols-1
-          lg:grid-cols-[60%_40%]
-          transition-all
-          duration-700
-          delay-100
-          ease-out
-          ${
-            isVisible
-              ? "translate-y-0 opacity-100"
-              : "translate-y-5 opacity-0"
-          }
-        `}
-      >
-
-        {/* MISSION CONTENT */}
-
-        <div
-          className="
-            order-2
-            flex
-            min-h-[230px]
-            items-center
-            px-7
-            py-10
-            sm:min-h-[270px]
-            sm:px-12
-            sm:py-11
-            lg:order-1
-            lg:min-h-[310px]
-            lg:px-[8%]
-            lg:py-12
-          "
-        >
-
-          <div className="max-w-[700px]">
-
-            <div
-              className="
-                mb-5
-                h-px
-                w-14
-                bg-[#00A68E]
-              "
-            />
-
-            <h3
-              className="
-                m-0
-                whitespace-nowrap
-                text-[2rem]
-                font-semibold
-                leading-none
-                tracking-[-0.04em]
-                text-[#0D1B2A]
-                sm:text-[2.35rem]
-                lg:text-[2.7rem]
-              "
-            >
-              Better public systems.
-            </h3>
-
-            <p
-              className="
-                mt-5
-                max-w-[650px]
-                text-[1.02rem]
-                leading-[1.7]
-                text-[#0D1B2A]/[0.7]
-                sm:text-[1.08rem]
-              "
-            >
-              CivicMirror exists to{" "}
-              <span className="font-semibold text-[#2D7FF9]">
-                improve trust
-              </span>
-              , make public decisions transparent, reduce repetitive
-              administrative work, and help governments prioritize
-              resources intelligently.
-            </p>
-
-          </div>
-        </div>
-
-
-        {/* TEAL MISSION RECTANGLE */}
-
-        <div
-          className="
-            relative
-            order-1
-            flex
-            min-h-[230px]
-            items-center
-            justify-center
-            bg-[#00A68E]
-            px-8
-            py-10
-            sm:min-h-[270px]
-            sm:px-10
-            lg:order-2
-            lg:min-h-[310px]
-            lg:justify-start
-            lg:px-14
-          "
-        >
-
-          {/* Decorative symbol */}
-
-          <div
-            className="
-              absolute
-              right-7
-              top-7
-              flex
-              h-9
-              w-9
-              items-center
-              justify-center
-              sm:right-9
-              sm:top-9
-            "
-          >
-
-            <div
-              className="
-                h-6
-                w-6
-                rotate-45
-                border-2
-                border-white/60
-              "
-            />
-
-            <div
-              className="
-                absolute
-                h-2
-                w-2
-                rounded-full
-                bg-white
-              "
-            />
-
-          </div>
-
-
-          {/* Mission title */}
-
-          <div className="w-full max-w-[400px] lg:mr-auto">
-
-            <span
-              className="
-                block
-                text-[0.78rem]
-                font-bold
-                tracking-[0.2em]
-                text-white/70
-              "
-            >
-              02
-            </span>
-
-            <h2
-              className="
-                mt-3
-                whitespace-nowrap
-                text-[2.2rem]
-                font-bold
-                uppercase
-                leading-none
-                tracking-[-0.045em]
-                text-white
-                sm:text-[2.7rem]
-                lg:text-[3.15rem]
-              "
-            >
-              Our Mission
-            </h2>
-
-          </div>
-        </div>
-
+        </article>
       </div>
 
 
@@ -468,7 +129,7 @@ export default function Mission() {
         className={`
           mx-auto
           w-full
-          max-w-[1180px]
+          max-w-[1320px]
           px-4
           pb-16
           pt-12
@@ -494,12 +155,10 @@ export default function Mission() {
             grid
             w-full
             grid-cols-1
-            border-b
-            border-[#0D1B2A]/[0.15]
-            border-t-2
-            border-t-[#0D1B2A]
-            bg-white
+            gap-4
+            bg-transparent
             sm:grid-cols-2
+            sm:gap-5
             lg:grid-cols-4
           "
         >
@@ -512,42 +171,17 @@ export default function Mission() {
                 relative
                 min-w-0
                 min-h-[225px]
-                px-4
-                py-7
+                border
+                border-[#0D1B2A]/[0.15]
+                bg-[#FCFDFC]
+                px-6
+                py-8
                 transition-all
                 duration-300
                 hover:-translate-y-0.5
-                hover:bg-[#F7F8F6]/70
+                hover:bg-white
+                hover:shadow-[0_12px_28px_rgba(13,27,42,0.08)]
 
-                ${
-                  index !== 0
-                    ? "border-t border-[#0D1B2A]/[0.15] sm:border-l"
-                    : ""
-                }
-
-                ${
-                  index === 2
-                    ? "lg:border-l"
-                    : ""
-                }
-
-                ${
-                  index === 0
-                    ? "lg:pl-1"
-                    : "lg:px-6"
-                }
-
-                ${
-                  index === 3
-                    ? "lg:pr-1"
-                    : ""
-                }
-
-                ${
-                  index >= 2
-                    ? "lg:border-t-0"
-                    : ""
-                }
               `}
             >
 
