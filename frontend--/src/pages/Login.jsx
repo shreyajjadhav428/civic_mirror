@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
 
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 export default function Login() {
+  const navigate = useNavigate();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -13,15 +15,22 @@ export default function Login() {
   }, []);
 
   const handleClose = () => {
-    setMounted(false);
-    setTimeout(() => {
-      window.history.pushState({}, "", "/");
-    }, 550);
-  };
+  setMounted(false);
+
+  setTimeout(() => {
+    navigate("/");
+  }, 550);
+};
 
   const handleSubmit = (event) => {
-    event.preventDefault();
-  };
+  event.preventDefault();
+
+  if (userRole === "user") {
+    navigate("/citizen");
+  } else {
+    navigate("/admin");
+  }
+};
 
   return (
     <main className="h-screen overflow-hidden bg-[#FAFAFC] px-4 py-4 font-['Inter',sans-serif] text-[#0D1B2A] sm:px-6 sm:py-6 lg:px-10 lg:py-8">

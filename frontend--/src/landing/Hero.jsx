@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import hero1Image from "../assets/hero1 .jpg";
+import hero1Image from "../assets/hero1.png";
+import { Link } from "react-router-dom";
 
 const HAS_LOADED_KEY = "cm_hero_loaded";
 
