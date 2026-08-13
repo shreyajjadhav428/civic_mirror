@@ -84,7 +84,7 @@ export default function Mission() {
             : "translate-y-5 opacity-0"
         }`}
       >
-        <div className="grid w-full grid-cols-1 overflow-hidden bg-[#16405F] text-white lg:grid-cols-2">
+        <div className="grid w-full grid-cols-1 overflow-hidden rounded-2xl bg-[#16405F] text-white lg:grid-cols-2">
 
           {/* =================================================
               MISSION — LEFT
