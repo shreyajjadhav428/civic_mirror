@@ -27,7 +27,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFC]">
+    <main className="min-h-screen bg-[#FAFAFC]">
       {showLoader && <Loader onComplete={handleLoaderComplete} />}
 
       <Hero />
@@ -35,6 +35,6 @@ export default function App() {
       <HowItWorks />
 
       <Footer />
-    </div>
+    </main>
   );
 }
