@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import hero1Image from "../assets/hero1.png";
-import { Link } from "react-router-dom";
+import hero1Image from "../assets/hero1.jpg";
+import { Link, useNavigate } from "react-router-dom";
 
 const HAS_LOADED_KEY = "cm_hero_loaded";
 
 export default function Hero() {
+  const navigate = useNavigate();
   const [isFirstVisit] = useState(() => {
     try {
       return !sessionStorage.getItem(HAS_LOADED_KEY);
@@ -642,7 +643,7 @@ export default function Hero() {
                 href="/login"
                 onClick={(e) => {
                   e.preventDefault();
-                  window.history.pushState({}, "", "/login");
+                  navigate("/login");
                 }}
                 className="cm-header__login cm-header__login--desktop"
               >
@@ -699,7 +700,7 @@ export default function Hero() {
                 onClick={(e) => {
                   e.preventDefault();
                   setIsMobileMenuOpen(false);
-                  window.history.pushState({}, "", "/login");
+                  navigate("/login");
                 }}
                 className="cm-header__login cm-header__login--mobile"
               >
@@ -733,7 +734,7 @@ export default function Hero() {
             href="/login"
             onClick={(e) => {
               e.preventDefault();
-              window.history.pushState({}, "", "/login");
+              navigate("/login");
             }}
             className={`cm-hero__cta ${isLoaded ? "cm-hero__cta--visible" : ""}`}
           >

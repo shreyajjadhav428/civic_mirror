@@ -7,6 +7,7 @@ import HowItWorks from "./landing/HowItWorks";
 import Mission from "./landing/Mission";
 import Login from "./pages/Login";
 import CitizenHome from "./citizen/CitizenHome";
+import AdminDashboard from "./admin/AdminDashboard";
 
 export default function App() {
   return (
@@ -39,10 +40,10 @@ export default function App() {
           element={<CitizenHome />}
         />
 
-        {/* Admin - teammate will replace this */}
+        {/* Admin Dashboard */}
         <Route
           path="/admin"
-          element={<div>Admin Dashboard</div>}
+          element={<AdminDashboard />}
         />
 
       </Routes>
