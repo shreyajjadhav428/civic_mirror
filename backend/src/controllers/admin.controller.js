@@ -154,3 +154,56 @@ export const getPincodeIntelligence = async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+/**
+ * GET /api/admin/queries
+ * Aggregates raw natural language queries from citizens to spot trends.
+ */
+export const getUniqueQueries = async (req, res) => {
+  try {
+    // In a production environment, you might use Gemini to dynamically cluster these.
+    // For this MVP, we will pull recent chat sessions and group them by raw prompt frequency.
+    const { data: sessions, error } = await supabase
+      .from('chat_sessions')
+      .select('prompt');
+
+    if (error) throw error;
+
+    // Aggregate exact query matches (or similar phrasing logic)
+    const queryCounts = (sessions || []).reduce((acc, session) => {
+      const q = session.prompt.trim();
+      acc[q] = (acc[q] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Format for the frontend UI: "Why is my road repair delayed? - 84 requests"
+    const uniqueQueries = Object.entries(queryCounts)
+      .map(([query, count]) => ({ query, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10); // Top 10 trending queries
+
+    return res.status(200).json({ status: 'success', data: uniqueQueries });
+  } catch (error) {
+    console.error('Error fetching unique queries:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+/**
+ * GET /api/admin/files
+ * Retrieves the library of municipal data files uploaded by admins.
+ */
+export const getMunicipalFiles = async (req, res) => {
+  try {
+    const { data: files, error } = await supabase
+      .from('municipal_files')
+      .select('id, filename, file_type, size_bytes, status, last_updated')
+      .order('last_updated', { ascending: false });
+
+    if (error) throw error;
+
+    return res.status(200).json({ status: 'success', data: files || [] });
+  } catch (error) {
+    console.error('Error fetching municipal files:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
