@@ -1,19 +1,20 @@
-// File Path: backend/src/app.js
-
 import express from 'express';
 import cors from 'cors';
 import healthRoute from './routes/health.route.js';
+import projectRoute from './routes/project.route.js';
+import complaintRoute from './routes/complaint.route.js';
 
 const app = express();
 
-// Middleware
 app.use(cors());
-app.use(express.json()); // Parse JSON bodies
+app.use(express.json());
 
 // Routes
 app.use('/api/health', healthRoute);
+app.use('/api/projects', projectRoute);
+app.use('/api/complaints', complaintRoute);
 
-// Global Error Handler (Fallback)
+// Global Error Handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Internal Server Error' });
