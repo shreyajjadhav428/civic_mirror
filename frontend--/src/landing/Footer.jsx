@@ -24,9 +24,9 @@ export default function Footer() {
             <a
               href="#hero"
               onClick={(e) => scrollToSection(e, "hero")}
-              className="inline-block text-[1.24rem] font-black tracking-[0.08em] transition-colors duration-200 hover:text-[#2D7FF9]"
+              className="inline-block text-[1.24rem] font-black tracking-[0.08em]"
             >
-              CIVIC<span className="text-[#2D7FF9]">MIRROR</span>
+              CIVIC<span className="relative inline-block text-[#2D7FF9] after:absolute after:bottom-[-2.5px] after:left-0 after:h-[2px] after:w-full after:origin-center after:scale-x-0 after:bg-white after:transition-transform after:duration-300 after:ease-out hover:after:scale-x-100">MIRROR</span>
             </a>
 
             <p className="mt-4 text-sm leading-7 text-white/65">
@@ -36,7 +36,7 @@ export default function Footer() {
           </div>
 
           <nav aria-label="Footer navigation">
-            <ul className="flex flex-wrap gap-x-8 gap-y-4 text-sm font-semibold tracking-wide">
+            <ul className="flex flex-col gap-y-3 text-sm font-semibold tracking-wide md:items-end">
               <li>
                 <a
                   href="#about"
@@ -58,6 +58,10 @@ export default function Footer() {
               <li>
                 <a
                   href="/login"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.history.pushState({}, "", "/login");
+                  }}
                   className="text-white/70 transition-colors duration-200 hover:text-[#2D7FF9]"
                 >
                   Login

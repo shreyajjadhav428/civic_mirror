@@ -272,7 +272,7 @@ export default function Mission() {
           {themes.map((theme, index) => (
             <article
               key={theme.number}
-              className="group relative min-w-0 min-h-[225px] border border-[#0D1B2A]/[0.15] bg-[#FCFDFC] px-6 py-8 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_12px_28px_rgba(13,27,42,0.08)]"
+              className="group relative min-w-0 min-h-[225px] rounded-2xl overflow-hidden border border-[#0D1B2A]/[0.15] bg-[#FCFDFC] px-6 py-8 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_12px_28px_rgba(13,27,42,0.08)]"
             >
               {/* Hover accent */}
 
