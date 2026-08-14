@@ -385,7 +385,6 @@ export default function Data() {
                   </button>
 
                   <button
-                    onClick={() => alert(`Downloading ${file.filename} from municipal archive.`)}
                     className="rounded-lg border border-[#D6E6F7] bg-white px-3 py-1.5 font-bold text-slate-600 hover:bg-slate-100"
                   >
                     Download ⬇

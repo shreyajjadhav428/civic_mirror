@@ -150,12 +150,7 @@ export default function Queries() {
       {/* Section Header */}
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between border-b border-[#D6E6F7] pb-4">
         <div>
-          <div className="mb-1 flex items-center gap-2">
-            <span className="h-px w-6 bg-[#2D7FF9]" />
-            <span className="text-[11px] font-extrabold tracking-[0.18em] text-[#1E4FA3] uppercase">
-              QUERIES SECTION
-            </span>
-          </div>
+          
           <h1 className="text-2xl font-black tracking-[-0.03em] text-[#0D1B2A]">
             Citizen Queries & Inquiries Logs
           </h1>
@@ -167,42 +162,42 @@ export default function Queries() {
         <div className="flex items-center justify-between border-b border-white/10 pb-3">
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-[#00A68E] animate-pulse" />
-            <h3 className="text-xs font-black uppercase tracking-[0.16em] text-[#8DBBFF]">
+            <h3 className="text-lg font-black uppercase tracking-[0.16em] text-[#8DBBFF]">
               AI Insight
             </h3>
           </div>
-          <span className="rounded bg-[#2D7FF9]/20 px-2.5 py-1 text-[10px] font-extrabold tracking-[0.14em] text-[#8DBBFF] uppercase">
+          <span className="rounded bg-[#2D7FF9]/20 px-2.5 py-1 text-[15px] font-extrabold tracking-[0.14em] text-[#8DBBFF] uppercase">
             Administrative Intelligence
           </span>
         </div>
 
         <div className="my-4 border-l-4 border-[#2D7FF9] pl-4 py-1">
-          <p className="text-base font-bold text-white leading-relaxed">
+          <p className="text-lg font-bold text-white leading-relaxed">
             A significant concentration of citizen queries relates to infrastructure project delays.
           </p>
         </div>
 
         <div className="mt-5 border-t border-white/10 pt-4">
-          <span className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-white/50">
+          <span className="text-[12px] font-extrabold uppercase tracking-[0.14em] text-white/50">
             Supporting Information:
           </span>
 
           <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 font-mono text-xs">
             <div className="rounded-xl bg-white/5 p-4 border border-white/10">
-              <span className="block text-2xl font-black text-[#2D7FF9]">84</span>
-              <span className="text-white/70 font-sans text-xs">related queries</span>
+              <span className="block text-2xl font-semibold text-[#2D7FF9]">84</span>
+              <span className="text-white/70 font-sans text-md">related queries</span>
             </div>
 
             <div className="rounded-xl bg-white/5 p-4 border border-white/10">
-              <span className="block text-2xl font-black text-[#00A68E]">67%</span>
-              <span className="text-white/70 font-sans text-xs">related to ongoing projects</span>
+              <span className="block text-2xl font-semibold text-[#00A68E]">67%</span>
+              <span className="text-white/70 font-sans text-md">related to ongoing projects</span>
             </div>
 
             <div className="rounded-xl bg-white/5 p-4 border border-white/10">
-              <span className="block text-xs font-black uppercase tracking-wider text-[#FFC107] mb-1 font-sans">
+              <span className="block text-md font-black uppercase tracking-wider text-[#FFC107] mb-1 font-sans">
                 Most Affected:
               </span>
-              <ul className="space-y-0.5 font-sans font-semibold text-white/80">
+              <ul className="space-y-0.5 font-sans text-md font-semibold text-white/80">
                 <li>• Shanti Nagar</li>
                 <li>• Green Park</li>
                 <li>• Sector 12</li>
@@ -210,10 +205,10 @@ export default function Queries() {
             </div>
 
             <div className="rounded-xl bg-white/5 p-4 border border-white/10">
-              <span className="block text-xs font-black uppercase tracking-wider text-[#8DBBFF] mb-1 font-sans">
+              <span className="block text-md font-black uppercase tracking-wider text-[#8DBBFF] mb-1 font-sans">
                 Primary Departments:
               </span>
-              <ul className="space-y-0.5 font-sans font-semibold text-white/80">
+              <ul className="space-y-0.5 font-sans text-md font-semibold text-white/80">
                 <li>• Engineering</li>
                 <li>• Electrical Works</li>
                 <li>• Water Supply</li>

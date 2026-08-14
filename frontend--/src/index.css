@@ -21,7 +21,6 @@ body,
 }
 
 html {
-  font-size: 120%;
   scroll-behavior: smooth;
   scroll-padding-top: 80px;
 }
@@ -42,3 +41,44 @@ body {
   width: 100%;
   min-height: 100vh;
 }
+
+/* Circular Border Animation on Hover */
+.card-circle-stroke {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  transition: stroke-dashoffset 0.65s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+}
+
+.group:hover .card-circle-stroke {
+  stroke-dashoffset: 0;
+  opacity: 1;
+}
+
+/* 10% Font Size Reduction for Admin Dashboard */
+.admin-dashboard-container {
+  font-size: 90%;
+}
+
+.admin-dashboard-container .text-xs { font-size: 0.675rem !important; }
+.admin-dashboard-container .text-sm { font-size: 0.7875rem !important; }
+.admin-dashboard-container .text-md { font-size: 0.84375rem !important; }
+.admin-dashboard-container .text-base { font-size: 0.9rem !important; }
+.admin-dashboard-container .text-lg { font-size: 1.0125rem !important; }
+.admin-dashboard-container .text-xl { font-size: 1.125rem !important; }
+.admin-dashboard-container .text-2xl { font-size: 1.35rem !important; }
+.admin-dashboard-container .text-3xl { font-size: 1.6875rem !important; }
+
+/* 15% Font Size Increase for Popups / Modals */
+.modal-popup-container {
+  font-size: 115%;
+}
+
+.modal-popup-container .text-xs { font-size: 0.8625rem !important; }
+.modal-popup-container .text-sm { font-size: 1.006rem !important; }
+.modal-popup-container .text-base { font-size: 1.15rem !important; }
+.modal-popup-container .text-lg { font-size: 1.293rem !important; }
+.modal-popup-container .text-xl { font-size: 1.437rem !important; }
+.modal-popup-container .text-2xl { font-size: 1.725rem !important; }
+.modal-popup-container .text-3xl { font-size: 2.156rem !important; }
+
+

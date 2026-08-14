@@ -138,9 +138,25 @@ export default function AiInsights() {
           {observationsList.map((obs) => (
             <div
               key={obs.id}
-              className="flex flex-col gap-3 rounded-xl border border-white/10 bg-white/5 p-4 text-xs sm:flex-row sm:items-center sm:justify-between transition-all hover:border-[#2D7FF9]"
+              className="group relative flex flex-col gap-3 rounded-xl border border-white/10 bg-white/5 p-4 text-xs sm:flex-row sm:items-center sm:justify-between transition-all overflow-hidden"
             >
-              <div className="flex items-start gap-3">
+              <svg className="absolute inset-0 h-full w-full pointer-events-none rounded-xl">
+                <rect
+                  x="1"
+                  y="1"
+                  width="calc(100% - 2px)"
+                  height="calc(100% - 2px)"
+                  rx="11"
+                  ry="11"
+                  fill="none"
+                  stroke="#2D7FF9"
+                  strokeWidth="2"
+                  pathLength="100"
+                  className="card-circle-stroke opacity-0"
+                />
+              </svg>
+
+              <div className="flex items-start gap-3 relative z-10">
                 <span className="text-sm text-[#2D7FF9] font-black">{obs.icon}</span>
                 <div>
                   <p className="font-extrabold text-white text-sm leading-relaxed">{obs.text}</p>
@@ -152,7 +168,7 @@ export default function AiInsights() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-2 shrink-0 relative z-10">
                 <button
                   onClick={() => setSelectedWhyModal(obs)}
                   className="rounded-lg bg-white/10 px-3 py-1.5 font-bold text-white hover:bg-white/20 transition-all"
@@ -188,10 +204,26 @@ export default function AiInsights() {
           {recommendationsList.map((rec) => (
             <div
               key={rec.id}
-              className="rounded-2xl border border-[#D6E6F7] bg-[#FAFAFC] p-6 shadow-sm space-y-4"
+              className="group relative rounded-2xl border border-[#D6E6F7] bg-[#FAFAFC] p-6 shadow-sm space-y-4 overflow-hidden"
             >
+              <svg className="absolute inset-0 h-full w-full pointer-events-none rounded-2xl">
+                <rect
+                  x="1"
+                  y="1"
+                  width="calc(100% - 2px)"
+                  height="calc(100% - 2px)"
+                  rx="15"
+                  ry="15"
+                  fill="none"
+                  stroke="#2D7FF9"
+                  strokeWidth="2.5"
+                  pathLength="100"
+                  className="card-circle-stroke opacity-0"
+                />
+              </svg>
+
               {/* Recommendation Title */}
-              <div>
+              <div className="relative z-10">
                 <span className="text-[11px] font-black uppercase text-[#2D7FF9] tracking-wider block mb-1">
                   AI RECOMMENDATION
                 </span>
@@ -243,7 +275,6 @@ export default function AiInsights() {
                 </div>
 
                 <button
-                  onClick={() => alert(`Recommendation "${rec.title}" acknowledged and routed to ${rec.department}.`)}
                   className="rounded-lg bg-[#2D7FF9] px-4 py-2 text-xs font-black text-white hover:bg-[#1E4FA3]"
                 >
                   Approve & Dispatch Work Order →
@@ -339,12 +370,9 @@ export default function AiInsights() {
 
                   <div className="flex items-center justify-between text-[11px] text-slate-400 font-semibold border-t border-[#D6E6F7] pt-2">
                     <span>Extracted Records: <strong className="text-[#2D7FF9]">{file.records}</strong></span>
-                    <button
-                      onClick={() => alert(`Opening raw vector dump for ${file.name}`)}
-                      className="text-[#2D7FF9] font-bold hover:underline"
-                    >
-                      Inspect Source Vector →
-                    </button>
+                    <span className="text-[#2D7FF9] font-bold">
+                      Source Vector Verified ✓
+                    </span>
                   </div>
                 </div>
               ))}
