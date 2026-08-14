@@ -240,23 +240,23 @@ export default function Requests() {
               placeholder="Search requests by description, title, area, or ID..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/60 px-4.5 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-[#2D7FF9] focus:bg-white transition"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-2.5 text-[14px] font-semibold text-slate-800 outline-none focus:border-[#2D7FF9] focus:bg-white transition"
             />
           </div>
 
           {/* Quick Filter Counts */}
-          <div className="text-xs font-bold text-slate-500 flex items-center gap-2">
+          <div className="text-[13px] font-bold text-slate-500 flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-emerald-500 inline-block" />
             <span>Showing {filteredRequests.length} of {requestsList.length} requests</span>
           </div>
         </div>
 
         {/* Useful Filters Bar */}
-        <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center gap-3 text-xs font-bold">
-          <span className="text-slate-400 uppercase font-mono tracking-wider">Useful Filters:</span>
+        <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center gap-3 text-[13px] font-bold">
+          <span className="text-slate-400 uppercase font-mono tracking-wider text-[11px]">Useful Filters:</span>
 
           {/* Pincode Filter */}
-          <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+          <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5">
             <span className="text-slate-500">Pincode:</span>
             <select
               value={selectedPincode}
@@ -272,7 +272,7 @@ export default function Requests() {
           </div>
 
           {/* Issue Category Filter */}
-          <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+          <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5">
             <span className="text-slate-500">Category:</span>
             <select
               value={selectedCategory}
@@ -289,7 +289,7 @@ export default function Requests() {
           </div>
 
           {/* Status Filter */}
-          <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+          <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5">
             <span className="text-slate-500">Status:</span>
             <select
               value={selectedStatus}
@@ -304,7 +304,7 @@ export default function Requests() {
           </div>
 
           {/* Date Filter */}
-          <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+          <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5">
             <span className="text-slate-500">Date:</span>
             <select
               value={selectedDate}
@@ -319,7 +319,7 @@ export default function Requests() {
           </div>
 
           {/* Flagged Filter */}
-          <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+          <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5">
             <span className="text-slate-500">Flagged:</span>
             <select
               value={selectedFlagged}
@@ -364,7 +364,7 @@ export default function Requests() {
         <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs overflow-hidden">
           <div className="overflow-x-auto rounded-xl border border-slate-200/70">
             <table className="w-full text-left text-base">
-              <thead className="bg-slate-50/80 text-xs font-black text-slate-500 uppercase border-b border-slate-200">
+              <thead className="bg-slate-50/80 text-[12px] font-black text-slate-500 uppercase border-b border-slate-200">
                 <tr>
                   <th className="px-5 py-4">Request</th>
                   <th className="px-5 py-4">Category</th>
@@ -376,7 +376,7 @@ export default function Requests() {
               <tbody className="divide-y divide-slate-100 font-semibold">
                 {filteredRequests.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="py-12 text-center text-xs font-semibold text-slate-400">
+                    <td colSpan={5} className="py-12 text-center text-[12px] font-semibold text-slate-400">
                       No citizen requests match your current search or filter parameters.
                     </td>
                   </tr>
@@ -396,30 +396,30 @@ export default function Requests() {
                             <span className="text-amber-500 text-sm" title="AI Flagged Request">🚩</span>
                           )}
                           <div>
-                            <span className="font-black text-[#0D1B2A] group-hover:text-[#2D7FF9] transition text-base block">
+                            <span className="font-black text-[#0D1B2A] group-hover:text-[#2D7FF9] transition text-[16px] leading-snug block">
                               {item.title}
                             </span>
-                            <span className="text-slate-400 text-xs font-semibold line-clamp-1 max-w-md">
+                            <span className="text-slate-400 text-[12px] font-semibold line-clamp-1 max-w-md">
                               {item.request}
                             </span>
                           </div>
                         </div>
                       </td>
-                      <td className="px-5 py-4.5 text-slate-700 font-extrabold text-sm">
+                      <td className="px-5 py-4.5 text-slate-700 font-extrabold text-[14px]">
                         <span className="rounded-md bg-slate-100 px-2.5 py-1 text-slate-800 font-bold border border-slate-200">
                           {item.category}
                         </span>
                       </td>
-                      <td className="px-5 py-4.5 font-mono font-black text-slate-800 text-sm">
+                      <td className="px-5 py-4.5 font-mono font-black text-slate-800 text-[14px]">
                         {item.pincode}
                       </td>
                       <td className="px-5 py-4.5">
-                        <span className={`inline-block rounded-md border px-2.5 py-1 text-xs font-black uppercase ${getStatusStyle(item.status)}`}>
+                        <span className={`inline-block rounded-md border px-2.5 py-1 text-[12px] font-black uppercase ${getStatusStyle(item.status)}`}>
                           {item.status}
                         </span>
                       </td>
                       <td className="px-5 py-4.5">
-                        <span className={`inline-block rounded-md border px-2.5 py-1 text-xs font-black uppercase ${getPriorityStyle(item.priority)}`}>
+                        <span className={`inline-block rounded-md border px-2.5 py-1 text-[12px] font-black uppercase ${getPriorityStyle(item.priority)}`}>
                           {item.priority}
                         </span>
                       </td>
@@ -497,42 +497,7 @@ export default function Requests() {
                 </div>
               </div>
 
-              {/* AI ANALYSIS SECTION MATCHING SPECIFICATION */}
-              {selectedRequestModal.aiAnalysis && (
-                <div className="rounded-2xl border border-slate-800 bg-[#0D1B2A] p-5 text-white shadow-md space-y-3">
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 block">
-                    AI ANALYSIS
-                  </span>
 
-                  <div className="space-y-1 text-sm">
-                    <span className="text-slate-400 text-xs font-semibold block">Related project</span>
-                    <span className="font-bold text-[#2D7FF9] text-base block">{selectedRequestModal.aiAnalysis.relatedProject}</span>
-                  </div>
-
-                  <div className="space-y-1 text-sm">
-                    <span className="text-slate-400 text-xs font-semibold block">Evidence</span>
-                    <span className="font-mono font-extrabold text-white text-sm">{selectedRequestModal.aiAnalysis.evidenceCount}</span>
-                  </div>
-
-                  <div className="pt-2">
-                    <button
-                      onClick={() => setShowAiExplanation(!showAiExplanation)}
-                      className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-bold text-slate-200 hover:bg-white hover:text-[#0D1B2A] transition"
-                    >
-                      [ {showAiExplanation ? "Hide Explanation" : "View Explanation"} ]
-                    </button>
-                  </div>
-
-                  {showAiExplanation && (
-                    <div className="mt-3 pt-3 border-t border-slate-800 text-xs font-medium text-slate-300 leading-relaxed animate-fadeIn">
-                      <span className="text-amber-400 font-mono font-bold uppercase tracking-wider block mb-1">
-                        AI Reasoning & Vector Correlation:
-                      </span>
-                      <p>"{selectedRequestModal.aiAnalysis.explanation}"</p>
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
 
             {/* Footer */}
