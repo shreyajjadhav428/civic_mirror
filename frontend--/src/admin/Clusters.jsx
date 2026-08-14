@@ -1,235 +1,316 @@
 import React, { useState } from "react";
 
-export default function Clusters() {
-  const [selectedCluster, setSelectedCluster] = useState(null);
-  const [showWhyModal, setShowWhyModal] = useState(null);
+export default function Clusters({ onNavigate }) {
+  // Filter & Search State
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedPincode, setSelectedPincode] = useState("All");
 
+  // Modal State
+  const [selectedCluster, setSelectedCluster] = useState(null);
+
+  // Initial Cluster Data matching backend spec
   const clusterData = [
     {
       id: "CLS-STREET-01",
       title: "STREETLIGHT CLUSTER",
-      category: "Streetlight failures",
+      category: "Streetlight",
+      categoryFull: "Streetlight failures & electrical outages",
       location: "Shanti Nagar",
+      pincode: "110025",
       complaintCount: 23,
-      affectedPopulation: 147,
       department: "Electrical Works",
-      priority: "HIGH",
-      priorityBg: "bg-red-500/10 text-red-500 border-red-500/30",
-      project: "Electrical Maintenance Phase II",
-      projectProgress: "82%",
-      geographicConcentration: "High (Radius 450m)",
-      firstReported: "Aug 05, 2026",
-      latestReported: "Aug 13, 2026",
-      whyBreakdown: [
-        "23 complaints aggregated from single geographic sector",
-        "147 potentially affected citizens in residential grid",
-        "High geographic concentration around main thoroughfare",
-        "Existing infrastructure dependency on Transformer Node #4",
-        "Multiple distinct reports submitted within last 7 days"
+      priority: "High",
+      priorityStyle: "bg-red-50 text-red-600 border-red-200",
+      topAccent: "bg-[#2D7FF9]",
+      barColor: "bg-[#2D7FF9]",
+      cardHoverBorder: "hover:border-[#2D7FF9]",
+      btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+      titleHover: "group-hover:text-[#2D7FF9]",
+      deptColor: "text-[#2D7FF9]",
+      flowChain: [
+        "23 COMPLAINTS",
+        "STREETLIGHT FAILURES",
+        "SHANTI NAGAR",
+        "ELECTRICAL WORKS",
+        "RELATED MUNICIPAL CONTEXT"
       ],
-      aiRecommendation: "Prioritize completion of the existing Electrical Maintenance Phase II project to resolve transformer load."
+      relatedComplaints: [
+        "Streetlight not working near Shanti Nagar Main Road",
+        "Streetlight flickering violently near Pole #409",
+        "Dark road near intersection causing safety concern",
+        "Streetlight fixture damaged after storm"
+      ]
     },
     {
       id: "CLS-ROAD-02",
       title: "ROAD DAMAGE CLUSTER",
-      category: "Pavement & Pothole Surface Damage",
-      location: "Sector 12",
+      category: "Roads",
+      categoryFull: "Pavement & Pothole Surface Damage",
+      location: "Shanti Nagar",
+      pincode: "110025",
       complaintCount: 17,
-      affectedPopulation: 89,
-      department: "Engineering & Road Maintenance",
-      priority: "MEDIUM",
-      priorityBg: "bg-amber-500/10 text-amber-500 border-amber-500/30",
-      project: "Sector 12 Resurfacing Phase I",
-      projectProgress: "45%",
-      geographicConcentration: "Moderate (2 Critical Potholes)",
-      firstReported: "Aug 08, 2026",
-      latestReported: "Aug 13, 2026",
-      whyBreakdown: [
-        "17 complaints along commuter transit route",
-        "89 affected daily commuters and residents",
-        "Pothole depth exceeding safety threshold (> 4 inches)",
-        "Overlaps with scheduled heavy transit bypass"
+      department: "Engineering",
+      priority: "Medium",
+      priorityStyle: "bg-amber-50 text-amber-700 border-amber-200",
+      topAccent: "bg-[#FFC107]",
+      barColor: "bg-[#FFC107]",
+      cardHoverBorder: "hover:border-[#FFC107]",
+      btnHover: "hover:bg-[#FFC107] hover:border-[#FFC107] hover:text-[#0D1B2A]",
+      titleHover: "group-hover:text-[#D97706]",
+      deptColor: "text-[#D97706]",
+      flowChain: [
+        "17 COMPLAINTS",
+        "ROAD SURFACE DAMAGE",
+        "SHANTI NAGAR",
+        "ENGINEERING",
+        "RELATED MUNICIPAL CONTEXT"
       ],
-      aiRecommendation: "Accelerate asphalt cold-patch dispatch ahead of scheduled Phase I resurfacing."
+      relatedComplaints: [
+        "Deep pothole near Shanti Nagar market entrance",
+        "Asphalt erosion along 3rd cross road",
+        "Cracked pavement causing traffic slowdown",
+        "Loose gravel on major bus transit curve"
+      ]
     },
     {
       id: "CLS-WATER-03",
       title: "WATER LEAKAGE CLUSTER",
-      category: "Mainline Water Seepage & Pressure Drop",
-      location: "Green Park",
+      category: "Water",
+      categoryFull: "Mainline Seepage & Low Water Pressure",
+      location: "Sector 12",
+      pincode: "110012",
       complaintCount: 21,
-      affectedPopulation: 210,
       department: "Water Supply & Sanitation",
-      priority: "HIGH",
-      priorityBg: "bg-red-500/10 text-red-500 border-red-500/30",
-      project: "Green Park Pipe Upgrade Project",
-      projectProgress: "60%",
-      geographicConcentration: "High (Sub-surface pressure drop)",
-      firstReported: "Aug 02, 2026",
-      latestReported: "Aug 12, 2026",
-      whyBreakdown: [
-        "21 low-pressure and leakage complaints within 2 blocks",
-        "210 estimated affected residents across 3 apartment complexes",
-        "Significant potable water volume loss detected by pipe sensors",
-        "High risk of structural pavement erosion if unaddressed"
+      priority: "High",
+      priorityStyle: "bg-red-50 text-red-600 border-red-200",
+      topAccent: "bg-[#00A68E]",
+      barColor: "bg-[#00A68E]",
+      cardHoverBorder: "hover:border-[#00A68E]",
+      btnHover: "hover:bg-[#00A68E] hover:border-[#00A68E] hover:text-white",
+      titleHover: "group-hover:text-[#00A68E]",
+      deptColor: "text-[#00A68E]",
+      flowChain: [
+        "21 COMPLAINTS",
+        "MAINLINE PIPE LEAKAGE",
+        "SECTOR 12",
+        "WATER SUPPLY & SANITATION",
+        "RELATED MUNICIPAL CONTEXT"
       ],
-      aiRecommendation: "Execute emergency pressure regulation valve replacement in Sector B."
+      relatedComplaints: [
+        "Low water pressure reported across Block B",
+        "Clean water seepage observed on main road curb",
+        "Water outage during morning peak hours",
+        "Dirty water supply in residential tap line"
+      ]
     },
     {
       id: "CLS-DRAIN-04",
       title: "DRAINAGE OVERFLOW CLUSTER",
-      category: "Stormwater Grate Blockage",
-      location: "Eastside Lowland Basin",
+      category: "Sanitation",
+      categoryFull: "Stormwater Grate Blockage & Overflow",
+      location: "Green Park",
+      pincode: "110045",
       complaintCount: 18,
-      affectedPopulation: 115,
       department: "Stormwater Management",
-      priority: "MEDIUM",
-      priorityBg: "bg-amber-500/10 text-amber-500 border-amber-500/30",
-      project: "Flood Mitigation Dredging Phase III",
-      projectProgress: "90%",
-      geographicConcentration: "Localized Lowland Catchment",
-      firstReported: "Aug 09, 2026",
-      latestReported: "Aug 13, 2026",
-      whyBreakdown: [
-        "18 complaints reporting water pooling post-rainfall",
-        "115 residents in flood-prone topography",
-        "Debris accumulation in primary culvert intake"
+      priority: "Medium",
+      priorityStyle: "bg-amber-50 text-amber-700 border-amber-200",
+      topAccent: "bg-[#6366F1]",
+      barColor: "bg-[#6366F1]",
+      cardHoverBorder: "hover:border-[#6366F1]",
+      btnHover: "hover:bg-[#6366F1] hover:border-[#6366F1] hover:text-white",
+      titleHover: "group-hover:text-[#6366F1]",
+      deptColor: "text-[#6366F1]",
+      flowChain: [
+        "18 COMPLAINTS",
+        "DRAINAGE BLOCKAGE",
+        "GREEN PARK",
+        "STORMWATER MANAGEMENT",
+        "RELATED MUNICIPAL CONTEXT"
       ],
-      aiRecommendation: "Deploy hydro-vac crew to clear primary culvert intake before anticipated weekend rain."
+      relatedComplaints: [
+        "Storm drain overflowing post rain",
+        "Blocked culvert causing standing water",
+        "Foul odor near storm grate entrance",
+        "Silt accumulation clogging drainage outlet"
+      ]
     }
   ];
 
+  // Filtering Logic
+  const filteredClusters = clusterData.filter((cluster) => {
+    const matchesSearch =
+      cluster.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      cluster.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      cluster.pincode.includes(searchQuery) ||
+      cluster.department.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesCategory =
+      selectedCategory === "All" || cluster.category === selectedCategory;
+
+    const matchesPincode =
+      selectedPincode === "All" || cluster.pincode === selectedPincode;
+
+    return matchesSearch && matchesCategory && matchesPincode;
+  });
+
   return (
-    <div className="space-y-6">
-      {/* Header Banner */}
-      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between border-b border-[#D6E6F7] pb-4">
-        <div>
-          <div className="mb-1 flex items-center gap-2">
-            <span className="h-px w-6 bg-[#2D7FF9]" />
-            <span className="text-[11px] font-extrabold tracking-[0.18em] text-[#1E4FA3] uppercase">
-              AI ENGINE & EXPLAINABILITY
-            </span>
+    <div className="space-y-8 text-[#0D1B2A] font-['Inter',sans-serif]">
+      {/* 1. HEADER BANNER */}
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs relative overflow-hidden">
+        {/* Top Accent bar */}
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#2D7FF9]" />
+
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="flex items-center gap-2 text-sm font-black tracking-widest text-[#2D7FF9] uppercase mb-2">
+              <span className="h-[3px] w-6 bg-[#2D7FF9] rounded-full inline-block" />
+              GEOGRAPHIC CONCENTRATIONS
+            </p>
+            <h1 className="text-4xl sm:text-5xl font-black text-[#0D1B2A] tracking-tight">
+              Complaint <span className="text-[#2D7FF9]">Clusters</span>
+            </h1>
+            <p className="mt-2 text-lg font-semibold text-[#59687A] max-w-2xl">
+              Turn thousands of individual complaints into <strong>meaningful groups</strong>. Identify geographic concentrations of similar civic problems.
+            </p>
+
+            {/* Accent Line Dashes */}
+            <div className="flex items-center gap-2 mt-4">
+              <span className="h-1.5 w-7 rounded-full bg-[#2D7FF9]" />
+              <span className="h-1.5 w-7 rounded-full bg-[#00A68E]" />
+              <span className="h-1.5 w-7 rounded-full bg-[#FFC107]" />
+              <span className="h-1.5 w-7 rounded-full bg-[#FF5252]" />
+            </div>
           </div>
-          <h1 className="text-2xl font-black tracking-[-0.03em] text-[#0D1B2A]">
-            7. COMPLAINT CLUSTERS
-          </h1>
-          <p className="text-xs font-semibold text-[#4B5563]">
-            Instead of treating complaints as independent tickets, AI aggregates related inquiries into actionable intelligence clusters.
-          </p>
+
+          {/* Stat Box */}
+          <div className="flex flex-col sm:items-end gap-3 shrink-0">
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-5 py-3 text-base font-semibold">
+              <span className="text-[#657386] block text-xs font-black uppercase tracking-wider">Active Clusters</span>
+              <span className="text-[#0D1B2A] font-black font-mono text-xl">{filteredClusters.length} Clustered Groups</span>
+            </div>
+          </div>
         </div>
 
-        <div>
-          <span className="inline-flex items-center gap-2 rounded-full bg-[#2D7FF9]/10 px-3.5 py-1 text-xs font-extrabold text-[#2D7FF9] border border-[#2D7FF9]/20">
-            <span className="h-2 w-2 rounded-full bg-[#2D7FF9] animate-ping" />
-            4 Active AI Clusters
+        {/* 2. SEARCH & FILTER CONTROL BAR */}
+        <div className="mt-7 pt-6 border-t border-slate-100 flex flex-col gap-3.5 sm:flex-row sm:items-center justify-between">
+          {/* Search Box */}
+          <div className="relative flex-1 max-w-md">
+            <input
+              type="text"
+              placeholder="Search cluster, location, department, or pincode..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full rounded-xl border border-slate-200 bg-slate-50/60 px-4.5 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-[#2D7FF9] focus:bg-white transition"
+            />
+          </div>
+
+          {/* Dropdown Filters */}
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Category Dropdown */}
+            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 py-2.5 text-sm font-bold">
+              <span className="text-slate-500">Category:</span>
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="bg-transparent text-[#0D1B2A] font-black outline-none cursor-pointer"
+              >
+                <option value="All">All Categories</option>
+                <option value="Streetlight">Streetlight</option>
+                <option value="Roads">Roads</option>
+                <option value="Water">Water</option>
+                <option value="Sanitation">Sanitation</option>
+              </select>
+            </div>
+
+            {/* Pincode Dropdown */}
+            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 py-2.5 text-sm font-bold">
+              <span className="text-slate-500">Pincode:</span>
+              <select
+                value={selectedPincode}
+                onChange={(e) => setSelectedPincode(e.target.value)}
+                className="bg-transparent text-[#0D1B2A] font-black outline-none cursor-pointer font-mono"
+              >
+                <option value="All">All Pincodes</option>
+                <option value="110025">110025 (Shanti Nagar)</option>
+                <option value="110012">110012 (Sector 12)</option>
+                <option value="110045">110045 (Green Park)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. CLUSTER CARDS GRID */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <p className="flex items-center gap-2 text-sm font-black tracking-widest text-slate-400 uppercase">
+            <span className="h-[3px] w-6 bg-slate-300 rounded-full inline-block" />
+            IDENTIFIED CLUSTER CARDS
+          </p>
+          <span className="text-sm font-bold text-slate-500">
+            Showing {filteredClusters.length} of {clusterData.length} clusters
           </span>
         </div>
-      </div>
 
-      {/* AI Pipeline Flow Card */}
-      <div className="rounded-2xl border border-white/10 bg-[#0D1B2A] p-6 text-white shadow-xl">
-        <span className="text-xs font-black uppercase tracking-[0.16em] text-[#8DBBFF]">
-          AI Clustering Workflow Demonstration
-        </span>
-
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs font-extrabold">
-          <div className="flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-3.5 py-2">
-            <span className="text-[#2D7FF9] font-mono text-sm font-black">23</span>
-            <span className="text-white/80">complaints</span>
-          </div>
-
-          <span className="text-white/40">↓</span>
-
-          <div className="flex items-center gap-2 rounded-xl bg-[#2D7FF9]/20 border border-[#2D7FF9]/40 px-3.5 py-2 text-[#8DBBFF]">
-            <span>✨ AI identifies similarity</span>
-          </div>
-
-          <span className="text-white/40">↓</span>
-
-          <div className="flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-3.5 py-2">
-            <span className="text-white font-mono font-black">STREETLIGHT CLUSTER</span>
-          </div>
-
-          <span className="text-white/40">↓</span>
-
-          <div className="flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-3.5 py-2 text-[#FFC107]">
-            <span>📍 Shanti Nagar</span>
-          </div>
-
-          <span className="text-white/40">↓</span>
-
-          <div className="flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-3.5 py-2 text-[#00A68E]">
-            <span>🏢 Electrical Works</span>
-          </div>
-
-          <span className="text-white/40">↓</span>
-
-          <div className="flex items-center gap-2 rounded-xl bg-emerald-500/20 border border-emerald-500/30 px-3.5 py-2 text-emerald-400">
-            <span>🛠 Maintenance Phase II</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Cluster Cards Grid */}
-      <div>
-        <h2 className="mb-4 text-xs font-extrabold tracking-[0.16em] uppercase text-[#1E4FA3]">
-          Active Complaint Cluster Cards
-        </h2>
-
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          {clusterData.map((cluster) => (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {filteredClusters.map((cluster) => (
             <div
               key={cluster.id}
-              className="group flex flex-col justify-between rounded-2xl border border-[#D6E6F7] bg-white p-6 shadow-sm transition-all hover:border-[#2D7FF9] hover:shadow-md"
+              className={`group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition-all ${cluster.cardHoverBorder} hover:shadow-md overflow-hidden`}
             >
+              {/* Top Accent line */}
+              <div className={`absolute top-0 left-0 w-16 h-1.5 ${cluster.topAccent} rounded-b`} />
+
               <div>
-                <div className="flex items-start justify-between border-b border-[#D6E6F7] pb-3">
+                {/* Header Row */}
+                <div className="flex items-start justify-between mb-4 pt-1">
                   <div>
-                    <span className="font-mono text-[10px] font-extrabold tracking-wider text-slate-400 uppercase">
+                    <span className="font-mono text-xs font-black tracking-wider text-slate-400 uppercase block mb-0.5">
                       {cluster.id}
                     </span>
-                    <h3 className="text-lg font-black text-[#0D1B2A] group-hover:text-[#2D7FF9] transition-colors">
+                    <h3 className={`text-xl font-black text-[#0D1B2A] ${cluster.titleHover} transition-colors leading-tight`}>
                       {cluster.title}
                     </h3>
-                    <p className="text-xs font-bold text-[#2D7FF9]">{cluster.location}</p>
                   </div>
 
-                  <span className={`rounded-full border px-3 py-1 text-xs font-black uppercase tracking-wider ${cluster.priorityBg}`}>
-                    {cluster.priority}
+                  <span className={`rounded-lg border px-3 py-1 text-xs font-black uppercase tracking-wider ${cluster.priorityStyle}`}>
+                    • {cluster.priority} PRIORITY
                   </span>
                 </div>
 
-                <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
-                  <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                    <span className="block text-slate-400 font-semibold text-[11px]">Aggregated Complaints</span>
-                    <span className="font-mono text-lg font-black text-[#0D1B2A]">{cluster.complaintCount} tickets</span>
+                {/* Main Stats Box */}
+                <div className="rounded-xl bg-slate-50/70 p-4 border border-slate-100 space-y-3">
+                  <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
+                    <span className="text-sm font-bold text-slate-500">Aggregated Complaints</span>
+                    <span className="font-mono font-black text-[#0D1B2A] text-lg">
+                      {cluster.complaintCount} complaints
+                    </span>
                   </div>
 
-                  <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                    <span className="block text-slate-400 font-semibold text-[11px]">Affected Citizens</span>
-                    <span className="font-mono text-lg font-black text-[#0D1B2A]">{cluster.affectedPopulation} citizens</span>
+                  <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
+                    <span className="text-sm font-bold text-slate-500">Geographic Location</span>
+                    <span className="font-black text-[#0D1B2A] text-base">
+                      {cluster.location} <span className="font-mono text-slate-400 font-medium">({cluster.pincode})</span>
+                    </span>
                   </div>
 
-                  <div className="col-span-2 rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                    <span className="block text-slate-400 font-semibold text-[11px]">Handling Department</span>
-                    <span className="font-bold text-[#0D1B2A]">{cluster.department}</span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-bold text-slate-500">Responsible Department</span>
+                    <span className={`font-extrabold ${cluster.deptColor} text-base`}>
+                      {cluster.department}
+                    </span>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-5 flex items-center justify-between border-t border-[#D6E6F7] pt-4">
-                <button
-                  onClick={() => setShowWhyModal(cluster)}
-                  className="rounded-lg bg-[#0D1B2A] px-3.5 py-2 text-xs font-black text-white hover:bg-[#1E4FA3] transition-all flex items-center gap-1.5"
-                >
-                  <span>❓ Explain "WHY?"</span>
-                </button>
-
+              {/* Card Footer Button */}
+              <div className="mt-5 pt-4 border-t border-slate-100 flex justify-end">
                 <button
                   onClick={() => setSelectedCluster(cluster)}
-                  className="rounded-lg border border-[#D6E6F7] px-3.5 py-2 text-xs font-extrabold text-[#2D7FF9] hover:bg-slate-50 transition-all flex items-center gap-1"
+                  className={`rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-black text-[#0D1B2A] ${cluster.btnHover} transition-all shadow-2xs`}
                 >
-                  <span>View Details →</span>
+                  View Cluster
                 </button>
               </div>
             </div>
@@ -237,181 +318,107 @@ export default function Clusters() {
         </div>
       </div>
 
-      {/* 8. CLUSTER DETAILS MODAL */}
+      {/* 4. CLUSTER DETAILS MODAL (FULL WORKFLOW & BREAKDOWN & AI CTA) */}
       {selectedCluster && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0D1B2A]/70 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-[#D6E6F7] bg-white p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 p-4 backdrop-blur-sm">
+          <div className="modal-popup-container w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-7 shadow-2xl space-y-6">
             
             {/* Modal Header */}
-            <div className="flex items-start justify-between border-b border-[#D6E6F7] pb-4">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-4">
               <div>
-                <span className="text-xs font-extrabold text-[#2D7FF9] uppercase tracking-wider">
-                  8. CLUSTER INTELLIGENCE DETAILS
-                </span>
-                <h3 className="text-xl font-black text-[#0D1B2A]">{selectedCluster.title}</h3>
-                <p className="text-xs font-bold text-slate-500">Location: {selectedCluster.location}</p>
+                <div className="flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#2D7FF9]" />
+                  <span className="font-mono text-xs font-black text-[#2D7FF9] uppercase tracking-wider">
+                    {selectedCluster.id}
+                  </span>
+                </div>
+                <h2 className="text-2xl font-black text-[#0D1B2A] mt-1">
+                  {selectedCluster.title}
+                </h2>
+                <p className="text-base font-bold text-slate-500 mt-0.5">
+                  {selectedCluster.location} <span className="font-mono text-slate-400">({selectedCluster.pincode})</span>
+                </p>
               </div>
+
               <button
                 onClick={() => setSelectedCluster(null)}
-                className="rounded-full p-1 text-slate-400 hover:bg-slate-100"
+                className="rounded-xl border border-slate-200 p-2 text-slate-400 hover:bg-slate-50 hover:text-slate-800 text-lg font-bold"
               >
                 ✕
               </button>
             </div>
 
-            {/* Visual Workflow Chain */}
-            <div className="my-5 rounded-xl bg-[#0D1B2A] p-4 text-white text-xs">
-              <span className="text-[10px] font-black uppercase text-slate-400 block mb-2">Clustering Mapping Chain</span>
-              <div className="flex flex-wrap items-center gap-2 font-mono">
-                <span className="text-[#2D7FF9] font-bold">{selectedCluster.complaintCount} complaints</span>
-                <span>↓</span>
-                <span className="text-white/80">{selectedCluster.category}</span>
-                <span>↓</span>
-                <span className="text-[#00A68E] font-bold">{selectedCluster.department}</span>
-                <span>↓</span>
-                <span className="text-amber-400 font-bold">{selectedCluster.project}</span>
-                <span>↓</span>
-                <span className="text-emerald-400 font-bold">{selectedCluster.projectProgress} complete</span>
-              </div>
-            </div>
 
-            {/* Detailed Cluster Information Grid */}
-            <div className="space-y-3 text-xs text-[#0D1B2A]">
-              <h4 className="font-extrabold uppercase text-[#1E4FA3] tracking-wider">Cluster Metadata & Metrics</h4>
 
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                  <span className="text-slate-400 block font-semibold">Complaint Count</span>
-                  <span className="font-mono text-base font-black text-[#0D1B2A]">{selectedCluster.complaintCount} tickets</span>
+            {/* CLUSTER BREAKDOWN METADATA */}
+            <div className="space-y-3">
+              <h4 className="text-base font-black text-[#0D1B2A] uppercase tracking-wider">
+                Cluster Breakdown
+              </h4>
+
+              <div className="grid grid-cols-2 gap-3 text-base">
+                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                  <span className="text-xs font-black text-slate-400 uppercase block mb-1">Complaint Count</span>
+                  <span className="font-mono font-black text-[#0D1B2A] text-lg">{selectedCluster.complaintCount}</span>
                 </div>
 
-                <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                  <span className="text-slate-400 block font-semibold">Affected Population Estimate</span>
-                  <span className="font-mono text-base font-black text-[#0D1B2A]">{selectedCluster.affectedPopulation} citizens</span>
+                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                  <span className="text-xs font-black text-slate-400 uppercase block mb-1">Location</span>
+                  <span className="font-extrabold text-[#0D1B2A]">{selectedCluster.location}</span>
                 </div>
 
-                <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                  <span className="text-slate-400 block font-semibold">Geographic Concentration</span>
-                  <span className="font-bold text-[#0D1B2A]">{selectedCluster.geographicConcentration}</span>
+                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                  <span className="text-xs font-black text-slate-400 uppercase block mb-1">Pincode</span>
+                  <span className="font-mono font-black text-[#0D1B2A]">{selectedCluster.pincode}</span>
                 </div>
 
-                <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                  <span className="text-slate-400 block font-semibold">Issue Category</span>
-                  <span className="font-bold text-[#0D1B2A]">{selectedCluster.category}</span>
+                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                  <span className="text-xs font-black text-slate-400 uppercase block mb-1">Category</span>
+                  <span className="font-extrabold text-[#0D1B2A]">{selectedCluster.category}</span>
                 </div>
 
-                <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                  <span className="text-slate-400 block font-semibold">Responsible Department</span>
-                  <span className="font-bold text-[#0D1B2A]">{selectedCluster.department}</span>
-                </div>
-
-                <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                  <span className="text-slate-400 block font-semibold">Assigned Priority Level</span>
-                  <span className="font-extrabold text-[#FF5252]">{selectedCluster.priority}</span>
-                </div>
-
-                <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                  <span className="text-slate-400 block font-semibold">First Reported Date</span>
-                  <span className="font-bold text-[#0D1B2A]">{selectedCluster.firstReported}</span>
-                </div>
-
-                <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                  <span className="text-slate-400 block font-semibold">Latest Reported Date</span>
-                  <span className="font-bold text-[#0D1B2A]">{selectedCluster.latestReported}</span>
+                <div className="col-span-2 rounded-xl bg-slate-50 p-3.5 border border-slate-100 flex items-center justify-between">
+                  <span className="text-xs font-black text-slate-400 uppercase">Priority Level</span>
+                  <span className={`rounded-lg border px-3 py-1 text-xs font-black uppercase ${selectedCluster.priorityStyle}`}>
+                    • {selectedCluster.priority}
+                  </span>
                 </div>
               </div>
             </div>
 
-            {/* Modal Actions */}
-            <div className="mt-6 flex justify-end gap-3 border-t border-[#D6E6F7] pt-4">
-              <button
-                onClick={() => {
-                  const current = selectedCluster;
-                  setSelectedCluster(null);
-                  setShowWhyModal(current);
-                }}
-                className="rounded-lg bg-[#0D1B2A] px-4 py-2 text-xs font-black text-white hover:bg-[#1E4FA3]"
-              >
-                Open "WHY?" AI Explainability →
-              </button>
+            {/* RELATED ISSUES BOX */}
+            <div className="space-y-3">
+              <h4 className="text-base font-black text-[#0D1B2A] uppercase tracking-wider">
+                Related Complaints
+              </h4>
+
+              <div className="rounded-xl bg-slate-50 p-4 border border-slate-200/80 space-y-2">
+                <span className="text-xs font-black uppercase tracking-wider text-slate-400 font-mono block mb-2">
+                  AGGREGATED INCOMING TICKETS
+                </span>
+                <ul className="space-y-2 text-sm font-semibold text-slate-700">
+                  {selectedCluster.relatedComplaints.map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5">
+                      <span className="text-[#2D7FF9] font-black">•</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+
+
+            {/* Modal Close Footer */}
+            <div className="flex justify-end pt-3 border-t border-slate-100">
               <button
                 onClick={() => setSelectedCluster(null)}
-                className="rounded-lg border border-[#D6E6F7] px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100"
+                className="rounded-xl border border-slate-200 px-5 py-2.5 text-xs font-black text-slate-600 hover:bg-slate-50"
               >
                 Close Window
               </button>
             </div>
-          </div>
-        </div>
-      )}
 
-      {/* 9. CLUSTER "WHY?" EXPLAINABLE AI MODAL */}
-      {showWhyModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0D1B2A]/80 p-4 backdrop-blur-md">
-          <div className="w-full max-w-xl rounded-2xl border border-white/10 bg-[#0D1B2A] p-6 text-white shadow-2xl">
-            
-            {/* Header */}
-            <div className="flex items-start justify-between border-b border-white/10 pb-4">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-[#2D7FF9] animate-pulse" />
-                  <span className="text-xs font-extrabold text-[#8DBBFF] uppercase tracking-wider">
-                    9. CLUSTER "WHY?" (EXPLAINABLE AI)
-                  </span>
-                </div>
-                <h3 className="mt-1 text-lg font-black text-white">
-                  WHY IS THIS CLUSTER {showWhyModal.priority} PRIORITY?
-                </h3>
-                <p className="text-xs text-white/70">{showWhyModal.title} — {showWhyModal.location}</p>
-              </div>
-
-              <button
-                onClick={() => setShowWhyModal(null)}
-                className="rounded-full p-1 text-white/60 hover:bg-white/10 hover:text-white"
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* Explainability Calculation Breakdown */}
-            <div className="my-5 rounded-xl border border-white/10 bg-white/5 p-5">
-              <span className="text-[11px] font-black uppercase text-[#8DBBFF] tracking-wider block mb-3">
-                CivicMirror AI Explainability Calculation:
-              </span>
-
-              <div className="space-y-2.5 text-xs font-mono">
-                {showWhyModal.whyBreakdown.map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-2">
-                    <span className="text-[#2D7FF9] font-black">{idx === 0 ? " " : "+"}</span>
-                    <span className="text-white/90 font-semibold">{item}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* AI Recommendation Box */}
-            <div className="rounded-xl border border-[#2D7FF9]/40 bg-[#2D7FF9]/10 p-4">
-              <span className="text-[11px] font-black uppercase tracking-wider text-[#8DBBFF] block mb-1">
-                AI Recommendation:
-              </span>
-              <p className="text-sm font-bold text-white leading-relaxed">
-                "{showWhyModal.aiRecommendation}"
-              </p>
-            </div>
-
-            <p className="mt-4 text-[11px] text-white/50 italic">
-              CivicMirror Explainable AI: Provides actionable intelligence beyond a simple status priority tag.
-            </p>
-
-            {/* Footer Actions */}
-            <div className="mt-6 flex justify-end gap-3 border-t border-white/10 pt-4">
-              <button
-                onClick={() => setShowWhyModal(null)}
-                className="rounded-lg bg-[#2D7FF9] px-4 py-2 text-xs font-extrabold text-white hover:bg-[#1E4FA3]"
-              >
-                Acknowledge AI Explainability
-              </button>
-            </div>
           </div>
         </div>
       )}

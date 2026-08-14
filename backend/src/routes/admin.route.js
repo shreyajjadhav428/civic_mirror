@@ -4,8 +4,10 @@ import {
   getComplaintClusters, 
   getClusterInsights, 
   getPincodeIntelligence,
-  getUniqueQueries,     // NEW
-  getMunicipalFiles     // NEW
+  getUniqueQueries,
+  getAdminInquiries,
+  getMunicipalFiles,
+  updateComplaintStatus
 } from '../controllers/admin.controller.js';
 import { verifyToken, requireRole } from '../middleware/auth.middleware.js';
 
@@ -19,8 +21,10 @@ router.get('/clusters', getComplaintClusters);
 router.post('/insights', getClusterInsights);
 router.get('/pincode/:pincode', getPincodeIntelligence);
 
-// New endpoints to close the UI gaps
+// Endpoints for admin queries, inquiries, files, and status update
 router.get('/queries', getUniqueQueries);
+router.get('/inquiries', getAdminInquiries);
 router.get('/files', getMunicipalFiles);
+router.patch('/complaints/:id/status', updateComplaintStatus);
 
 export default router;

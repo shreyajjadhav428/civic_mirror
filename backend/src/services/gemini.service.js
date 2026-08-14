@@ -16,7 +16,7 @@ Core Operational Rules:
 7. Return strictly valid JSON conforming to the requested schema.`;
 
 export const analyzePromptForTools = async (userPrompt) => {
-  const modelsToTry = ['Gemini 3.1 Flash Lite'];
+  const modelsToTry = ['gemini-3.1-flash-lite'];
   for (const model of modelsToTry) {
     try {
       const response = await ai.models.generateContent({
