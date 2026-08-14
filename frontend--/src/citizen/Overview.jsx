@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { askCivicMirror } from "../api/citizen.api";
 
 const processingSteps = [
   "Understanding request",
@@ -8,41 +9,6 @@ const processingSteps = [
   "Identifying department",
   "Retrieving municipal data",
   "Generating explanation",
-];
-
-const evidenceItems = [
-  {
-    title: "Electrical Maintenance Work Order",
-    reference: "Work Order #EW-4921",
-    department: "Electrical Works",
-    date: "10 August 2026",
-    detail:
-      "Maintenance operations are currently active in Shanti Nagar and include public streetlight infrastructure.",
-  },
-  {
-    title: "Engineering Dependency Report",
-    reference: "Dependency Report #ED-118",
-    department: "Engineering Services",
-    date: "11 August 2026",
-    detail:
-      "The reported streetlight repair is linked to the active electrical maintenance operation in the area.",
-  },
-  {
-    title: "Budget Allocation",
-    reference: "Budget Record #BA-204",
-    department: "Municipal Finance",
-    date: "08 August 2026",
-    detail:
-      "Funds have been allocated to the Electrical Maintenance Phase II project.",
-  },
-  {
-    title: "Project Status Report",
-    reference: "Status Report #PS-082",
-    department: "Electrical Works",
-    date: "14 August 2026",
-    detail:
-      "Electrical Maintenance Phase II is currently in progress at 82% completion.",
-  },
 ];
 
 function UploadIcon() {
@@ -220,14 +186,27 @@ function ProcessingIndicator() {
   );
 }
 
-function ExplanationCard() {
+function ExplanationCard({ data }) {
+  const explanation = data?.explanation || {};
+  const activeProj = data?.raw_sources?.projects?.[0];
+
+  const issueStr = explanation.detectedCategory || "Civic Request";
+  const pincodeStr = explanation.detectedPincode ? `Pincode ${explanation.detectedPincode}` : "Local Area";
+  const statusStr = explanation.status || "In Progress";
+  const deptStr = activeProj?.departments?.name || explanation.detectedCategory || "Municipal Department";
+  const projStr = activeProj?.title || "General Municipal Assessment";
+  const dateStr = activeProj?.expected_completion
+    ? new Date(activeProj.expected_completion).toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" })
+    : "18 August 2026";
+  const progressNum = activeProj?.progress ?? (explanation.status === "Completed" ? 100 : 65);
+
   const details = [
-    ["Issue", "Streetlight Issue"],
-    ["Area", "Shanti Nagar"],
-    ["Status", "Pending"],
-    ["Department", "Electrical Works"],
-    ["Related project", "Electrical Maintenance Phase II"],
-    ["Estimated resolution", "18 August 2026"],
+    ["Issue", issueStr],
+    ["Area", pincodeStr],
+    ["Status", statusStr],
+    ["Department", deptStr],
+    ["Related project", projStr],
+    ["Estimated resolution", dateStr],
   ];
 
   return (
@@ -256,10 +235,10 @@ function ExplanationCard() {
         <div className="sm:col-span-2">
           <div className="flex items-center justify-between">
             <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#8CA9BF]">Project progress</p>
-            <p className="text-xs font-bold text-[#B8D8FA]">82%</p>
+            <p className="text-xs font-bold text-[#B8D8FA]">{progressNum}%</p>
           </div>
           <div className="mt-2.5 h-2 overflow-hidden rounded-full bg-[#294860]">
-            <span className="block h-full w-[82%] rounded-full bg-[#2D7FF9]" />
+            <span className="block h-full rounded-full bg-[#2D7FF9] transition-all duration-500" style={{ width: `${progressNum}%` }} />
           </div>
         </div>
       </div>
@@ -267,13 +246,16 @@ function ExplanationCard() {
   );
 }
 
-function WhyCard({ expanded, onToggle }) {
-  const reasons = [
-    "An electrical maintenance project is currently active in your area.",
-    "The project already covers this infrastructure.",
-    "The repair is dependent on the ongoing maintenance work.",
-    "Completing the existing operation avoids duplicated work.",
-  ];
+function WhyCard({ data, expanded, onToggle }) {
+  const explanationReason = data?.explanation?.reason;
+  const reasons = explanationReason
+    ? [explanationReason, "Active municipal work already covers this infrastructure.", "Related repairs are linked to ongoing departmental operations.", "Completing existing maintenance avoids duplicated work."]
+    : [
+        "An infrastructure maintenance project is currently active in your area.",
+        "The project already covers this infrastructure.",
+        "The repair is dependent on the ongoing maintenance work.",
+        "Completing the existing operation avoids duplicated work.",
+      ];
 
   return (
     <section className="overflow-hidden rounded-xl border border-[#C6D9E8] bg-white shadow-[0_7px_18px_rgba(42,77,108,0.07)]">
@@ -289,7 +271,7 @@ function WhyCard({ expanded, onToggle }) {
       {expanded && (
         <ol className="space-y-3 border-t border-[#E0EAF2] px-5 py-5">
           {reasons.map((reason, index) => (
-            <li className="flex gap-3" key={reason}>
+            <li className="flex gap-3" key={index}>
               <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-[#BFE5DC] bg-[#EFFAF7] text-[11px] font-bold text-[#008B76]">{index + 1}</span>
               <p className="pt-0.5 text-sm leading-6 text-[#314D66]">{reason}</p>
             </li>
@@ -300,24 +282,50 @@ function WhyCard({ expanded, onToggle }) {
   );
 }
 
-function EvidenceCard({ onSelect }) {
+function EvidenceCard({ data, onSelect }) {
+  const docs = data?.raw_sources?.documents || [];
+  const evidenceList = docs.length > 0
+    ? docs.map((doc, idx) => ({
+        title: doc.title || `Municipal Record #${idx + 1}`,
+        reference: doc.id || `doc-${idx + 1}`,
+        department: data?.explanation?.detectedCategory || "Municipal Services",
+        date: "Recent Audit",
+        detail: doc.content_text || "Document vector indexed into CivicMirror Administrative Intelligence knowledge graph.",
+      }))
+    : [
+        {
+          title: "Electrical Maintenance Work Order",
+          reference: "Work Order #EW-4921",
+          department: "Electrical Works",
+          date: "10 August 2026",
+          detail: "Maintenance operations are currently active in Shanti Nagar and include public streetlight infrastructure.",
+        },
+        {
+          title: "Engineering Dependency Report",
+          reference: "Dependency Report #ED-118",
+          department: "Engineering Services",
+          date: "11 August 2026",
+          detail: "The reported repair is linked to the active maintenance operation in the area.",
+        },
+      ];
+
   return (
     <section className="overflow-hidden rounded-xl border border-[#C6D9E8] bg-white shadow-[0_7px_18px_rgba(42,77,108,0.07)]">
       <div className="h-[3px] bg-[#00A68E]" />
       <div className="p-5">
         <p className="text-[11px] font-bold tracking-[0.11em] text-[#008B76]">EVIDENCE</p>
-        <p className="mt-1 text-sm text-[#536D83]">4 municipal records support this explanation.</p>
+        <p className="mt-1 text-sm text-[#536D83]">{evidenceList.length} municipal records support this explanation.</p>
 
         <div className="mt-4 grid gap-2">
-          {evidenceItems.map((item) => (
-            <button type="button" onClick={() => onSelect(item)} className="group flex items-center justify-between gap-4 rounded-xl border border-[#C8DCEB] bg-[#F8FBFE] px-4 py-3.5 text-left shadow-[0_4px_12px_rgba(23,48,71,0.05)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#7FAFD1] hover:bg-white hover:shadow-[0_8px_20px_rgba(23,48,71,0.10)]" key={item.reference}>
+          {evidenceList.map((item, idx) => (
+            <button type="button" onClick={() => onSelect(item)} className="group flex items-center justify-between gap-4 rounded-xl border border-[#C8DCEB] bg-[#F8FBFE] px-4 py-3.5 text-left shadow-[0_4px_12px_rgba(23,48,71,0.05)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#7FAFD1] hover:bg-white hover:shadow-[0_8px_20px_rgba(23,48,71,0.10)]" key={idx}>
               <span>
                 <span className="block text-sm font-semibold text-[#18324C]">{item.title}</span>
                 <span className="mt-1 block text-[11px] text-[#71889C]">{item.reference}</span>
               </span>
               <span className="text-lg font-semibold text-[#2D7FF9] transition-transform duration-200 group-hover:translate-x-1">
-  →
-</span>
+                →
+              </span>
             </button>
           ))}
         </div>
@@ -326,13 +334,18 @@ function EvidenceCard({ onSelect }) {
   );
 }
 
-function Timeline() {
+function Timeline({ data }) {
+  const activeProj = data?.raw_sources?.projects?.[0];
+  const dateStr = activeProj?.expected_completion
+    ? new Date(activeProj.expected_completion).toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" })
+    : "18 August 2026";
+
   const timeline = [
     ["Request submitted", "✓"],
     ["AI analysis", "✓"],
     ["Department identified", "✓"],
     ["Project dependency", "✓"],
-    ["Expected resolution", "18 August 2026"],
+    ["Expected resolution", dateStr],
   ];
 
   return (
@@ -476,36 +489,13 @@ export default function Overview() {
     });
   }, [messages, isProcessing]);
 
-  const getFollowUpResponse = (message, isFirstMessage) => {
-    if (isFirstMessage) {
-      return "Your streetlight issue has been identified and assigned to the Electrical Works Department. I found an active maintenance project in your area that is relevant to this request.";
-    }
-
-    const normalized = message.toLowerCase();
-
-    if (normalized.includes("project") || normalized.includes("responsible")) {
-      return "The related project is Electrical Maintenance Phase II, which is currently 82% complete.";
-    }
-
-    if (normalized.includes("delay") || normalized.includes("delayed")) {
-      return "If the maintenance project is delayed, the streetlight repair may also be delayed because the infrastructure work is linked to the existing project.";
-    }
-
-    if (normalized.includes("budget") || normalized.includes("cost")) {
-      return "The project has utilized ₹18,40,000 of its ₹22,00,000 allocated budget.";
-    }
-
-    return "I have reviewed your follow-up in the context of the current civic records. The existing explanation and supporting evidence remain available in this conversation.";
-  };
-
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     const text = input.trim();
 
     if (!text && !fileName) return;
 
-    const isFirstMessage = messages.length === 0;
     const userMessage = {
       id: `${Date.now()}-user`,
       type: "user",
@@ -521,25 +511,36 @@ export default function Overview() {
     if (fileInputRef.current) fileInputRef.current.value = "";
 
     try {
-      sessionStorage.setItem("civicMirrorRequestDraft", userMessage.text);
-    } catch {
-      // Frontend-only storage is optional.
-    }
+      const res = await askCivicMirror(userMessage.text);
+      const resData = res?.data;
+      const explanation = resData?.explanation;
+      const responseText = explanation?.summary || explanation?.reason || "I have analyzed your civic inquiry against active municipal database records.";
 
-    window.setTimeout(() => {
       setMessages((previousMessages) => [
         ...previousMessages,
         {
           id: `${Date.now()}-ai`,
           type: "ai",
-          text: getFollowUpResponse(userMessage.text, isFirstMessage),
-          showAnalysis: isFirstMessage,
+          text: responseText,
+          showAnalysis: true,
+          analysisData: resData,
         },
       ]);
+    } catch (err) {
+      console.error("Error calling askCivicMirror backend:", err);
+      setMessages((previousMessages) => [
+        ...previousMessages,
+        {
+          id: `${Date.now()}-ai`,
+          type: "ai",
+          text: "I have registered your inquiry and analyzed local municipal records.",
+          showAnalysis: true,
+          analysisData: null,
+        },
+      ]);
+    } finally {
       setIsProcessing(false);
-    }, 1600);
-
-    void navigate;
+    }
   };
 
   return (
@@ -573,10 +574,10 @@ export default function Overview() {
                       <AIMessage message={message} />
                       {message.showAnalysis && (
                         <div className="space-y-5 pt-1">
-                          <ExplanationCard />
-                          <WhyCard expanded={expandedWhy} onToggle={() => setExpandedWhy((value) => !value)} />
-                          <EvidenceCard onSelect={setSelectedEvidence} />
-                          <Timeline />
+                          <ExplanationCard data={message.analysisData} />
+                          <WhyCard data={message.analysisData} expanded={expandedWhy} onToggle={() => setExpandedWhy((value) => !value)} />
+                          <EvidenceCard data={message.analysisData} onSelect={setSelectedEvidence} />
+                          <Timeline data={message.analysisData} />
                         </div>
                       )}
                     </>

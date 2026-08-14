@@ -1,22 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-
-const initialRequest = {
-  message: "There is a large pothole near my street that is affecting traffic.",
-  createdAt: "14 Aug 2026",
-  location: "Shanti Nagar, 110025",
-  aiResponse:
-    "CivicMirror has identified this as a road maintenance issue. The request can be directed to the relevant civic department for review.",
-  explanation:
-    "The request describes damage to a public road, which falls under civic road maintenance responsibilities.",
-  evidence: [
-    "Your description indicates a road surface problem affecting people in the area.",
-    "Road damage can be classified under public infrastructure and maintenance.",
-  ],
-  nextSteps: [
-    "The request can be reviewed by the relevant civic department.",
-    "You can track the progress of this request from My Requests.",
-  ],
-};
+import { askCivicMirror } from "../api/citizen.api";
 
 function UploadIcon() {
   return (

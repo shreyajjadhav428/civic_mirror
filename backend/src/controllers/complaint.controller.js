@@ -3,6 +3,38 @@ import {
   getComplaintByIdRepo,
   findMatchingProject
 } from '../repositories/complaint.repository.js';
+import { supabase } from '../config/supabase.js';
+
+/**
+ * GET /api/complaints
+ * Fetches all citizen complaint records from Supabase.
+ */
+export const getComplaintsList = async (req, res) => {
+  try {
+    const { data: dbComplaints, error } = await supabase
+      .from('complaints')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    const formattedRequests = (dbComplaints || []).map((c) => ({
+      id: c.complaint_code || c.id,
+      title: c.description ? (c.description.length > 50 ? c.description.slice(0, 50) + '...' : c.description) : `${c.category || 'Civic'} Issue`,
+      description: c.description || 'No description provided.',
+      location: c.pincode ? `Pincode ${c.pincode}` : 'Shanti Nagar',
+      date: c.created_at ? new Date(c.created_at).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Recent',
+      status: c.status === 'Pending' ? 'Under review' : (c.status || 'Under review'),
+      category: c.category || 'General',
+      pincode: c.pincode || '110025'
+    }));
+
+    return res.status(200).json({ status: 'success', data: formattedRequests });
+  } catch (error) {
+    console.error('Error fetching complaints list:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
 
 /**
  * POST /api/complaints

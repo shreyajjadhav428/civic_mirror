@@ -1,38 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-const requests = [
-  {
-    id: "CM-1024",
-    title: "Streetlight not working",
-    description:
-      "The streetlight near the main road has not been working.",
-    location: "Shanti Nagar",
-    date: "Aug 13, 2026",
-    status: "Under review",
-  },
-  {
-    id: "CM-1018",
-    title: "Road damage near residential area",
-    description:
-      "There is a damaged section of road causing difficulty for vehicles.",
-    location: "Shanti Nagar",
-    date: "Aug 10, 2026",
-    status: "In progress",
-  },
-  {
-    id: "CM-1007",
-    title: "Garbage collection issue",
-    description:
-      "Garbage has not been collected from the area as scheduled.",
-    location: "Shanti Nagar",
-    date: "Aug 5, 2026",
-    status: "Resolved",
-  },
-];
+import { getCitizenRequests } from "../api/citizen.api";
 
 function statusStyles(status) {
-  if (status === "Resolved") {
+  const stLower = (status || "").toLowerCase();
+  if (stLower.includes("resolved") || stLower.includes("completed")) {
     return {
       badge: "border-emerald-200 bg-emerald-50 text-[#008D78]",
       accent: "bg-[#008D78]",
@@ -40,7 +12,7 @@ function statusStyles(status) {
     };
   }
 
-  if (status === "In progress") {
+  if (stLower.includes("progress")) {
     return {
       badge: "border-amber-200 bg-amber-50 text-amber-800",
       accent: "bg-amber-500",
@@ -81,8 +53,33 @@ function RequestIcon({ status }) {
 }
 
 export default function Requests() {
+  const [requestsList, setRequestsList] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadRequests() {
+      setLoading(true);
+      try {
+        const res = await getCitizenRequests();
+        if (isMounted && res?.data) {
+          setRequestsList(res.data);
+        }
+      } catch (err) {
+        console.error("Error fetching citizen requests from backend:", err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    loadRequests();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const openRequestPage = () => {
     setSelectedRequest(null);
@@ -155,8 +152,13 @@ export default function Requests() {
 
       {/* REQUESTS LIST */}
       <section className="space-y-4" aria-label="Your civic requests">
-        {requests.map((request) => {
-          const styles = statusStyles(request.status);
+        {requestsList.length === 0 ? (
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-12 text-center text-slate-500 font-semibold text-sm">
+            {loading ? "Loading your submitted civic requests..." : "No civic requests reported yet."}
+          </div>
+        ) : (
+          requestsList.map((request) => {
+            const styles = statusStyles(request.status);
 
           return (
             <article
@@ -229,7 +231,8 @@ export default function Requests() {
               </div>
             </article>
           );
-        })}
+        })
+      )}
       </section>
 
       {/* REQUEST DETAILS MODAL */}
