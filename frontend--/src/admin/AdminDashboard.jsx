@@ -49,22 +49,20 @@ export default function AdminDashboard() {
           {/* Logo & Header */}
           <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2D7FF9] text-sm font-black text-white shadow-md shadow-[#2D7FF9]/20">
-                CM
-              </div>
-              <div>
-                <a
-                  href="/"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate("/");
-                  }}
-                  className="block text-lg font-black tracking-tight text-white leading-tight hover:opacity-90 transition-opacity"
-                >
-                  Civic<span className="text-[#2D7FF9]">Mirror</span>
-                </a>
-                <span className="block text-xs font-semibold text-slate-400">Admin portal</span>
-              </div>
+              <a
+                href="/"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/");
+                }}
+                className="group inline-flex items-center text-2xl font-black tracking-tight outline-none"
+              >
+                <span className="text-white">C</span>
+                <span className="relative text-[#2D7FF9] after:absolute after:-bottom-1 after:left-0 after:h-[2.5px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 group-hover:after:scale-x-100">
+                  M
+                </span>
+              </a>
+              <span className="text-xs font-semibold text-slate-400">Admin portal</span>
             </div>
             <button
               onClick={() => setIsMobileSidebarOpen(false)}
@@ -92,7 +90,7 @@ export default function AdminDashboard() {
                       : "text-slate-300 hover:bg-white/5 hover:text-white"
                   }`}
                 >
-                  <span className="text-lg">{item.icon}</span>
+                  <span className={`text-lg font-black ${isActive ? "text-[#2D7FF9]" : "text-slate-500"}`}>•</span>
                   <span className="text-lg">{item.label}</span>
                 </button>
               );
@@ -207,7 +205,7 @@ export default function AdminDashboard() {
           {activeNav === "queries" && <Queries onNavigate={setActiveNav} />}
 
           {/* VIEW 3: CLUSTERS TAB */}
-          {activeNav === "clusters" && <Clusters />}
+          {activeNav === "clusters" && <Clusters onNavigate={setActiveNav} />}
 
           {/* VIEW 4: DATA TAB */}
           {activeNav === "data" && <Data />}
