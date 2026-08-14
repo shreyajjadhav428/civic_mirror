@@ -81,8 +81,9 @@ export default function Overview() {
         const queriesRes = await getUniqueQueries();
         if (isMounted && queriesRes?.data) {
           const mappedQueries = queriesRes.data.map((q) => ({
-            text: q.query,
-            count: q.count,
+            ...q,
+            text: q.text || q.question || q.query || "Citizen Query",
+            count: q.count ?? q.requestCount ?? 0,
             category: "Citizen Query"
           }));
           setCommonQueries(mappedQueries);
@@ -383,35 +384,41 @@ export default function Overview() {
             </div>
 
             <div className="mt-4 space-y-3.5">
-              {commonQueries.map((query, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => alert(`Query detail: "${query.text}" (${query.count} citizen requests)`)}
-                  className="flex items-center justify-between text-sm text-slate-800 cursor-pointer p-2 rounded-xl hover:bg-slate-50 relative z-10 transition border border-transparent hover:border-slate-200"
-                >
-                  <div className="flex items-center gap-3">
-                    <svg
-                      className="h-4.5 w-4.5 text-[#2D7FF9] shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <span className="font-extrabold text-slate-700 hover:text-[#2D7FF9] transition">
-                      {query.text}
+              {commonQueries.length === 0 ? (
+                <div className="py-6 text-center text-xs font-semibold text-slate-400">
+                  No common citizen queries logged yet.
+                </div>
+              ) : (
+                commonQueries.map((query, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => alert(`Query detail: "${query.text}" (${query.count} citizen requests)`)}
+                    className="flex items-center justify-between text-sm text-slate-800 cursor-pointer p-2 rounded-xl hover:bg-slate-50 relative z-10 transition border border-transparent hover:border-slate-200"
+                  >
+                    <div className="flex items-center gap-3">
+                      <svg
+                        className="h-4.5 w-4.5 text-[#2D7FF9] shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span className="font-extrabold text-slate-700 hover:text-[#2D7FF9] transition">
+                        {query.text}
+                      </span>
+                    </div>
+                    <span className="font-black font-mono text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg text-sm shrink-0 ml-2">
+                      {query.count}
                     </span>
                   </div>
-                  <span className="font-black font-mono text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg text-sm shrink-0 ml-2">
-                    {query.count}
-                  </span>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>

@@ -59,6 +59,14 @@ export const getAdminInquiries = async () => {
 };
 
 /**
+ * Ingest document file / text, generate Gemini vector embedding, and insert into RAG knowledge store.
+ */
+export const ingestDocument = async (payload) => {
+  const response = await api.post("/documents/ingest", payload);
+  return response.data;
+};
+
+/**
  * Update a complaint status or flag.
  */
 export const updateComplaintStatus = async (id, statusData) => {
