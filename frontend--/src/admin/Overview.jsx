@@ -1,4 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import {
+  getAdminOverview,
+  getComplaintClusters,
+  getUniqueQueries,
+  updateComplaintStatus,
+} from "../api/admin.api";
 
 export default function Overview() {
   const [activityTimeframe, setActivityTimeframe] = useState("Last 7 Days");
@@ -8,322 +14,171 @@ export default function Overview() {
   const [showAllQueriesModal, setShowAllQueriesModal] = useState(false);
   const [selectedAreaModal, setSelectedAreaModal] = useState(null);
   const [actionSuccessMsg, setActionSuccessMsg] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  // Priority Issues Data (Stateful so user actions can update it)
-  const [priorityIssues, setPriorityIssues] = useState([
-    {
-      id: "ISS-01",
-      title: "Streetlight Issues",
-      count: 34,
-      dotColor: "bg-red-500",
-      urgency: "High Priority",
-      department: "Electrical Works",
-      location: "Ward 4 & Downtown",
-      status: "Pending Action",
-      description: "Multiple non-functional LED fixtures causing dark spots and public safety concerns during night hours.",
-    },
-    {
-      id: "ISS-02",
-      title: "Road Damage",
-      count: 27,
-      dotColor: "bg-orange-500",
-      urgency: "High Priority",
-      department: "Engineering / Road Dept",
-      location: "North Avenue",
-      status: "Under Review",
-      description: "Pothole clusters and asphalt deterioration following monsoon runoff.",
-    },
-    {
-      id: "ISS-03",
-      title: "Water Leakage",
-      count: 21,
-      dotColor: "bg-amber-500",
-      urgency: "Moderate Priority",
-      department: "Water Supply",
-      location: "Green Park Sector 7",
-      status: "Crew Dispatched",
-      description: "Pipeline seepage leading to low water pressure in domestic supply.",
-    },
-    {
-      id: "ISS-04",
-      title: "Drainage",
-      count: 18,
-      dotColor: "bg-amber-500",
-      urgency: "Moderate Priority",
-      department: "Engineering",
-      location: "Eastside Lowland",
-      status: "Scheduled",
-      description: "Clogged stormwater drains causing localized waterlogging.",
-    },
-    {
-      id: "ISS-05",
-      title: "Other Issues",
-      count: 12,
-      dotColor: "bg-purple-500",
-      urgency: "Low Priority",
-      department: "General Admin",
-      location: "Multiple Wards",
-      status: "Pending Action",
-      description: "Miscellaneous municipal inquiries and sanitation requests.",
-    },
-  ]);
+  // Dynamic Backend State (Zeroed initially - populated exclusively by Backend API)
+  const [overviewMetrics, setOverviewMetrics] = useState({
+    totalRequests: 0,
+    pending: 0,
+    resolved: 0,
+    activeClusters: 0,
+    flaggedForReview: 0,
+  });
+
+  // Priority Issues Data (Empty initially - populated exclusively by Backend API)
+  const [priorityIssues, setPriorityIssues] = useState([]);
 
   // Priority Issue Search & Filter State inside modal
   const [prioritySearch, setPrioritySearch] = useState("");
-  const [priorityFilterDept, setPriorityFilterDept] = useState("All");
 
   // Common Queries Search State inside modal
   const [querySearch, setQuerySearch] = useState("");
 
-  // Most Common Queries Data
-  const commonQueries = [
-    { text: "Why is my road repair delayed?", count: 84, category: "Infrastructure" },
-    { text: "When will water supply resume?", count: 63, category: "Utilities" },
-    { text: "Why hasn't my streetlight been repaired?", count: 41, category: "Electrical" },
-    { text: "Why is drainage work taking so long?", count: 32, category: "Sanitation" },
-    { text: "How long will this project take?", count: 15, category: "General" },
-  ];
+  // Most Common Queries Data (Empty initially - populated exclusively by Backend API)
+  const [commonQueries, setCommonQueries] = useState([]);
 
-  // Dynamic Top Stat Cards Data by Date Filter
-  const statsDataByFilter = {
-    Today: {
-      dateLabel: "12 Aug 2026",
-      stats: [
-        {
-          title: "TOTAL REQUESTS",
-          value: "1,284",
-          trend: "↑ 12% from last 7 days",
-          titleColor: "text-[#2D7FF9]",
-          valColor: "text-[#1E3A8A]",
-          strokeColor: "#2D7FF9",
-          hoverBorder: "hover:shadow-[#2D7FF9]/15",
-        },
-        {
-          title: "PENDING",
-          value: "214",
-          trend: "↑ 7% from last 7 days",
-          titleColor: "text-[#FF5722]",
-          valColor: "text-slate-800",
-          strokeColor: "#FF5722",
-          hoverBorder: "hover:shadow-[#FF5722]/15",
-        },
-        {
-          title: "RESOLVED",
-          value: "927",
-          trend: "↑ 18% from last 7 days",
-          titleColor: "text-[#2E7D32]",
-          valColor: "text-[#2E7D32]",
-          strokeColor: "#2E7D32",
-          hoverBorder: "hover:shadow-[#2E7D32]/15",
-        },
-        {
-          title: "ACTIVE CLUSTERS",
-          value: "43",
-          trend: "↑ 5 from last 7 days",
-          titleColor: "text-[#1E3A8A]",
-          valColor: "text-[#1E3A8A]",
-          strokeColor: "#1E3A8A",
-          hoverBorder: "hover:shadow-[#1E3A8A]/15",
-        },
-      ],
-    },
-    Yesterday: {
-      dateLabel: "11 Aug 2026",
-      stats: [
-        {
-          title: "TOTAL REQUESTS",
-          value: "1,210",
-          trend: "↑ 8% from previous day",
-          titleColor: "text-[#2D7FF9]",
-          valColor: "text-[#1E3A8A]",
-          strokeColor: "#2D7FF9",
-          hoverBorder: "hover:shadow-[#2D7FF9]/15",
-        },
-        {
-          title: "PENDING",
-          value: "198",
-          trend: "↓ 3% from previous day",
-          titleColor: "text-[#FF5722]",
-          valColor: "text-slate-800",
-          strokeColor: "#FF5722",
-          hoverBorder: "hover:shadow-[#FF5722]/15",
-        },
-        {
-          title: "RESOLVED",
-          value: "890",
-          trend: "↑ 14% from previous day",
-          titleColor: "text-[#2E7D32]",
-          valColor: "text-[#2E7D32]",
-          strokeColor: "#2E7D32",
-          hoverBorder: "hover:shadow-[#2E7D32]/15",
-        },
-        {
-          title: "ACTIVE CLUSTERS",
-          value: "41",
-          trend: "↑ 2 from previous day",
-          titleColor: "text-[#1E3A8A]",
-          valColor: "text-[#1E3A8A]",
-          strokeColor: "#1E3A8A",
-          hoverBorder: "hover:shadow-[#1E3A8A]/15",
-        },
-      ],
-    },
-    "This Week": {
-      dateLabel: "06 Aug - 12 Aug 2026",
-      stats: [
-        {
-          title: "TOTAL REQUESTS",
-          value: "8,420",
-          trend: "↑ 15% from last week",
-          titleColor: "text-[#2D7FF9]",
-          valColor: "text-[#1E3A8A]",
-          strokeColor: "#2D7FF9",
-          hoverBorder: "hover:shadow-[#2D7FF9]/15",
-        },
-        {
-          title: "PENDING",
-          value: "1,420",
-          trend: "↑ 4% from last week",
-          titleColor: "text-[#FF5722]",
-          valColor: "text-slate-800",
-          strokeColor: "#FF5722",
-          hoverBorder: "hover:shadow-[#FF5722]/15",
-        },
-        {
-          title: "RESOLVED",
-          value: "6,210",
-          trend: "↑ 22% from last week",
-          titleColor: "text-[#2E7D32]",
-          valColor: "text-[#2E7D32]",
-          strokeColor: "#2E7D32",
-          hoverBorder: "hover:shadow-[#2E7D32]/15",
-        },
-        {
-          title: "ACTIVE CLUSTERS",
-          value: "43",
-          trend: "↑ 8 from last week",
-          titleColor: "text-[#1E3A8A]",
-          valColor: "text-[#1E3A8A]",
-          strokeColor: "#1E3A8A",
-          hoverBorder: "hover:shadow-[#1E3A8A]/15",
-        },
-      ],
-    },
-    "This Month": {
-      dateLabel: "01 Aug - 12 Aug 2026",
-      stats: [
-        {
-          title: "TOTAL REQUESTS",
-          value: "34,890",
-          trend: "↑ 24% from last month",
-          titleColor: "text-[#2D7FF9]",
-          valColor: "text-[#1E3A8A]",
-          strokeColor: "#2D7FF9",
-          hoverBorder: "hover:shadow-[#2D7FF9]/15",
-        },
-        {
-          title: "PENDING",
-          value: "4,820",
-          trend: "↑ 9% from last month",
-          titleColor: "text-[#FF5722]",
-          valColor: "text-slate-800",
-          strokeColor: "#FF5722",
-          hoverBorder: "hover:shadow-[#FF5722]/15",
-        },
-        {
-          title: "RESOLVED",
-          value: "28,100",
-          trend: "↑ 31% from last month",
-          titleColor: "text-[#2E7D32]",
-          valColor: "text-[#2E7D32]",
-          strokeColor: "#2E7D32",
-          hoverBorder: "hover:shadow-[#2E7D32]/15",
-        },
-        {
-          title: "FLAGGED",
-          value: "52",
-          trend: "↑ 12 from last month",
-          titleColor: "text-[#1E3A8A]",
-          valColor: "text-[#1E3A8A]",
-          strokeColor: "#1E3A8A",
-          hoverBorder: "hover:shadow-[#1E3A8A]/15",
-        },
-      ],
-    },
-  };
+  // -------------------------------------------------------------------
+  // FETCH BACKEND DATA ON MOUNT & FILTER CHANGE
+  // -------------------------------------------------------------------
+  useEffect(() => {
+    let isMounted = true;
+    async function loadDashboardData() {
+      setLoading(true);
+      try {
+        // 1. Fetch Overview Stats
+        const overviewRes = await getAdminOverview(dateFilter);
+        if (isMounted && overviewRes?.data) {
+          setOverviewMetrics(overviewRes.data);
+        }
+      } catch (err) {
+        console.error("Error fetching overview stats from backend:", err);
+      }
 
-  const currentStats = statsDataByFilter[dateFilter] || statsDataByFilter["Today"];
+      try {
+        // 2. Fetch Complaint Clusters
+        const clustersRes = await getComplaintClusters();
+        if (isMounted && clustersRes?.data) {
+          const mappedClusters = clustersRes.data.map((c, idx) => ({
+            id: c.clusterId || `ISS-0${idx + 1}`,
+            title: c.category ? `${c.category} Issues` : `Pincode ${c.pincode}`,
+            count: c.complaintCount || 0,
+            dotColor: c.unmatchedCount > 0 ? "bg-red-500" : "bg-amber-500",
+            urgency: c.unmatchedCount > 0 ? "High Priority" : "Moderate Priority",
+            department: c.category || "Municipal Dept",
+            location: `Pincode ${c.pincode}`,
+            status: c.unmatchedCount > 0 ? "Pending Action" : "Under Review",
+            description: `Aggregated complaint cluster with ${c.complaintCount} citizen report(s) in Pincode ${c.pincode}.`,
+            complaints: c.complaints || []
+          }));
+          setPriorityIssues(mappedClusters);
+        }
+      } catch (err) {
+        console.error("Error fetching priority clusters from backend:", err);
+      }
 
-  // Dynamic Activity Graph Datasets by Timeframe Selection
-  const activityGraphByTimeframe = {
-    "Last 7 Days": [
-      { label: "Mon", value: 15 },
-      { label: "Tue", value: 30 },
-      { label: "Wed", value: 20 },
-      { label: "Thu", value: 48 },
-      { label: "Fri", value: 39 },
-      { label: "Sat", value: 59 },
-      { label: "Sun", value: 42 },
-    ],
-    "Last 30 Days": [
-      { label: "Week 1", value: 180 },
-      { label: "Week 2", value: 340 },
-      { label: "Week 3", value: 290 },
-      { label: "Week 4", value: 470 },
-    ],
-    "Last 3 Months": [
-      { label: "Jun", value: 680 },
-      { label: "Jul", value: 920 },
-      { label: "Aug", value: 1284 },
+      try {
+        // 3. Fetch Common Queries
+        const queriesRes = await getUniqueQueries();
+        if (isMounted && queriesRes?.data) {
+          const mappedQueries = queriesRes.data.map((q) => ({
+            text: q.query,
+            count: q.count,
+            category: "Citizen Query"
+          }));
+          setCommonQueries(mappedQueries);
+        }
+      } catch (err) {
+        console.error("Error fetching queries from backend:", err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    loadDashboardData();
+    return () => { isMounted = false; };
+  }, [dateFilter]);
+
+  // Compute Stat Cards dynamically from overviewMetrics
+  const currentStats = {
+    dateLabel: dateFilter,
+    stats: [
+      {
+        title: "TOTAL REQUESTS",
+        value: Number(overviewMetrics.totalRequests ?? 0).toLocaleString(),
+        trend: loading ? "Loading..." : "↑ Live from database",
+        titleColor: "text-[#2D7FF9]",
+        valColor: "text-[#1E3A8A]",
+        strokeColor: "#2D7FF9",
+        hoverBorder: "hover:shadow-[#2D7FF9]/15",
+      },
+      {
+        title: "PENDING",
+        value: Number(overviewMetrics.pending ?? 0).toLocaleString(),
+        trend: loading ? "Loading..." : "↑ Needs action",
+        titleColor: "text-[#FF5722]",
+        valColor: "text-slate-800",
+        strokeColor: "#FF5722",
+        hoverBorder: "hover:shadow-[#FF5722]/15",
+      },
+      {
+        title: "RESOLVED",
+        value: Number(overviewMetrics.resolved ?? 0).toLocaleString(),
+        trend: loading ? "Loading..." : "✓ Completed",
+        titleColor: "text-[#2E7D32]",
+        valColor: "text-[#2E7D32]",
+        strokeColor: "#2E7D32",
+        hoverBorder: "hover:shadow-[#2E7D32]/15",
+      },
+      {
+        title: "ACTIVE CLUSTERS",
+        value: Number(overviewMetrics.activeClusters ?? overviewMetrics.flaggedForReview ?? 0).toLocaleString(),
+        trend: loading ? "Loading..." : "↑ Grouped clusters",
+        titleColor: "text-[#1E3A8A]",
+        valColor: "text-[#1E3A8A]",
+        strokeColor: "#1E3A8A",
+        hoverBorder: "hover:shadow-[#1E3A8A]/15",
+      },
     ],
   };
 
-  const currentActivityData =
-    activityGraphByTimeframe[activityTimeframe] || activityGraphByTimeframe["Last 7 Days"];
-
-  // SVG Line Graph Geometry
-  const width = 480;
-  const height = 150;
-  const paddingLeft = 35;
-  const paddingRight = 25;
-  const paddingTop = 15;
-  const paddingBottom = 25;
-
-  const maxValue = Math.max(...currentActivityData.map((d) => d.value), 50);
-
-  const points = currentActivityData.map((d, i) => {
-    const denominator = currentActivityData.length > 1 ? currentActivityData.length - 1 : 1;
-    const x = paddingLeft + (i / denominator) * (width - paddingLeft - paddingRight);
-    const y = height - paddingBottom - (d.value / maxValue) * (height - paddingTop - paddingBottom);
-    return { x, y, label: d.label, value: d.value };
-  });
-
-  const lineD = points.reduce((acc, pt, idx, arr) => {
-    if (idx === 0) return `M ${pt.x} ${pt.y}`;
-    const prev = arr[idx - 1];
-    const cx = (prev.x + pt.x) / 2;
-    return `${acc} C ${cx} ${prev.y}, ${cx} ${pt.y}, ${pt.x} ${pt.y}`;
-  }, "");
-
-  const areaD =
-    points.length > 0
-      ? `${lineD} L ${points[points.length - 1].x} ${height - paddingBottom} L ${points[0].x} ${height - paddingBottom} Z`
-      : "";
-
-  // Handlers for modal actions
-  const handleAssignCrew = (issueId) => {
+  // Handlers for modal actions with Backend Integration
+  const handleAssignCrew = async (issueId) => {
+    try {
+      const issue = priorityIssues.find((i) => i.id === issueId);
+      if (issue && issue.complaints && issue.complaints.length > 0) {
+        await updateComplaintStatus(issue.complaints[0].id, { status: "Crew Dispatched" });
+      }
+    } catch (e) {
+      console.warn("Backend status update error:", e);
+    }
     setPriorityIssues((prev) =>
       prev.map((iss) => (iss.id === issueId ? { ...iss, status: "Crew Dispatched" } : iss))
     );
-    setActionSuccessMsg(`Repair crew dispatched for ${selectedPriorityIssue?.title}!`);
+    setActionSuccessMsg(`Repair crew dispatched for ${selectedPriorityIssue?.title || "issue"}!`);
     setTimeout(() => setActionSuccessMsg(""), 3000);
   };
 
-  const handleResolveIssue = (issueId) => {
+  const handleResolveIssue = async (issueId) => {
+    try {
+      const issue = priorityIssues.find((i) => i.id === issueId);
+      if (issue && issue.complaints && issue.complaints.length > 0) {
+        await Promise.all(
+          issue.complaints.map((c) => updateComplaintStatus(c.id, { status: "Resolved", admin_flagged: false }))
+        );
+      }
+    } catch (e) {
+      console.warn("Backend status update error:", e);
+    }
     setPriorityIssues((prev) =>
-      prev.map((iss) => (iss.id === issueId ? { ...iss, count: Math.max(0, iss.count - 5), status: "Resolved & Closed" } : iss))
+      prev.map((iss) => (iss.id === issueId ? { ...iss, count: Math.max(0, iss.count - 1), status: "Resolved & Closed" } : iss))
     );
-    setActionSuccessMsg(`Issue "${selectedPriorityIssue?.title}" marked as resolved!`);
+    // Update overview metrics locally
+    setOverviewMetrics((prev) => ({
+      ...prev,
+      pending: Math.max(0, prev.pending - 1),
+      resolved: prev.resolved + 1,
+    }));
+    setActionSuccessMsg(`Issue "${selectedPriorityIssue?.title || "selected"}" marked as resolved!`);
     setTimeout(() => setActionSuccessMsg(""), 3000);
   };
 
@@ -336,11 +191,16 @@ export default function Overview() {
         </div>
       )}
 
-      {/* 2. Welcome Header Bar with Functional Filters */}
+      {/* Welcome Header Bar with Functional Filters */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
+<<<<<<< HEAD
+          <h2 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+=======
           <h2 className="text-xl font-extrabold text-slate-900">
+>>>>>>> 995d6d0469b500f838d4adad657b81fc0ef7e544
             Welcome back, Admin
+            {loading && <span className="text-xs font-semibold text-slate-400 animate-pulse">(Fetching live data...)</span>}
           </h2>
           
         </div>
@@ -365,7 +225,7 @@ export default function Overview() {
 
           {/* Date Badge */}
           <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-sm">
-            <span>{currentStats.dateLabel}</span>
+            <span>Filter: {currentStats.dateLabel}</span>
             <svg
               className="h-4 w-4 text-[#2D7FF9]"
               fill="none"
@@ -383,7 +243,7 @@ export default function Overview() {
         </div>
       </div>
 
-      {/* 3. Dynamic Top 4 Stat Cards */}
+      {/* Dynamic Top 4 Stat Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {currentStats.stats.map((stat, idx) => (
           <div
@@ -420,7 +280,7 @@ export default function Overview() {
         ))}
       </div>
 
-      {/* 4. Priority Issues (Left Column) & Most Common Queries (Right Column) */}
+      {/* Priority Issues (Left Column) & Most Common Queries (Right Column) */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Priority Issues Card */}
         <div className="group relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-[#FF5722]/10 hover:shadow-md lg:col-span-6 flex flex-col justify-between overflow-hidden">
@@ -454,33 +314,43 @@ export default function Overview() {
             </div>
 
             <div className="mt-4 space-y-3.5">
-              {priorityIssues.slice(0, 5).map((issue) => (
-                <div
-                  key={issue.id}
-                  onClick={() => setSelectedPriorityIssue(issue)}
-                  className="flex items-center justify-between cursor-pointer group/item hover:bg-slate-50 p-2 rounded-xl transition border border-transparent hover:border-slate-200 relative z-10"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className={`h-3.5 w-3.5 rounded-full ${issue.dotColor} shrink-0`} />
-                    <div>
-                      <span className="text-sm font-extrabold text-slate-800 group-hover/item:text-[#2D7FF9] transition block">
-                        {issue.title}
+              {loading && priorityIssues.length === 0 ? (
+                <div className="py-8 text-center text-xs font-semibold text-slate-400 animate-pulse">
+                  Loading priority issues from backend...
+                </div>
+              ) : priorityIssues.length === 0 ? (
+                <div className="py-8 text-center text-xs font-semibold text-slate-400">
+                  No active priority issue clusters found.
+                </div>
+              ) : (
+                priorityIssues.slice(0, 5).map((issue) => (
+                  <div
+                    key={issue.id}
+                    onClick={() => setSelectedPriorityIssue(issue)}
+                    className="flex items-center justify-between cursor-pointer group/item hover:bg-slate-50 p-2 rounded-xl transition border border-transparent hover:border-slate-200 relative z-10"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className={`h-3.5 w-3.5 rounded-full ${issue.dotColor} shrink-0`} />
+                      <div>
+                        <span className="text-sm font-extrabold text-slate-800 group-hover/item:text-[#2D7FF9] transition block">
+                          {issue.title}
+                        </span>
+                        <span className="text-xs text-slate-400 font-semibold block mt-0.5">
+                          {issue.department}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <span className="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-extrabold text-slate-600">
+                        {issue.status}
                       </span>
-                      <span className="text-xs text-slate-400 font-semibold block mt-0.5">
-                        {issue.department}
+                      <span className="text-sm font-black font-mono text-slate-800">
+                        {issue.count}
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2.5">
-                    <span className="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-extrabold text-slate-600">
-                      {issue.status}
-                    </span>
-                    <span className="text-sm font-black font-mono text-slate-800">
-                      {issue.count}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -517,6 +387,42 @@ export default function Overview() {
             </div>
 
             <div className="mt-4 space-y-3.5">
+<<<<<<< HEAD
+              {loading && commonQueries.length === 0 ? (
+                <div className="py-8 text-center text-xs font-semibold text-slate-400 animate-pulse">
+                  Loading common queries from backend...
+                </div>
+              ) : commonQueries.length === 0 ? (
+                <div className="py-8 text-center text-xs font-semibold text-slate-400">
+                  No citizen queries recorded yet.
+                </div>
+              ) : (
+                commonQueries.slice(0, 5).map((query, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between text-sm text-slate-800 p-2 rounded-xl hover:bg-slate-50 relative z-10 transition border border-transparent hover:border-slate-200"
+                  >
+                    <div className="flex items-center gap-3">
+                      <svg
+                        className="h-4.5 w-4.5 text-[#2D7FF9] shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span className="font-extrabold text-slate-700 hover:text-[#2D7FF9] transition line-clamp-1">
+                        {query.text}
+                      </span>
+                    </div>
+                    <span className="font-black font-mono text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg text-sm shrink-0 ml-2">
+                      {query.count}
+=======
               {commonQueries.map((query, idx) => (
                 <div
                   key={idx}
@@ -539,23 +445,21 @@ export default function Overview() {
                     </svg>
                     <span className="font-extrabold text-slate-700 hover:text-[#2D7FF9] transition">
                       {query.text}
+>>>>>>> 995d6d0469b500f838d4adad657b81fc0ef7e544
                     </span>
                   </div>
-                  <span className="font-black font-mono text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg text-sm">
-                    {query.count}
-                  </span>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>
       </div>
 
       {/* ========================================================================= */}
-      {/* ENLARGED & FUNCTIONAL MODALS (Increased Size to max-w-2xl / max-w-3xl) */}
+      {/* MODALS */}
       {/* ========================================================================= */}
 
-      {/* 1. PRIORITY ISSUE DETAIL MODAL (15% Font Size Boost applied) */}
+      {/* 1. PRIORITY ISSUE DETAIL MODAL */}
       {selectedPriorityIssue && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-6 backdrop-blur-sm animate-fadeIn">
           <div className="modal-popup-container w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-8 shadow-2xl transition-all">
@@ -624,7 +528,11 @@ export default function Overview() {
                   onClick={() => handleAssignCrew(selectedPriorityIssue.id)}
                   className="rounded-xl bg-[#2D7FF9] px-4 py-2.5 text-sm font-extrabold text-white shadow-md hover:bg-[#1E4FA3] transition"
                 >
+<<<<<<< HEAD
+                  👷 Dispatch Crew
+=======
                   🚀 Assign Repair Crew
+>>>>>>> 995d6d0469b500f838d4adad657b81fc0ef7e544
                 </button>
                 <button
                   onClick={() => handleResolveIssue(selectedPriorityIssue.id)}
@@ -673,16 +581,6 @@ export default function Overview() {
                 onChange={(e) => setPrioritySearch(e.target.value)}
                 className="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#2D7FF9]"
               />
-              <select
-                value={priorityFilterDept}
-                onChange={(e) => setPriorityFilterDept(e.target.value)}
-                className="rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm font-bold text-slate-700 outline-none"
-              >
-                <option value="All">All Departments</option>
-                <option value="Electrical Works">Electrical Works</option>
-                <option value="Engineering / Road Dept">Engineering / Road Dept</option>
-                <option value="Water Supply">Water Supply</option>
-              </select>
             </div>
 
             <div className="mt-2 space-y-3 overflow-y-auto pr-1 flex-1 max-h-96">
@@ -691,7 +589,6 @@ export default function Overview() {
                   iss.title.toLowerCase().includes(prioritySearch.toLowerCase()) ||
                   iss.location.toLowerCase().includes(prioritySearch.toLowerCase())
                 )
-                .filter((iss) => priorityFilterDept === "All" || iss.department === priorityFilterDept)
                 .map((issue) => (
                   <div
                     key={issue.id}
@@ -780,7 +677,7 @@ export default function Overview() {
                         <span className="text-xs text-slate-500 font-semibold">Category: {query.category}</span>
                       </div>
                     </div>
-                    <span className="font-extrabold font-mono text-[#2D7FF9] text-sm bg-white px-3 py-1 rounded-lg border border-slate-200">
+                    <span className="font-extrabold font-mono text-[#2D7FF9] text-sm bg-white px-3 py-1 rounded-lg border border-slate-200 shrink-0 ml-2">
                       {query.count} citizen queries
                     </span>
                   </div>
@@ -793,60 +690,6 @@ export default function Overview() {
                 className="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-extrabold text-white"
               >
                 Close Window
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 4. AI INSIGHT AREA / DEPT DETAIL MODAL */}
-      {selectedAreaModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-6 backdrop-blur-sm animate-fadeIn">
-          <div className="modal-popup-container w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-8 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-              <div>
-                <span className="text-sm font-extrabold text-[#2D7FF9] uppercase tracking-wider">
-                  AI INSIGHT SPATIAL TARGETING
-                </span>
-                <h3 className="font-extrabold text-slate-900 text-xl mt-0.5">
-                  {selectedAreaModal.title}
-                </h3>
-              </div>
-              <button
-                onClick={() => setSelectedAreaModal(null)}
-                className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 text-base font-bold"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="my-6 space-y-4 text-sm text-slate-700">
-              <p className="bg-emerald-50 p-4 rounded-xl text-emerald-900 font-semibold border border-emerald-200 leading-relaxed text-sm">
-                The CivicMirror AI engine has cross-referenced 1,284 incoming reports against active work orders. These target locations/departments represent 82% of current infrastructure delay complaints.
-              </p>
-
-              <div className="grid grid-cols-3 gap-3 text-center">
-                <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
-                  <span className="text-slate-500 font-bold block text-xs uppercase tracking-wider">INQUIRIES</span>
-                  <span className="font-black text-slate-800 text-lg">860</span>
-                </div>
-                <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
-                  <span className="text-slate-500 font-bold block text-xs uppercase tracking-wider">WARDS AFFECTED</span>
-                  <span className="font-black text-slate-800 text-lg">3 Wards</span>
-                </div>
-                <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
-                  <span className="text-slate-500 font-bold block text-xs uppercase tracking-wider">CONFIDENCE SCORE</span>
-                  <span className="font-black text-emerald-600 text-lg">94.8%</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end border-t border-slate-100 pt-4">
-              <button
-                onClick={() => setSelectedAreaModal(null)}
-                className="rounded-xl bg-[#2D7FF9] px-5 py-2.5 text-sm font-extrabold text-white hover:bg-[#1E4FA3]"
-              >
-                Understood
               </button>
             </div>
           </div>

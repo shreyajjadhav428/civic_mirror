@@ -6,20 +6,18 @@ import Footer from "./landing/Footer";
 import HowItWorks from "./landing/HowItWorks";
 import Mission from "./landing/Mission";
 import Login from "./pages/Login";
-import CitizenHome from "./citizen/CitizenHome";
+import CitizenDashboard from "./citizen/CitizenDashboard";
 import AdminDashboard from "./admin/AdminDashboard";
 
 export default function App() {
   return (
     <Routes>
-
-      {/* Landing Page */}
       <Route
         path="/"
         element={
           <>
             <Loader />
-            <Hero/>
+            <Hero />
             <Mission />
             <HowItWorks />
             <Footer />
@@ -27,24 +25,9 @@ export default function App() {
         }
       />
 
-      {/* Login */}
-      <Route
-        path="/login"
-        element={<Login />}
-      />
-
-      {/* Citizen */}
-      <Route
-        path="/citizen"
-        element={<CitizenHome />}
-      />
-
-      {/* Admin Dashboard */}
-      <Route
-        path="/admin"
-        element={<AdminDashboard />}
-      />
-
+      <Route path="/login" element={<Login />} />
+      <Route path="/citizen/*" element={<CitizenDashboard />} />
+      <Route path="/admin" element={<AdminDashboard />} />
     </Routes>
   );
 }

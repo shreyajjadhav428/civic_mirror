@@ -1,5 +1,5 @@
 
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const primaryNavigation = [
   { label: "Overview", to: "/citizen", icon: "overview", end: true },
@@ -65,23 +65,15 @@ function SidebarIcon({ name }) {
   );
 }
 
-export default function CitizenSidebar({
-  onSettings,
-  onProfile,
-  onLogout,
-}) {
+export default function CitizenSidebar({ onLogout }) {
+  const navigate = useNavigate();
+
   const navigationClassName = ({ isActive }) =>
     [
-      // Base navigation item
       "group relative flex min-h-[42px] w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-[14px] font-medium",
-
-      // Smooth interaction
       "transition-all duration-200 ease-out",
-
-      // Focus
       "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]",
 
-      // Active / inactive states
       isActive
         ? [
             "bg-[#183B60]",
@@ -106,9 +98,10 @@ export default function CitizenSidebar({
       <div className="max-[860px]:flex max-[860px]:items-center max-[860px]:gap-[18px]">
 
         {/* Logo */}
-        <a
-          className="flex items-center gap-3 px-2 py-[5px] text-white no-underline outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
-          href="/citizen"
+        <button
+          type="button"
+          onClick={() => navigate("/citizen")}
+          className="flex items-center gap-3 px-2 py-[5px] text-left text-white outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
           aria-label="CivicMirror home"
         >
           <span
@@ -127,12 +120,12 @@ export default function CitizenSidebar({
               Citizen portal
             </small>
           </span>
-        </a>
+        </button>
 
         {/* Divider */}
         <div className="mx-2 my-[22px] h-px bg-white/[0.07] max-[860px]:hidden" />
 
-        {/* Navigation */}
+        {/* Main navigation */}
         <nav
           className="grid gap-1 max-[860px]:flex max-[860px]:flex-1 max-[860px]:gap-1 max-[860px]:overflow-x-auto"
           aria-label="Primary navigation"
@@ -143,10 +136,10 @@ export default function CitizenSidebar({
 
           {primaryNavigation.map((item) => (
             <NavLink
-              className={`${navigationClassName} max-[860px]:w-auto max-[860px]:flex-none max-[860px]:px-2.5 max-[860px]:py-2 max-[560px]:px-2`}
-              end={item.end}
               key={item.label}
               to={item.to}
+              end={item.end}
+              className={`${navigationClassName} max-[860px]:w-auto max-[860px]:flex-none max-[860px]:px-2.5 max-[860px]:py-2 max-[560px]:px-2`}
             >
               <SidebarIcon name={item.icon} />
 
@@ -158,9 +151,8 @@ export default function CitizenSidebar({
         </nav>
       </div>
 
-      {/* Bottom account section */}
+      {/* Account section */}
       <div className="max-[860px]:hidden">
-
         <div className="mx-2 my-[22px] h-px bg-white/[0.07]" />
 
         <div className="flex items-center gap-2.5 px-2.5 pb-[15px]">
@@ -184,28 +176,31 @@ export default function CitizenSidebar({
 
         <div className="grid gap-0.5">
 
+          {/* Profile */}
           <button
-            className="flex min-h-[36px] w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#B8CADB] transition-all duration-150 hover:bg-white/[0.045] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
             type="button"
-            onClick={onProfile}
+            onClick={() => navigate("/citizen/profile")}
+            className="flex min-h-[36px] w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#B8CADB] transition-all duration-150 hover:bg-white/[0.045] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
           >
             <SidebarIcon name="profile" />
             <span>Profile</span>
           </button>
 
+          {/* Settings */}
           <button
-            className="flex min-h-[36px] w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#B8CADB] transition-all duration-150 hover:bg-white/[0.045] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
             type="button"
-            onClick={onSettings}
+            onClick={() => navigate("/citizen/settings")}
+            className="flex min-h-[36px] w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#B8CADB] transition-all duration-150 hover:bg-white/[0.045] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
           >
             <SidebarIcon name="settings" />
             <span>Settings</span>
           </button>
 
+          {/* Logout */}
           <button
-            className="mt-1 flex min-h-[36px] w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#B8CADB] transition-all duration-150 hover:bg-white/[0.045] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
             type="button"
             onClick={onLogout}
+            className="mt-1 flex min-h-[36px] w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#B8CADB] transition-all duration-150 hover:bg-white/[0.045] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
           >
             <SidebarIcon name="logout" />
             <span>Log out</span>
@@ -216,4 +211,3 @@ export default function CitizenSidebar({
     </aside>
   );
 }
-
