@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import CitizenSidebar from "./components/CitizenSidebar";
 import CitizenTopBar from "./components/CitizenTopBar";
 import Overview from "./Overview";
@@ -10,6 +10,11 @@ import ProfilePage from "./ProfilePage";
 import SettingsPage from "./SettingsPage";
 
 export default function CitizenDashboard() {
+    const navigate = useNavigate();
+
+const handleCitizenNavigation = (page) => {
+  navigate(`/citizen/${page}`);
+};
   return (
     <div className="min-h-screen bg-[#F1F4F8] font-['Inter',sans-serif] text-[#0D1B2A]">
       <CitizenTopBar />
@@ -21,7 +26,10 @@ export default function CitizenDashboard() {
             <Route index element={<Overview />} />
             <Route path="request" element={<Request />} />
             <Route path="requests" element={<Requests />} />
-            <Route path="repairs" element={<TrackRepairs />} />
+            <Route
+  path="repairs"
+  element={<TrackRepairs onNavigate={handleCitizenNavigation} />}
+/>
             <Route path="updates" element={<Updates />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="settings" element={<SettingsPage />} />
