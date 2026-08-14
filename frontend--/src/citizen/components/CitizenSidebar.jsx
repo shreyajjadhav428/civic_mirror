@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 
 const primaryNavigation = [
-  { label: "Overview", to: "/citizen", icon: "overview", end: true },
-  { label: "My requests", to: "/citizen/requests", icon: "requests" },
-  { label: "Track repairs", to: "/citizen/repairs", icon: "repairs" },
+  { label: "Raise Complaint", to: "/citizen", icon: "overview", end: true },
+  { label: "My Complaints", to: "/citizen/requests", icon: "requests" },
+  { label: "Track Repairs", to: "/citizen/repairs", icon: "repairs" },
 ];
 
 function SidebarIcon({ name }) {
@@ -159,7 +159,7 @@ export default function CitizenSidebar({ onLogout }) {
                 navigate("/citizen");
                 handleNavigation();
               }}
-              className="group inline-flex items-center text-4xl font-black tracking-tight outline-none cursor-pointer"
+              className="group inline-flex items-center gap-0 text-[26px] font-black tracking-tight outline-none cursor-pointer"
               aria-label="CivicMirror home"
             >
               <span className="text-white">C</span>
@@ -186,6 +186,17 @@ export default function CitizenSidebar({ onLogout }) {
                 <path d="M6 6l12 12M18 6 6 18" />
               </svg>
             </button>
+          </div>
+
+          {/* Citizen role badge */}
+          <div className="mt-4 mb-1 px-3">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#69A8FF]/30 bg-[#69A8FF]/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#69A8FF]">
+              <svg viewBox="0 0 24 24" aria-hidden="true" className="h-3 w-3 fill-none stroke-current stroke-[2] [stroke-linecap:round]">
+                <circle cx="12" cy="8" r="3.5" />
+                <path d="M5 21a7 7 0 0 1 14 0" />
+              </svg>
+              Citizen Workspace
+            </span>
           </div>
 
           {/* Main navigation */}
@@ -229,6 +240,17 @@ export default function CitizenSidebar({ onLogout }) {
         {/* Account section */}
         <div>
           <div className="mx-2 my-[22px] h-px bg-white/[0.07]" />
+
+          {/* User identity chip */}
+          <div className="mb-2 flex items-center gap-3 rounded-xl bg-white/[0.04] px-3 py-2.5">
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#234D78] text-xs font-bold text-[#69A8FF]">
+              C
+            </span>
+            <div className="min-w-0">
+              <p className="truncate text-[12px] font-semibold text-white">Citizen</p>
+              <p className="truncate text-[10px] text-[#809BB7]">Logged in</p>
+            </div>
+          </div>
 
           <div className="grid gap-0.5">
             {/* Profile */}

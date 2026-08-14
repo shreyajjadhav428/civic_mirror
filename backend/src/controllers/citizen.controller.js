@@ -6,12 +6,13 @@ import { supabase } from '../config/supabase.js';
  */
 export const getCitizenStats = async (req, res) => {
   try {
-    const citizenId = req.user.userId;
+    // Support both JWT-authenticated requests and dev-mode query-param fallback
+    const citizenId = req.query?.user_id || req.user?.userId || 'user-citizen-1';
 
     const { data: complaints, error } = await supabase
       .from('complaints')
       .select('status')
-      .eq('citizen_id', citizenId); // Assumes we add citizen_id to complaints table when they submit
+      .eq('user_id', citizenId); // correct column name — complaints table uses user_id
 
     if (error) throw error;
 
@@ -34,17 +35,42 @@ export const getCitizenStats = async (req, res) => {
  */
 export const getChatHistory = async (req, res) => {
   try {
-    const citizenId = req.user.userId;
+    const citizenId = req.query.user_id || req.user?.userId || 'user-citizen-1';
 
     const { data: history, error } = await supabase
       .from('chat_sessions')
-      .select('id, prompt, pincode, created_at')
+      .select('*')
       .eq('citizen_id', citizenId)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: true });
 
     if (error) throw error;
 
-    return res.status(200).json({ status: 'success', data: history || [] });
+    const formattedSessions = (history || []).map((s) => {
+      let parsedExplanation = null;
+      try {
+        parsedExplanation = typeof s.ai_explanation === 'string'
+          ? JSON.parse(s.ai_explanation)
+          : s.ai_explanation;
+      } catch (e) {
+        parsedExplanation = { summary: s.prompt };
+      }
+
+      // Extract _raw_sources that were embedded at persist time, then strip
+      // the private key from the explanation object returned to the frontend.
+      const rawSources = parsedExplanation?._raw_sources || { projects: [], documents: [] };
+      const { _raw_sources, ...cleanExplanation } = parsedExplanation || {};
+
+      return {
+        id: s.id,
+        prompt: s.prompt,
+        pincode: s.pincode,
+        explanation: cleanExplanation,
+        raw_sources: rawSources,
+        created_at: s.created_at
+      };
+    });
+
+    return res.status(200).json({ status: 'success', data: formattedSessions });
   } catch (error) {
     console.error('Error fetching chat history:', error);
     return res.status(500).json({ error: 'Internal Server Error' });

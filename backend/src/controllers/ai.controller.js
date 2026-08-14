@@ -6,24 +6,50 @@ import { searchSimilarDocumentsRepo } from '../repositories/document.repository.
 
 export const askCivicMirror = async (req, res) => {
   try {
-    const { prompt } = req.body;
+    const { prompt, user_id } = req.body;
 
     if (!prompt) {
       return res.status(400).json({ error: 'BadRequest', message: 'A prompt is required.' });
+    }
+
+    // Guard: reject prompts that are too long or clearly not text
+    if (typeof prompt !== 'string') {
+      return res.status(400).json({ error: 'BadRequest', message: 'Prompt must be a text string.' });
+    }
+    if (prompt.length > 2000) {
+      return res.status(400).json({ error: 'BadRequest', message: 'Prompt exceeds the 2000 character limit. Please shorten your message.' });
     }
 
     let localProjects = [];
     let localDocuments = []; 
     let detectedPincode = null;
     let detectedCategory = null;
+    let userPincode = '110025';
+    let userArea = 'Shanti Nagar';
 
-    // Fallback pincode extraction for 6-digit postal code (e.g., 110025, 400001, 560001)
+    // 0. Auto-resolve citizen profile pincode & area from Supabase
+    if (user_id) {
+      const { data: userProfile } = await supabase
+        .from('users')
+        .select('pincode, area')
+        .eq('id', user_id)
+        .single();
+
+      if (userProfile?.pincode) userPincode = userProfile.pincode;
+      if (userProfile?.area) userArea = userProfile.area;
+    }
+
+    // 1. Fallback pincode extraction from prompt text or user profile
     const pincodeMatch = prompt.match(/\b\d{6}\b/);
     if (pincodeMatch) {
       detectedPincode = pincodeMatch[0];
+    } else {
+      detectedPincode = userPincode;
     }
 
-    const analysisResponse = await analyzePromptForTools(prompt);
+    const effectivePrompt = pincodeMatch ? prompt : `${prompt} (Location: ${userArea}, Pincode: ${userPincode})`;
+
+    const analysisResponse = await analyzePromptForTools(effectivePrompt);
 
     if (analysisResponse.functionCalls && analysisResponse.functionCalls.length > 0) {
       const call = analysisResponse.functionCalls[0];
@@ -50,7 +76,9 @@ export const askCivicMirror = async (req, res) => {
         .select('project_code, title, category, status, progress, expected_completion, departments(name), budgets(total_allocated, spent)')
         .eq('pincode', detectedPincode)
         .in('status', ['In Progress', 'Planning']);
-      
+        
+      if (detectedCategory) query = query.ilike('category', `%${detectedCategory}%`);
+
       const { data } = await query;
       localProjects = data || [];
     }
@@ -72,11 +100,62 @@ export const askCivicMirror = async (req, res) => {
     // 2. Generate the explainable answer
     const decisionCardData = await generateExplainableAnswer(prompt, packagedEvidence);
 
+    const activeCitizenId = user_id || 'user-citizen-1';
+    const activePincode = decisionCardData.detectedPincode || detectedPincode || '110025';
+
+    // Check if input is spam, casual chatter, or off-topic text
+    const isSpam = decisionCardData?.isSpam || false;
+
+    if (isSpam) {
+      // DO NOT CREATE COMPLAINT / DO NOT REGISTER IN SUPABASE
+      return res.status(200).json({
+        status: 'success',
+        data: {
+          is_spam: true,
+          is_unique_request: false,
+          admin_flagged: false,
+          complaint_code: null,
+          complaint: null,
+          explanation: {
+            summary: decisionCardData.summary || "This message does not appear to be a valid civic or municipal issue. If you genuinely have an infrastructure or municipal problem to report, please describe the issue details again so we can assist you.",
+            reason: decisionCardData.reason || "Casual or off-topic input detected. No complaint ticket was created for administrative review.",
+            status: "Invalid Input",
+            priority: "None",
+            expectedAction: "Please rephrase your prompt with a specific civic problem.",
+            estimatedTimeline: "N/A",
+            isUniqueRequest: false,
+            isSpam: true,
+            evidence: [],
+            detectedCategory: decisionCardData.detectedCategory || "General",
+            detectedPincode: activePincode
+          },
+          raw_sources: { projects: [], documents: [] }
+        }
+      });
+    }
+
     // Check if an active project exists in the database evidence
     const isUnique = localProjects.length === 0;
     decisionCardData.isUniqueRequest = isUnique;
     if (!isUnique && localProjects.length > 0) {
       decisionCardData.status = localProjects[0].status || "In Progress";
+    }
+
+    // Persist chat session ONLY for genuine (non-spam) civic requests.
+    // raw_sources are embedded inside ai_explanation so history restoration
+    // can recover full project data without a schema change.
+    try {
+      await supabase.from('chat_sessions').insert([{
+        citizen_id: activeCitizenId,
+        prompt: prompt,
+        pincode: activePincode,
+        ai_explanation: JSON.stringify({
+          ...decisionCardData,
+          _raw_sources: { projects: localProjects, documents: localDocuments }
+        })
+      }]);
+    } catch (e) {
+      console.warn('Error recording chat_sessions:', e.message);
     }
 
     let createdComplaint = null;
@@ -91,6 +170,7 @@ export const askCivicMirror = async (req, res) => {
       const newComplaintData = {
         id: complaintId,
         complaint_code: complaintCode,
+        user_id: activeCitizenId,
         description: prompt,
         category: finalCategory,
         pincode: finalPincode,
@@ -110,26 +190,6 @@ export const askCivicMirror = async (req, res) => {
         createdComplaint = inserted;
       } else {
         createdComplaint = newComplaintData;
-      }
-
-      // Log prompt into chat_sessions for query frequency tracking
-      try {
-        await supabase.from('chat_sessions').insert([{
-          id: `chat-${Date.now()}`,
-          prompt: prompt
-        }]);
-      } catch (e) {
-        // Silently ignore if table not present
-      }
-    } else {
-      // SCENARIO A: ACTIVE PROJECT MATCH -> Citizen reassured with active project details
-      try {
-        await supabase.from('chat_sessions').insert([{
-          id: `chat-${Date.now()}`,
-          prompt: prompt
-        }]);
-      } catch (e) {
-        // Silently ignore if table not present
       }
     }
 

@@ -13,6 +13,10 @@ export const explainableDecisionSchema = {
       type: Type.BOOLEAN, 
       description: "True if no matching active project exists in the municipal evidence for this pincode/issue." 
     },
+    isSpam: {
+      type: Type.BOOLEAN,
+      description: "True if the user input is spam, casual chatter, greeting ('hi', 'hello'), test input, or unrelated non-civic input."
+    },
     detectedPincode: { 
       type: Type.STRING, 
       description: "The 6-digit postal pincode identified in the prompt." 
@@ -33,7 +37,7 @@ export const explainableDecisionSchema = {
       }
     }
   },
-  required: ["summary", "reason", "status", "priority", "expectedAction", "estimatedTimeline", "isUniqueRequest", "evidence"]
+  required: ["summary", "reason", "status", "priority", "expectedAction", "estimatedTimeline", "isUniqueRequest", "isSpam", "evidence"]
 };
 
 /**

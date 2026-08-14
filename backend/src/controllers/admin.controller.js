@@ -85,6 +85,22 @@ export const getComplaintClusters = async (req, res) => {
       const isHighPriority = cl.unmatchedCount > 1 || cl.complaintCount >= 5;
       const catLower = cl.category.toLowerCase();
 
+      const resolvedCount = cl.complaints.filter(c => 
+        (c.status || '').toLowerCase().includes('resolved') || 
+        (c.status || '').toLowerCase().includes('completed')
+      ).length;
+      const inProgressCount = cl.complaints.filter(c => 
+        (c.status || '').toLowerCase().includes('progress')
+      ).length;
+      const pendingCount = Math.max(0, cl.complaints.length - resolvedCount - inProgressCount);
+
+      let clusterStatus = 'Pending';
+      if (resolvedCount === cl.complaints.length && cl.complaints.length > 0) {
+        clusterStatus = 'Completed';
+      } else if (inProgressCount > 0 || resolvedCount > 0) {
+        clusterStatus = 'In Progress';
+      }
+
       let topAccent = "bg-[#2D7FF9]";
       let deptColor = "text-[#2D7FF9]";
 
@@ -101,6 +117,10 @@ export const getComplaintClusters = async (req, res) => {
 
       return {
         ...cl,
+        status: clusterStatus,
+        resolvedCount,
+        inProgressCount,
+        pendingCount,
         priority: isHighPriority ? 'High' : 'Medium',
         priorityStyle: isHighPriority ? 'bg-red-50 text-red-600 border-red-200' : 'bg-amber-50 text-amber-700 border-amber-200',
         topAccent,
@@ -289,8 +309,8 @@ export const getAdminProjects = async (req, res) => {
         budget: budgetNum,
         utilizedBudget: utilNum,
         remainingBudget: remNum,
-        relatedComplaintsCount: connected.length || Math.floor(Math.random() * 10) + 5,
-        affectedCitizens: Math.floor(Math.random() * 150) + 50,
+        relatedComplaintsCount: connected.length,
+        affectedCitizens: connected.length, // deterministic: actual linked complaint count, no random
         status: isCompleted ? 'Completed' : 'In Progress',
         statusBadge: isCompleted ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-teal-50 text-[#008D78] border-teal-200',
         connectedComplaints: connected
@@ -611,7 +631,20 @@ export const updateComplaintStatus = async (req, res) => {
 export const dispatchClusterWorkOrder = async (req, res) => {
   try {
     const { pincode, category, status } = req.body;
-    const targetStatus = status || 'In Progress';
+    let targetStatus = status || 'In Progress';
+    
+    // Normalize status for complaints table
+    let complaintStatus = targetStatus;
+    if (targetStatus.toLowerCase().includes('complete') || targetStatus.toLowerCase().includes('resolve')) {
+      complaintStatus = 'Resolved';
+      targetStatus = 'Completed';
+    } else if (targetStatus.toLowerCase().includes('progress')) {
+      complaintStatus = 'In Progress';
+      targetStatus = 'In Progress';
+    } else {
+      complaintStatus = 'Pending';
+      targetStatus = 'Pending';
+    }
 
     if (!pincode) {
       return res.status(400).json({ error: 'BadRequest', message: 'pincode is required.' });
@@ -619,7 +652,7 @@ export const dispatchClusterWorkOrder = async (req, res) => {
 
     let query = supabase
       .from('complaints')
-      .update({ status: targetStatus })
+      .update({ status: complaintStatus })
       .eq('pincode', pincode);
 
     if (category && category !== 'All' && category !== 'General') {
@@ -644,7 +677,9 @@ export const dispatchClusterWorkOrder = async (req, res) => {
 
     return res.status(200).json({
       status: 'success',
-      message: `Successfully dispatched work order. Updated ${data?.length || 0} complaints to '${targetStatus}'.`,
+      message: `Successfully updated cluster to '${targetStatus}'. ${data?.length || 0} complaints updated to '${complaintStatus}'.`,
+      targetStatus,
+      complaintStatus,
       updatedCount: data?.length || 0,
       data: data || []
     });

@@ -1,167 +1,16 @@
-import { useMemo, useState } from "react";
-
-const repairs = [
-  {
-    id: "CM-24018",
-    title: "Streetlight issue near Shanti Nagar Park",
-    location: "Shanti Nagar, 110025",
-    submittedDate: "14 August 2026",
-    status: "In progress",
-    currentStep: 1,
-    category: "Street lighting",
-
-    update: "An electrical maintenance team has been assigned.",
-
-    department: "Electrical Works",
-    relatedProject: "Electrical Maintenance Phase II",
-    projectProgress: 82,
-    expectedResolution: "18 August 2026",
-
-    description:
-      "The streetlight near Shanti Nagar Park has not been working, affecting visibility and safety for people using the road after dark.",
-
-    timeline: [
-      {
-        title: "Request submitted",
-        date: "14 August 2026",
-        description:
-          "Your civic request was submitted successfully with the reported location.",
-        status: "completed",
-      },
-      {
-        title: "Repair in progress",
-        date: "15 August 2026",
-        description:
-          "An electrical maintenance team has been assigned and repair work is being coordinated.",
-        status: "current",
-      },
-      {
-        title: "Expected resolution",
-        date: "18 August 2026",
-        description:
-          "The issue is expected to be resolved by the assigned maintenance team.",
-        status: "upcoming",
-      },
-    ],
-
-    nextSteps: [
-      "The assigned electrical maintenance team will inspect the streetlight.",
-      "Repair work will be carried out if the fault is confirmed.",
-      "The request will be marked resolved after completion and verification.",
-    ],
-  },
-
-  {
-    id: "CM-24012",
-    title: "Water leakage reported near Community Centre",
-    location: "Shanti Nagar, 110025",
-    submittedDate: "11 August 2026",
-    status: "Reported",
-    currentStep: 0,
-    category: "Water supply",
-
-    update:
-      "The issue has been reported and routed to the local water services team.",
-
-    department: "Water Services",
-    relatedProject: "Shanti Nagar Water Network Maintenance",
-    projectProgress: 54,
-    expectedResolution: "19 August 2026",
-
-    description:
-      "A water leakage has been reported near the Community Centre and may be affecting the surrounding public area.",
-
-    timeline: [
-      {
-        title: "Request submitted",
-        date: "11 August 2026",
-        description:
-          "Your water supply issue was submitted successfully.",
-        status: "current",
-      },
-      {
-        title: "Repair in progress",
-        date: "Pending",
-        description:
-          "Repair work will begin after the assigned team completes its inspection.",
-        status: "upcoming",
-      },
-      {
-        title: "Expected resolution",
-        date: "19 August 2026",
-        description:
-          "The issue is currently expected to be resolved by this date.",
-        status: "upcoming",
-      },
-    ],
-
-    nextSteps: [
-      "The Water Services team will inspect the reported leakage.",
-      "The required repair work will be scheduled.",
-      "The request will be updated after the repair is completed.",
-    ],
-  },
-
-  {
-    id: "CM-23994",
-    title: "Road maintenance request on Market Road",
-    location: "Market Road, 110025",
-    submittedDate: "04 August 2026",
-    status: "Resolved",
-    currentStep: 2,
-    category: "Road maintenance",
-
-    update:
-      "Repair work was completed and verified by the local team.",
-
-    department: "Road Maintenance",
-    relatedProject: "Market Road Surface Improvement",
-    projectProgress: 100,
-    expectedResolution: "12 August 2026",
-
-    description:
-      "A damaged section of Market Road was reported because it was creating difficulty for vehicles and pedestrians.",
-
-    timeline: [
-      {
-        title: "Request submitted",
-        date: "04 August 2026",
-        description:
-          "The road maintenance issue was submitted successfully.",
-        status: "completed",
-      },
-      {
-        title: "Repair in progress",
-        date: "08 August 2026",
-        description:
-          "Road repair work was carried out at the reported location.",
-        status: "completed",
-      },
-      {
-        title: "Resolved",
-        date: "12 August 2026",
-        description:
-          "The repair was completed and verified by the local team.",
-        status: "completed",
-      },
-    ],
-
-    nextSteps: [
-      "No further action is currently required.",
-      "The completed repair has been verified by the local team.",
-      "You can reopen or report the issue again if the problem returns.",
-    ],
-  },
-];
+import { useMemo, useState, useEffect } from "react";
+import { getCitizenRequests } from "../api/citizen.api";
+import { useAuth } from "../context/AuthContext";
 
 const steps = ["Reported", "In progress", "Resolved"];
 
 function statusStyles(status) {
-  if (status === "Resolved") {
+  const stLower = (status || "").toLowerCase();
+  if (stLower.includes("resolved") || stLower.includes("completed")) {
     return "border-[#BFE9DE] bg-[#E9F8F4] text-[#087F6A]";
   }
 
-  if (status === "In progress") {
+  if (stLower.includes("progress")) {
     return "border-[#C9DFFF] bg-[#EEF5FF] text-[#2864A8]";
   }
 
@@ -177,13 +26,6 @@ function getStepColor(step, index, currentStep) {
   }
 
   if (index === currentStep) {
-    if (step === "In progress") {
-      return {
-        circle: "border-[#2D7FF9] bg-[#EEF5FF] text-[#2D7FF9]",
-        line: "bg-[#DCE6EF]",
-      };
-    }
-
     return {
       circle: "border-[#2D7FF9] bg-[#EEF5FF] text-[#2D7FF9]",
       line: "bg-[#DCE6EF]",
@@ -225,14 +67,110 @@ function TimelineIcon({ status }) {
 }
 
 export default function TrackRepairs({ onNavigate }) {
+  const { user } = useAuth();
+  const [repairsList, setRepairsList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [status, setStatus] = useState("All");
   const [selectedRepair, setSelectedRepair] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadRepairs() {
+      setLoading(true);
+      try {
+        const res = await getCitizenRequests(user?.id || "user-citizen-1");
+        if (isMounted && res?.data) {
+          const formatted = res.data.map((c) => {
+            const stRaw = c.status || "Pending";
+            let normStatus = "Reported";
+            let currentStep = 0;
+            let progress = 25;
+
+            if (stRaw.toLowerCase().includes("resolved") || stRaw.toLowerCase().includes("completed")) {
+              normStatus = "Resolved";
+              currentStep = 2;
+              progress = 100;
+            } else if (stRaw.toLowerCase().includes("progress")) {
+              normStatus = "In progress";
+              currentStep = 1;
+              progress = 65;
+            }
+
+            return {
+              id: c.id,
+              title: c.title || `${c.category || "Civic"} Maintenance Request`,
+              location: c.location || "Shanti Nagar, 110025",
+              submittedDate: c.date || "Recent",
+              status: normStatus,
+              currentStep,
+              category: c.category || "General Services",
+              update: normStatus === "Resolved"
+                ? "Repair work completed and verified by municipal team."
+                : (normStatus === "In progress"
+                  ? "Municipal maintenance team assigned and work is underway."
+                  : "Request reported and routed to local department."),
+              department: c.category ? `${c.category} Dept` : "Municipal Services",
+              relatedProject: `${c.category || "Civic"} Infrastructure Operations`,
+              projectProgress: progress,
+              expectedResolution: normStatus === "Resolved"
+                ? (c.date || "Completed")
+                : normStatus === "In progress"
+                ? "Under active repair"
+                : "Pending departmental review",
+              description: c.description || "No description provided.",
+              timeline: [
+                {
+                  title: "Request submitted",
+                  date: c.date || "Submitted",
+                  description: "Civic request submitted and registered into database.",
+                  status: "completed",
+                },
+                {
+                  title: "Repair in progress",
+                  date: normStatus === "Reported" ? "Pending" : "In Progress",
+                  description: "Departmental team inspects and coordinates repair operation.",
+                  status: currentStep >= 1 ? (currentStep === 1 ? "current" : "completed") : "upcoming",
+                },
+                {
+                  title: "Expected resolution",
+                  date: normStatus === "Resolved"
+                    ? (c.date || "Completed")
+                    : normStatus === "In progress"
+                    ? "Under active repair"
+                    : "Pending review",
+                  description: "Issue expected to be completed and verified.",
+                  status: currentStep === 2 ? "completed" : "upcoming",
+                },
+              ],
+              nextSteps: [
+                "Municipal department inspects the reported issue.",
+                "Maintenance crew carries out necessary infrastructure repairs.",
+                "Request is marked resolved upon completion.",
+              ],
+            };
+          });
+
+          setRepairsList(formatted);
+        }
+      } catch (err) {
+        console.error("Error fetching repairs list from backend:", err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    loadRepairs();
+    return () => {
+      isMounted = false;
+    };
+  }, [user?.id]);
 
   const filteredRepairs = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
 
-    return repairs.filter((repair) => {
+    return repairsList.filter((repair) => {
       const matchesStatus =
         status === "All" || repair.status === status;
 
@@ -251,21 +189,13 @@ export default function TrackRepairs({ onNavigate }) {
 
       return matchesStatus && matchesQuery;
     });
-  }, [searchQuery, status]);
+  }, [repairsList, searchQuery, status]);
 
-  const summary = {
-    active: repairs.filter(
-      (repair) => repair.status !== "Resolved",
-    ).length,
-
-    progress: repairs.filter(
-      (repair) => repair.status === "In progress",
-    ).length,
-
-    resolved: repairs.filter(
-      (repair) => repair.status === "Resolved",
-    ).length,
-  };
+  const summary = useMemo(() => ({
+    active: repairsList.filter((r) => r.status !== "Resolved").length,
+    progress: repairsList.filter((r) => r.status === "In progress").length,
+    resolved: repairsList.filter((r) => r.status === "Resolved").length,
+  }), [repairsList]);
 
   const summaryCards = [
     {
@@ -470,7 +400,12 @@ export default function TrackRepairs({ onNavigate }) {
 
       {/* REPAIR CARDS */}
       <section className="mt-6 space-y-5" aria-label="Repairs">
-        {filteredRepairs.map((repair) => (
+        {filteredRepairs.length === 0 ? (
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-12 text-center text-slate-500 font-semibold text-sm">
+            {loading ? "Loading active municipal repairs..." : "No matching civic repairs found."}
+          </div>
+        ) : (
+          filteredRepairs.map((repair) => (
           <article
             key={repair.id}
             className="overflow-hidden rounded-2xl border border-[#DCE7F1] bg-white shadow-[0_8px_24px_rgba(13,27,42,0.045)] transition-all duration-200 hover:-translate-y-1 hover:border-[#C7D9E9] hover:shadow-[0_12px_30px_rgba(13,27,42,0.065)]"
@@ -514,7 +449,7 @@ export default function TrackRepairs({ onNavigate }) {
                 {/* VIEW DETAILS BUTTON */}
                 <button
                   type="button"
-                  onClick={() => onNavigate?.("requests")}
+                  onClick={() => setSelectedRepair(repair)}
                   className="w-fit shrink-0 rounded-lg border border-[#C9D8E6] px-5 py-2.5 text-sm font-bold text-[#31516E] transition-all duration-150 hover:border-[#9BC5FF] hover:bg-[#EEF5FF] hover:text-[#2D7FF9]"
                 >
                   View details
@@ -630,35 +565,8 @@ export default function TrackRepairs({ onNavigate }) {
               </div>
             </div>
           </article>
-        ))}
-
-        {!filteredRepairs.length && (
-          <section className="rounded-2xl border border-dashed border-[#C8D8E6] bg-white/60 px-8 py-16 text-center">
-            <span className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-[#EEF5FF] text-[#2D7FF9]">
-              <svg
-                viewBox="0 0 24 24"
-                className="h-6 w-6"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="11" cy="11" r="6.5" />
-                <path d="m16 16 4 4" />
-              </svg>
-            </span>
-
-            <h2 className="mt-5 text-lg font-bold text-[#18324C]">
-              No repairs found
-            </h2>
-
-            <p className="mx-auto mt-2 max-w-sm text-base leading-6 text-[#6C7F92]">
-              Adjust the search or status filter to view another repair
-              request.
-            </p>
-          </section>
-        )}
+        ))
+      )}
       </section>
 
       {/* REPAIR DETAILS MODAL */}

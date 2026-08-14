@@ -7,29 +7,65 @@ import { supabase } from '../config/supabase.js';
 
 /**
  * GET /api/complaints
- * Fetches all citizen complaint records from Supabase.
+ * Fetches citizen complaint records from Supabase (filtered by user_id if provided).
  */
 export const getComplaintsList = async (req, res) => {
   try {
-    const { data: dbComplaints, error } = await supabase
+    const { user_id } = req.query;
+
+    let userArea = 'Shanti Nagar';
+    let userPincode = '110025';
+
+    // Retrieve citizen's area and pincode directly from the users table
+    if (user_id) {
+      const { data: userProfile } = await supabase
+        .from('users')
+        .select('area, pincode')
+        .eq('id', user_id)
+        .single();
+
+      if (userProfile?.area) userArea = userProfile.area;
+      if (userProfile?.pincode) userPincode = userProfile.pincode;
+    }
+
+    let query = supabase
       .from('complaints')
       .select('*')
       .order('created_at', { ascending: false });
 
+    if (user_id) {
+      query = query.eq('user_id', user_id);
+    }
+
+    const { data: dbComplaints, error } = await query;
+
     if (error) throw error;
 
-    const formattedRequests = (dbComplaints || []).map((c) => ({
-      id: c.complaint_code || c.id,
-      title: c.description ? (c.description.length > 50 ? c.description.slice(0, 50) + '...' : c.description) : `${c.category || 'Civic'} Issue`,
-      description: c.description || 'No description provided.',
-      location: c.pincode ? `Pincode ${c.pincode}` : 'Shanti Nagar',
-      date: c.created_at ? new Date(c.created_at).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Recent',
-      status: c.status === 'Pending' ? 'Under review' : (c.status || 'Under review'),
-      category: c.category || 'General',
-      pincode: c.pincode || '110025'
-    }));
+    const formattedRequests = (dbComplaints || []).map((c) => {
+      const finalPincode = c.pincode || userPincode || '110025';
+      const finalArea = userArea || 'Shanti Nagar';
+      const locationStr = `${finalArea}, ${finalPincode}`;
 
-    return res.status(200).json({ status: 'success', data: formattedRequests });
+      return {
+        id: c.complaint_code || c.id,
+        title: c.description ? (c.description.length > 50 ? c.description.slice(0, 50) + '...' : c.description) : `${c.category || 'Civic'} Issue`,
+        description: c.description || 'No description provided.',
+        location: locationStr,
+        area: finalArea,
+        pincode: finalPincode,
+        date: c.created_at ? new Date(c.created_at).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Recent',
+        status: c.status === 'Pending' ? 'Under review' : (c.status || 'Under review'),
+        category: c.category || 'General',
+        user_id: c.user_id || user_id || 'user-citizen-1'
+      };
+    });
+
+    return res.status(200).json({
+      status: 'success',
+      data: formattedRequests,
+      user_area: userArea,
+      user_pincode: userPincode
+    });
   } catch (error) {
     console.error('Error fetching complaints list:', error);
     return res.status(500).json({ error: 'Internal Server Error' });
@@ -43,7 +79,7 @@ export const getComplaintsList = async (req, res) => {
  */
 export const createComplaint = async (req, res) => {
   try {
-    const { description, category, pincode } = req.body;
+    const { description, category, pincode, user_id } = req.body;
 
     if (!description || !category || !pincode) {
       return res.status(400).json({
@@ -75,6 +111,7 @@ export const createComplaint = async (req, res) => {
     const newComplaintData = {
       id: complaintId,
       complaint_code: complaintCode,
+      user_id: user_id || 'user-citizen-1',
       description,
       category,
       pincode,

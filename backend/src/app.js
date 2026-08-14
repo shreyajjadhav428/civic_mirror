@@ -14,7 +14,24 @@ import integrationRoute from './routes/integration.route.js';
 
 const app = express();
 
-app.use(cors());
+// Restrict CORS to the frontend origin only.
+// Set FRONTEND_ORIGIN in .env for production (e.g. https://civicmirror.vercel.app).
+// Falls back to localhost:5173 for local Vite dev server.
+const allowedOrigins = (process.env.FRONTEND_ORIGIN || 'http://localhost:5173')
+  .split(',')
+  .map(o => o.trim());
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow server-to-server / Postman calls (no origin header) in dev
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS: origin '${origin}' is not allowed.`));
+    }
+  },
+  credentials: true
+}));
 app.use(express.json());
 
 // Routes

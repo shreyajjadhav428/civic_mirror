@@ -4,7 +4,7 @@ import {
   useState,
 } from "react";
 
-import { loginUser } from "../api/auth.api";
+import { loginUser, registerUser } from "../api/auth.api";
 
 // ─────────────────────────────────────────────────────────────────────
 // DEVELOPMENT AUTH BYPASS
@@ -19,8 +19,8 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     if (DEV_BYPASS_AUTH) {
       return {
-        id: "dev_user_1",
-        email: "dev@civicmirror.local",
+        id: "user-citizen-1",
+        email: "citizen@civicmirror.com",
         role: "citizen",
       };
     }
@@ -47,15 +47,10 @@ export function AuthProvider({ children }) {
     password,
     selectedRole = "citizen"
   ) => {
-    // ────────────────────────────────────────────────────────────────
-    // DEVELOPMENT MODE
-    // The Resident/Admin toggle determines the mock role.
-    // ────────────────────────────────────────────────────────────────
-
     if (DEV_BYPASS_AUTH) {
       const mockUser = {
-        id: "dev_user_1",
-        email: email || "dev@civicmirror.local",
+        id: selectedRole === "admin" ? "user-admin-1" : "user-citizen-1",
+        email: email || (selectedRole === "admin" ? "admin@civicmirror.com" : "citizen@civicmirror.com"),
         role: selectedRole,
       };
 
@@ -72,11 +67,6 @@ export function AuthProvider({ children }) {
       return mockResponse;
     }
 
-    // ────────────────────────────────────────────────────────────────
-    // REAL BACKEND AUTHENTICATION
-    // Backend decides whether the user is citizen or admin.
-    // ────────────────────────────────────────────────────────────────
-
     const response = await loginUser(email, password);
 
     if (!response.authenticated || !response.token) {
@@ -86,7 +76,7 @@ export function AuthProvider({ children }) {
     }
 
     const userData = {
-      id: response.user?.id || "user_1",
+      id: response.user?.id || "user-citizen-1",
       email: response.user?.email || email,
       role: response.role || "citizen",
     };
@@ -108,6 +98,33 @@ export function AuthProvider({ children }) {
   };
 
   // ─────────────────────────────────────────────────────────────────────
+  // REGISTER
+  // ─────────────────────────────────────────────────────────────────────
+
+  const register = async (email, password, role = "citizen") => {
+    try {
+      const response = await registerUser(email, password, role);
+      if (response?.authenticated && response?.token) {
+        const userData = {
+          id: response.user?.id || "user-citizen-1",
+          email: response.user?.email || email,
+          role: response.role || role,
+        };
+
+        localStorage.setItem("civicmirror_token", response.token);
+        localStorage.setItem("civicmirror_user", JSON.stringify(userData));
+
+        setToken(response.token);
+        setUser(userData);
+      }
+      return response;
+    } catch (err) {
+      console.error("Error in AuthContext register:", err);
+      throw err;
+    }
+  };
+
+  // ─────────────────────────────────────────────────────────────────────
   // LOGOUT
   // ─────────────────────────────────────────────────────────────────────
 
@@ -119,10 +136,6 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  // ─────────────────────────────────────────────────────────────────────
-  // CONTEXT
-  // ─────────────────────────────────────────────────────────────────────
-
   return (
     <AuthContext.Provider
       value={{
@@ -133,6 +146,7 @@ export function AuthProvider({ children }) {
           : Boolean(token),
         DEV_BYPASS_AUTH,
         login,
+        register,
         logout,
       }}
     >

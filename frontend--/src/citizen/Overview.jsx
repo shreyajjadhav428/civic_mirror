@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { askCivicMirror } from "../api/citizen.api";
+import { askCivicMirror, getChatHistory } from "../api/citizen.api";
+import { useAuth } from "../context/AuthContext";
 
 const processingSteps = [
   "Understanding request",
@@ -189,16 +190,20 @@ function ProcessingIndicator() {
 function ExplanationCard({ data }) {
   const explanation = data?.explanation || {};
   const activeProj = data?.raw_sources?.projects?.[0];
+  const isUnique = explanation.isUniqueRequest;
+  const isSpam = explanation.isSpam;
 
   const issueStr = explanation.detectedCategory || "Civic Request";
   const pincodeStr = explanation.detectedPincode ? `Pincode ${explanation.detectedPincode}` : "Local Area";
-  const statusStr = explanation.status || "In Progress";
+  const statusStr = isSpam ? "Invalid Input" : (explanation.status || "In Progress");
   const deptStr = activeProj?.departments?.name || explanation.detectedCategory || "Municipal Department";
-  const projStr = activeProj?.title || "General Municipal Assessment";
+  const projStr = isUnique ? "New — Pending Admin Review" : (activeProj?.title || "General Municipal Assessment");
   const dateStr = activeProj?.expected_completion
     ? new Date(activeProj.expected_completion).toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" })
-    : "18 August 2026";
-  const progressNum = activeProj?.progress ?? (explanation.status === "Completed" ? 100 : 65);
+    : (explanation.estimatedTimeline || "Pending administrative review");
+  const progressNum = activeProj?.progress ?? (explanation.status === "Completed" ? 100 : 0);
+  // Only show progress bar when an active project exists
+  const showProgress = !!activeProj && !isUnique && !isSpam;
 
   const details = [
     ["Issue", issueStr],
@@ -232,29 +237,46 @@ function ExplanationCard({ data }) {
           </div>
         ))}
 
-        <div className="sm:col-span-2">
-          <div className="flex items-center justify-between">
-            <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#8CA9BF]">Project progress</p>
-            <p className="text-xs font-bold text-[#B8D8FA]">{progressNum}%</p>
+        {showProgress && (
+          <div className="sm:col-span-2">
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#8CA9BF]">Project progress</p>
+              <p className="text-xs font-bold text-[#B8D8FA]">{progressNum}%</p>
+            </div>
+            <div className="mt-2.5 h-2 overflow-hidden rounded-full bg-[#294860]">
+              <span className="block h-full rounded-full bg-[#2D7FF9] transition-all duration-500" style={{ width: `${progressNum}%` }} />
+            </div>
           </div>
-          <div className="mt-2.5 h-2 overflow-hidden rounded-full bg-[#294860]">
-            <span className="block h-full rounded-full bg-[#2D7FF9] transition-all duration-500" style={{ width: `${progressNum}%` }} />
-          </div>
-        </div>
+        )}
       </div>
     </section>
   );
 }
 
 function WhyCard({ data, expanded, onToggle }) {
-  const explanationReason = data?.explanation?.reason;
-  const reasons = explanationReason
-    ? [explanationReason, "Active municipal work already covers this infrastructure.", "Related repairs are linked to ongoing departmental operations.", "Completing existing maintenance avoids duplicated work."]
+  const explanation = data?.explanation || {};
+  const isSpam = explanation.isSpam;
+  const isUnique = explanation.isUniqueRequest;
+
+  // Show context-correct reasons based on which scenario this response is
+  const reasons = isSpam
+    ? [
+        "This input did not meet the criteria for a valid civic or municipal report.",
+        "Greetings, test inputs, and off-topic messages are not registered as complaints.",
+        "Please describe a specific infrastructure or municipal issue to get a civic response.",
+      ]
+    : isUnique
+    ? [
+        explanation.reason || "No active municipal project was found matching this issue in your area.",
+        "Your request has been registered as a new unique civic complaint in the system.",
+        "It has been automatically flagged and routed to the municipal admin dashboard for review.",
+        "An officer will review the complaint and initiate a work order.",
+      ]
     : [
-        "An infrastructure maintenance project is currently active in your area.",
-        "The project already covers this infrastructure.",
-        "The repair is dependent on the ongoing maintenance work.",
-        "Completing the existing operation avoids duplicated work.",
+        explanation.reason || "An active municipal project already covers the reported infrastructure.",
+        "The municipal department managing this project is already engaged on the issue.",
+        "Ongoing work addresses the root cause of the reported infrastructure problem.",
+        "Completing the active operation avoids duplicated maintenance effort and cost.",
       ];
 
   return (
@@ -284,51 +306,39 @@ function WhyCard({ data, expanded, onToggle }) {
 
 function EvidenceCard({ data, onSelect }) {
   const docs = data?.raw_sources?.documents || [];
-  const evidenceList = docs.length > 0
-    ? docs.map((doc, idx) => ({
-        title: doc.title || `Municipal Record #${idx + 1}`,
-        reference: doc.id || `doc-${idx + 1}`,
-        department: data?.explanation?.detectedCategory || "Municipal Services",
-        date: "Recent Audit",
-        detail: doc.content_text || "Document vector indexed into CivicMirror Administrative Intelligence knowledge graph.",
-      }))
-    : [
-        {
-          title: "Electrical Maintenance Work Order",
-          reference: "Work Order #EW-4921",
-          department: "Electrical Works",
-          date: "10 August 2026",
-          detail: "Maintenance operations are currently active in Shanti Nagar and include public streetlight infrastructure.",
-        },
-        {
-          title: "Engineering Dependency Report",
-          reference: "Dependency Report #ED-118",
-          department: "Engineering Services",
-          date: "11 August 2026",
-          detail: "The reported repair is linked to the active maintenance operation in the area.",
-        },
-      ];
+  const evidenceList = docs.map((doc, idx) => ({
+    title: doc.title || `Municipal Record #${idx + 1}`,
+    reference: doc.id || `doc-${idx + 1}`,
+    department: data?.explanation?.detectedCategory || "Municipal Services",
+    date: "Recent Audit",
+    detail: doc.content_text || "Document vector indexed into CivicMirror knowledge graph.",
+  }));
 
   return (
     <section className="overflow-hidden rounded-xl border border-[#C6D9E8] bg-white shadow-[0_7px_18px_rgba(42,77,108,0.07)]">
       <div className="h-[3px] bg-[#00A68E]" />
       <div className="p-5">
         <p className="text-[11px] font-bold tracking-[0.11em] text-[#008B76]">EVIDENCE</p>
-        <p className="mt-1 text-sm text-[#536D83]">{evidenceList.length} municipal records support this explanation.</p>
-
-        <div className="mt-4 grid gap-2">
-          {evidenceList.map((item, idx) => (
-            <button type="button" onClick={() => onSelect(item)} className="group flex items-center justify-between gap-4 rounded-xl border border-[#C8DCEB] bg-[#F8FBFE] px-4 py-3.5 text-left shadow-[0_4px_12px_rgba(23,48,71,0.05)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#7FAFD1] hover:bg-white hover:shadow-[0_8px_20px_rgba(23,48,71,0.10)]" key={idx}>
-              <span>
-                <span className="block text-sm font-semibold text-[#18324C]">{item.title}</span>
-                <span className="mt-1 block text-[11px] text-[#71889C]">{item.reference}</span>
-              </span>
-              <span className="text-lg font-semibold text-[#2D7FF9] transition-transform duration-200 group-hover:translate-x-1">
-                →
-              </span>
-            </button>
-          ))}
-        </div>
+        {evidenceList.length === 0 ? (
+          <p className="mt-3 text-sm leading-6 text-[#536D83]">
+            No indexed RAG documents found for this area. The AI assessment is based entirely on live municipal project database records.
+          </p>
+        ) : (
+          <>
+            <p className="mt-1 text-sm text-[#536D83]">{evidenceList.length} municipal records support this explanation.</p>
+            <div className="mt-4 grid gap-2">
+              {evidenceList.map((item, idx) => (
+                <button type="button" onClick={() => onSelect(item)} className="group flex items-center justify-between gap-4 rounded-xl border border-[#C8DCEB] bg-[#F8FBFE] px-4 py-3.5 text-left shadow-[0_4px_12px_rgba(23,48,71,0.05)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#7FAFD1] hover:bg-white hover:shadow-[0_8px_20px_rgba(23,48,71,0.10)]" key={idx}>
+                  <span>
+                    <span className="block text-sm font-semibold text-[#18324C]">{item.title}</span>
+                    <span className="mt-1 block text-[11px] text-[#71889C]">{item.reference}</span>
+                  </span>
+                  <span className="text-lg font-semibold text-[#2D7FF9] transition-transform duration-200 group-hover:translate-x-1">→</span>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </section>
   );
@@ -336,31 +346,118 @@ function EvidenceCard({ data, onSelect }) {
 
 function Timeline({ data }) {
   const activeProj = data?.raw_sources?.projects?.[0];
+  const explanation = data?.explanation || {};
   const dateStr = activeProj?.expected_completion
     ? new Date(activeProj.expected_completion).toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" })
-    : "18 August 2026";
+    : (explanation.estimatedTimeline || "Pending admin review");
 
-  const timeline = [
-    ["Request submitted", "✓"],
-    ["AI analysis", "✓"],
-    ["Department identified", "✓"],
-    ["Project dependency", "✓"],
-    ["Expected resolution", dateStr],
+  const timelineSteps = [
+    { label: "Request submitted", value: "✓" },
+    { label: "AI governance analysis", value: "✓" },
+    { label: "Department identified", value: "✓" },
+    { label: "Municipal project dependency", value: "✓" },
+    { label: "Expected resolution", value: dateStr },
   ];
+
+  const [activeStepIndex, setActiveStepIndex] = useState(0);
+
+  useEffect(() => {
+    // Sequentially advance steps with 450ms interval for realistic validation pacing
+    const interval = setInterval(() => {
+      setActiveStepIndex((prev) => {
+        if (prev < timelineSteps.length) {
+          return prev + 1;
+        }
+        clearInterval(interval);
+        return prev;
+      });
+    }, 450);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <section className="overflow-hidden rounded-xl border border-[#C6D9E8] bg-white shadow-[0_7px_18px_rgba(42,77,108,0.07)]">
       <div className="h-[3px] bg-[#2D7FF9]" />
       <div className="p-5">
-        <p className="text-[11px] font-bold tracking-[0.11em] text-[#2C659A]">WHAT&apos;S NEXT?</p>
-        <div className="mt-4 space-y-3">
-          {timeline.map(([label, value], index) => (
-            <div className="flex items-center gap-3" key={label}>
-              <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${index === timeline.length - 1 ? "bg-[#2D7FF9]" : "bg-[#00A68E]"}`} />
-              <p className="flex-1 text-xs font-semibold uppercase tracking-[0.07em] text-[#536D83]">{label}</p>
-              <span className="text-xs font-semibold text-[#18324C]">{value}</span>
-            </div>
-          ))}
+        <div className="flex items-center justify-between">
+          <p className="text-[11px] font-bold tracking-[0.11em] text-[#2C659A]">WHAT&apos;S NEXT?</p>
+          <span className="text-[11px] font-semibold text-slate-400">
+            {activeStepIndex >= timelineSteps.length ? "✓ Complete" : `Processing ${Math.min(activeStepIndex, timelineSteps.length)}/${timelineSteps.length}`}
+          </span>
+        </div>
+
+        <div className="mt-4 space-y-3.5">
+          {timelineSteps.map((step, index) => {
+            const isCompleted = index < activeStepIndex;
+            const isCurrent = index === activeStepIndex;
+            const isFinalStep = index === timelineSteps.length - 1;
+
+            return (
+              <div
+                key={step.label}
+                className={`flex items-center gap-3 transition-all duration-300 ${
+                  isCompleted
+                    ? "opacity-100"
+                    : isCurrent
+                    ? "opacity-90 scale-[1.01]"
+                    : "opacity-40"
+                }`}
+              >
+                {/* Step Status Icon with Micro-Animation */}
+                <span
+                  className={`grid h-5 w-5 shrink-0 place-items-center rounded-full text-[10px] font-black transition-all duration-300 ${
+                    isCompleted
+                      ? isFinalStep
+                        ? "bg-[#2D7FF9] text-white shadow-xs scale-100"
+                        : "bg-[#00A68E] text-white shadow-xs scale-100"
+                      : isCurrent
+                      ? "border-2 border-[#2D7FF9] bg-blue-50 text-[#2D7FF9] animate-pulse"
+                      : "border border-slate-300 bg-slate-100 text-transparent"
+                  }`}
+                >
+                  {isCompleted ? (
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="h-3 w-3 stroke-current stroke-[3] fill-none"
+                    >
+                      <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  ) : isCurrent ? (
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#2D7FF9] animate-ping" />
+                  ) : (
+                    ""
+                  )}
+                </span>
+
+                {/* Step Label */}
+                <p
+                  className={`flex-1 text-xs uppercase tracking-[0.07em] transition-colors duration-200 ${
+                    isCompleted
+                      ? "font-bold text-[#18324C]"
+                      : isCurrent
+                      ? "font-bold text-[#2D7FF9]"
+                      : "font-semibold text-slate-400"
+                  }`}
+                >
+                  {step.label}
+                </p>
+
+                {/* Step Value */}
+                <span
+                  className={`text-xs transition-all duration-300 ${
+                    isCompleted
+                      ? isFinalStep
+                        ? "font-extrabold text-[#2D7FF9] bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100"
+                        : "font-bold text-[#00A68E]"
+                      : "text-slate-300 font-medium"
+                  }`}
+                >
+                  {isCompleted ? step.value : isCurrent ? "..." : ""}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -470,11 +567,18 @@ function Composer({ value, fileName, isProcessing, onChange, onFileChange, onRem
 
 export default function Overview() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [input, setInput] = useState("");
   const [fileName, setFileName] = useState("");
   const [messages, setMessages] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [expandedWhy, setExpandedWhy] = useState(true);
+  // Per-message expanded state: Set of message IDs whose WhyCard is open
+  const [expandedWhyIds, setExpandedWhyIds] = useState(new Set());
+  const toggleWhy = (id) => setExpandedWhyIds((prev) => {
+    const next = new Set(prev);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
   const [selectedEvidence, setSelectedEvidence] = useState(null);
 
   const conversationEndRef = useRef(null);
@@ -482,12 +586,11 @@ export default function Overview() {
 
   const hasConversation = messages.length > 0 || isProcessing;
 
-  useEffect(() => {
-    conversationEndRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-    });
-  }, [messages, isProcessing]);
+  const handleClearChat = () => {
+    setMessages([]);
+    setInput("");
+    setFileName("");
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -511,7 +614,7 @@ export default function Overview() {
     if (fileInputRef.current) fileInputRef.current.value = "";
 
     try {
-      const res = await askCivicMirror(userMessage.text);
+      const res = await askCivicMirror(userMessage.text, user?.id || "user-citizen-1");
       const resData = res?.data;
       const explanation = resData?.explanation;
       const responseText = explanation?.summary || explanation?.reason || "I have analyzed your civic inquiry against active municipal database records.";
@@ -549,46 +652,62 @@ export default function Overview() {
 
       <div className="relative flex min-h-0 flex-1 flex-col pt-[72px] min-[861px]:pt-[72px]">
         <div className="min-h-0 flex-1 overflow-y-auto px-4 py-6 [scrollbar-color:#B8CDDE_transparent] [scrollbar-width:thin] sm:px-7 sm:py-8" aria-label="CivicMirror conversation">
-          {!hasConversation ? (
-            <section className="flex min-h-full flex-col items-center justify-center pb-10 text-center">
-              <p className="text-[11px] font-bold tracking-[0.13em] text-[#2C659A]">CIVICMIRROR AI</p>
+          <section className="mx-auto w-full max-w-[840px] space-y-7 pb-4">
+            {/* Welcome header: shown when chat is blank */}
+            {!hasConversation ? (
+              <div className="flex flex-col items-center justify-center pt-2 pb-4 text-center">
+                <p className="text-[11px] font-bold tracking-[0.13em] text-[#2C659A]">CIVICMIRROR AI</p>
 
-              <h1 className="group mt-3 text-[34px] font-extrabold tracking-[-0.045em] text-[#0D1B2A] sm:text-[42px]">
-                Welcome to{" "}
-                <span className="relative inline-block">
-                  Civic<span className="text-[#2D7FF9]">Mirror</span>
-                  <span className="absolute bottom-[-3px] left-0 h-px w-full origin-left scale-x-0 bg-[#0D1B2A] transition-transform duration-200 group-hover:scale-x-100" />
+                <h1 className="group mt-3 text-[34px] font-extrabold tracking-[-0.045em] text-[#0D1B2A] sm:text-[42px]">
+                  Welcome to{" "}
+                  <span className="relative inline-block">
+                    Civic<span className="text-[#2D7FF9]">Mirror</span>
+                    <span className="absolute bottom-[-3px] left-0 h-px w-full origin-left scale-x-0 bg-[#0D1B2A] transition-transform duration-200 group-hover:scale-x-100" />
+                  </span>
+                </h1>
+
+                <p className="mt-3 text-lg font-medium text-[#536D83]">How can we help you today?</p>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between pb-2 border-b border-[#C6D8E7]">
+                <span className="text-xs font-bold text-[#4B6882] flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-[#00A68E] inline-block" />
+                  Active Civic Session
                 </span>
-              </h1>
 
-              <p className="mt-3 text-lg font-medium text-[#536D83]">How can we help you today?</p>
-            </section>
-          ) : (
-            <section className="mx-auto w-full max-w-[840px] space-y-7 pb-4">
-              {messages.map((message) => (
-                <div key={message.id} className="space-y-5">
-                  {message.type === "user" ? (
-                    <UserMessage message={message} />
-                  ) : (
-                    <>
-                      <AIMessage message={message} />
-                      {message.showAnalysis && (
-                        <div className="space-y-5 pt-1">
-                          <ExplanationCard data={message.analysisData} />
-                          <WhyCard data={message.analysisData} expanded={expandedWhy} onToggle={() => setExpandedWhy((value) => !value)} />
-                          <EvidenceCard data={message.analysisData} onSelect={setSelectedEvidence} />
-                          <Timeline data={message.analysisData} />
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              ))}
+                <button
+                  type="button"
+                  onClick={handleClearChat}
+                  className="rounded-lg border border-[#CADEEB] bg-white/80 px-3 py-1.5 text-xs font-bold text-[#35526C] hover:bg-white hover:text-[#2D7FF9] shadow-2xs cursor-pointer transition"
+                >
+                  + Start New Chat
+                </button>
+              </div>
+            )}
 
-              {isProcessing && <ProcessingIndicator />}
-              <div ref={conversationEndRef} />
-            </section>
-          )}
+            {messages.map((message) => (
+              <div key={message.id} className="space-y-5">
+                {message.type === "user" ? (
+                  <UserMessage message={message} />
+                ) : (
+                  <>
+                    <AIMessage message={message} />
+                    {message.showAnalysis && (
+                      <div className="space-y-5 pt-1">
+                        <ExplanationCard data={message.analysisData} />
+                        <WhyCard data={message.analysisData} expanded={expandedWhyIds.has(message.id)} onToggle={() => toggleWhy(message.id)} />
+                        <EvidenceCard data={message.analysisData} onSelect={setSelectedEvidence} />
+                        <Timeline data={message.analysisData} />
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            ))}
+
+            {isProcessing && <ProcessingIndicator />}
+            <div ref={conversationEndRef} />
+          </section>
         </div>
 
         <Composer

@@ -47,7 +47,31 @@ export const loginUser = async (email, password) => {
 
 export const registerUser = async (email, password, role = "citizen") => {
   try {
-    const response = await api.post("/api/auth/register", { email, password, role });
+    const response = await api.post("/auth/register", { email, password, role });
+    return response.data;
+  } catch (error) {
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    throw error;
+  }
+};
+
+export const getUserProfile = async (userId) => {
+  try {
+    const response = await api.get(`/auth/profile/${userId}`);
+    return response.data;
+  } catch (error) {
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    throw error;
+  }
+};
+
+export const updateUserProfile = async (userId, data) => {
+  try {
+    const response = await api.put(`/auth/profile/${userId}`, data);
     return response.data;
   } catch (error) {
     if (error.response?.data) {
