@@ -74,8 +74,8 @@ export default function Data() {
       id: "DOC-04",
       filename: "Zoning_Ordinance_2026.pdf",
       updatedDate: "10 Aug 2026",
-      status: "Indexed",
-      statusStyle: "bg-emerald-50 text-emerald-700 border-emerald-200",
+      status: "Pending",
+      statusStyle: "bg-amber-50 text-amber-700 border-amber-200",
       extractedRecords: 156,
       departments: ["Urban Planning", "Zoning Compliance"],
       relatedProjects: 6,
@@ -107,7 +107,7 @@ export default function Data() {
       filename: "Environmental_Report_Q2.xlsx",
       updatedDate: "05 Aug 2026",
       status: "Processing",
-      statusStyle: "bg-amber-50 text-amber-700 border-amber-200",
+      statusStyle: "bg-indigo-50 text-indigo-700 border-indigo-200",
       extractedRecords: 74,
       departments: ["Environmental Protection"],
       relatedProjects: 3,
@@ -119,6 +119,40 @@ export default function Data() {
       contributionSummary: "Quarterly groundwater quality, noise density, and air index metrics currently undergoing vector embedding."
     }
   ]);
+
+  // Helper for dynamic status pill styles
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case "Indexed":
+        return "bg-emerald-50 text-emerald-700 border-emerald-200 focus:ring-emerald-400";
+      case "Pending":
+        return "bg-amber-50 text-amber-700 border-amber-200 focus:ring-amber-400";
+      case "Processing":
+        return "bg-indigo-50 text-indigo-700 border-indigo-200 focus:ring-indigo-400";
+      default:
+        return "bg-slate-50 text-slate-700 border-slate-200";
+    }
+  };
+
+  // Change Indexing Status Handler
+  const handleStatusChange = (fileId, newStatus) => {
+    const newStyle = getStatusStyle(newStatus);
+    setFilesLibrary((prev) =>
+      prev.map((file) =>
+        file.id === fileId
+          ? { ...file, status: newStatus, statusStyle: newStyle }
+          : file
+      )
+    );
+
+    if (selectedFileModal && selectedFileModal.id === fileId) {
+      setSelectedFileModal((prev) => ({
+        ...prev,
+        status: newStatus,
+        statusStyle: newStyle,
+      }));
+    }
+  };
 
   // Handle File Ingestion
   const handleUploadSimulate = (fileName, fileType) => {
@@ -353,7 +387,7 @@ export default function Data() {
             <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 py-2.5 text-sm font-bold">
               <span className="text-slate-500">Status:</span>
               <div className="flex items-center gap-1">
-                {["All", "Indexed", "Processing"].map((st) => (
+                {["All", "Indexed", "Pending", "Processing"].map((st) => (
                   <button
                     key={st}
                     onClick={() => setSelectedStatus(st)}
@@ -413,7 +447,7 @@ export default function Data() {
                   <div className="flex items-center justify-between text-sm">
                     <span className="font-bold text-slate-500">Status</span>
                     <span className={`rounded-md border px-2.5 py-0.5 text-xs font-black uppercase ${file.statusStyle}`}>
-                      ✓ {file.status}
+                      {file.status === "Indexed" ? "✓ INDEXED" : file.status === "Pending" ? "⏳ PENDING" : "⚙ PROCESSING"}
                     </span>
                   </div>
 
@@ -476,11 +510,17 @@ export default function Data() {
                   <span className="font-extrabold text-[#0D1B2A]">{selectedFileModal.updatedDate}</span>
                 </div>
 
-                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100 flex flex-col justify-between">
                   <span className="text-xs font-black text-slate-400 uppercase block mb-1">Indexing Status</span>
-                  <span className={`inline-block rounded-md border px-2.5 py-0.5 text-xs font-black uppercase ${selectedFileModal.statusStyle}`}>
-                    ✓ {selectedFileModal.status}
-                  </span>
+                  <select
+                    value={selectedFileModal.status}
+                    onChange={(e) => handleStatusChange(selectedFileModal.id, e.target.value)}
+                    className={`w-full rounded-md border px-2 py-1 text-xs font-black uppercase outline-none cursor-pointer transition focus:ring-2 ${selectedFileModal.statusStyle}`}
+                  >
+                    <option value="Indexed">✓ Indexed</option>
+                    <option value="Pending">⏳ Pending</option>
+                    <option value="Processing">⚙ Processing</option>
+                  </select>
                 </div>
 
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
