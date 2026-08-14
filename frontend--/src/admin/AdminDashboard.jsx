@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import Overview from "./Overview";
+import Requests from "./Requests";
 import Queries from "./Queries";
 import Clusters from "./Clusters";
 import Data from "./Data";
@@ -9,9 +10,25 @@ import AiInsights from "./AiInsights";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const [activeNav, setActiveNav] = useState("overview");
+  const location = useLocation();
+
+  const getTabFromPath = (path) => {
+    if (path.includes("/requests")) return "requests";
+    if (path.includes("/queries")) return "queries";
+    if (path.includes("/clusters")) return "clusters";
+    if (path.includes("/data")) return "data";
+    if (path.includes("/projects")) return "projects";
+    if (path.includes("/ai_insights")) return "ai_insights";
+    return "overview";
+  };
+
+  const [activeNav, setActiveNav] = useState(getTabFromPath(location.pathname));
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+
+  useEffect(() => {
+    setActiveNav(getTabFromPath(location.pathname));
+  }, [location.pathname]);
 
   const navItems = [
     { id: "overview", label: "Overview", icon: "📊" },
@@ -26,6 +43,7 @@ export default function AdminDashboard() {
   const handleNavClick = (id) => {
     setActiveNav(id);
     setIsMobileSidebarOpen(false);
+    navigate(`/admin/${id === "overview" ? "" : id}`);
   };
 
   return (
@@ -201,7 +219,10 @@ export default function AdminDashboard() {
           {/* VIEW 1: OVERVIEW TAB */}
           {activeNav === "overview" && <Overview />}
 
-          {/* VIEW 2: QUERIES TAB */}
+          {/* VIEW 2: REQUESTS TAB */}
+          {activeNav === "requests" && <Requests />}
+
+          {/* VIEW 3: QUERIES TAB */}
           {activeNav === "queries" && <Queries onNavigate={setActiveNav} />}
 
           {/* VIEW 3: CLUSTERS TAB */}

@@ -48,7 +48,7 @@ export const getComplaintClusters = async (req, res) => {
   try {
     const { data: complaints, error } = await supabase
       .from('complaints')
-      .select('id, category, pincode, status, admin_flagged, description, created_at');
+      .select('id, complaint_code, category, pincode, status, admin_flagged, description, created_at');
 
     if (error) throw error;
 
@@ -58,21 +58,66 @@ export const getComplaintClusters = async (req, res) => {
     (complaints || []).forEach(c => {
       const key = `${c.pincode}_${c.category}`;
       if (!clustersMap[key]) {
+        const catSlug = (c.category || 'general').replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 6);
         clustersMap[key] = {
-          clusterId: `cluster-${key.toLowerCase()}`,
+          clusterId: `CLS-${catSlug}-${c.pincode}`,
+          id: `CLS-${catSlug}-${c.pincode}`,
+          title: `${(c.category || 'MUNICIPAL').toUpperCase()} CLUSTER`,
+          category: c.category || 'General',
+          categoryFull: `${c.category} issues & citizen reports`,
+          location: `Pincode ${c.pincode}`,
           pincode: c.pincode,
-          category: c.category,
           complaintCount: 0,
+          department: c.category || 'Municipal Services',
           unmatchedCount: 0,
-          complaints: []
+          complaints: [],
+          relatedComplaints: [],
         };
       }
+
       clustersMap[key].complaintCount += 1;
       if (c.admin_flagged) clustersMap[key].unmatchedCount += 1;
       clustersMap[key].complaints.push(c);
+      clustersMap[key].relatedComplaints.push(c.description);
     });
 
-    const clusters = Object.values(clustersMap);
+    const clusters = Object.values(clustersMap).map((cl) => {
+      const isHighPriority = cl.unmatchedCount > 1 || cl.complaintCount >= 5;
+      const catLower = cl.category.toLowerCase();
+
+      let topAccent = "bg-[#2D7FF9]";
+      let deptColor = "text-[#2D7FF9]";
+
+      if (catLower.includes('road')) {
+        topAccent = "bg-[#FFC107]";
+        deptColor = "text-[#D97706]";
+      } else if (catLower.includes('water')) {
+        topAccent = "bg-[#00A68E]";
+        deptColor = "text-[#00A68E]";
+      } else if (catLower.includes('sanitation') || catLower.includes('drain')) {
+        topAccent = "bg-[#6366F1]";
+        deptColor = "text-[#6366F1]";
+      }
+
+      return {
+        ...cl,
+        priority: isHighPriority ? 'High' : 'Medium',
+        priorityStyle: isHighPriority ? 'bg-red-50 text-red-600 border-red-200' : 'bg-amber-50 text-amber-700 border-amber-200',
+        topAccent,
+        barColor: topAccent,
+        cardHoverBorder: 'hover:border-[#2D7FF9]',
+        btnHover: 'hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white',
+        titleHover: 'group-hover:text-[#2D7FF9]',
+        deptColor,
+        flowChain: [
+          `${cl.complaintCount} COMPLAINTS`,
+          cl.category.toUpperCase(),
+          `PINCODE ${cl.pincode}`,
+          cl.department.toUpperCase(),
+          'RELATED MUNICIPAL CONTEXT'
+        ]
+      };
+    }).sort((a, b) => b.complaintCount - a.complaintCount);
 
     return res.status(200).json({
       status: 'success',
@@ -208,7 +253,10 @@ export const getUniqueQueries = async (req, res) => {
     const commonQueries = Object.values(categoryGroups).map((g) => ({
       id: g.id,
       question: g.question,
+      text: g.question,
+      query: g.question,
       requestCount: g.requestCount,
+      count: g.requestCount,
       relatedRequests: g.relatedRequests.slice(0, 4),
       locations: Array.from(g.locations),
       departments: Array.from(g.departments),
@@ -325,18 +373,47 @@ export const getAdminInquiries = async (req, res) => {
 
 /**
  * GET /api/admin/files
- * Retrieves the library of municipal data files uploaded by admins.
+ * Retrieves the library of municipal RAG data files uploaded by admins.
  */
 export const getMunicipalFiles = async (req, res) => {
   try {
-    const { data: files, error } = await supabase
-      .from('municipal_files')
-      .select('id, filename, file_type, size_bytes, status, last_updated')
-      .order('last_updated', { ascending: false });
+    let docs = [];
+    const { data: dbDocs, error } = await supabase
+      .from('documents')
+      .select('id, title, content_text, pincode, source_type, created_at')
+      .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (!error && dbDocs) {
+      docs = dbDocs.map((doc, idx) => {
+        const type = doc.source_type || (doc.title?.endsWith('.csv') ? 'CSV' : doc.title?.endsWith('.xlsx') ? 'XLSX' : 'PDF');
+        const iconMap = { PDF: "📄", CSV: "📊", XLSX: "📋" };
+        const accentMap = { PDF: "bg-[#2D7FF9]", CSV: "bg-[#00A68E]", XLSX: "bg-[#FFC107]" };
+        const hoverMap = {
+          PDF: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+          CSV: "hover:bg-[#00A68E] hover:border-[#00A68E] hover:text-white",
+          XLSX: "hover:bg-[#FFC107] hover:border-[#FFC107] hover:text-[#0D1B2A]"
+        };
 
-    return res.status(200).json({ status: 'success', data: files || [] });
+        return {
+          id: doc.id || `DOC-0${idx + 1}`,
+          filename: doc.title || "Municipal_Doc.pdf",
+          updatedDate: doc.created_at ? new Date(doc.created_at).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Recent',
+          status: "Indexed",
+          statusStyle: "bg-emerald-50 text-emerald-700 border-emerald-200",
+          extractedRecords: Math.floor((doc.content_text?.length || 200) / 4),
+          departments: [`Pincode ${doc.pincode || "110025"}`, `${type} RAG Knowledge`],
+          relatedProjects: 4,
+          size: "2.4 MB",
+          fileType: type,
+          icon: iconMap[type] || "📄",
+          topAccent: accentMap[type] || "bg-[#2D7FF9]",
+          btnHover: hoverMap[type] || "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+          contributionSummary: doc.content_text || "Document vector indexed into CivicMirror Administrative Intelligence knowledge graph."
+        };
+      });
+    }
+
+    return res.status(200).json({ status: 'success', data: docs });
   } catch (error) {
     console.error('Error fetching municipal files:', error);
     return res.status(500).json({ error: 'Internal Server Error' });

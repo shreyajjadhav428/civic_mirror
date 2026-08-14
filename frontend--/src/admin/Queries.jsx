@@ -94,8 +94,7 @@ export default function Queries({ onNavigate }) {
       citizen: "Rajesh Sharma",
       date: "14 Aug 2026",
       department: "Engineering & Road Ops",
-      aiStatus: "Verified",
-      confidence: "98%",
+      aiStatus: "Resolved",
       pincode: "400012",
       summary: "Inquiry cross-referenced against PRJ-01 active work order. AI verified contractor status is on schedule."
     },
@@ -105,8 +104,7 @@ export default function Queries({ onNavigate }) {
       citizen: "Priya Nair",
       date: "14 Aug 2026",
       department: "Water Supply",
-      aiStatus: "Verified",
-      confidence: "95%",
+      aiStatus: "Resolved",
       pincode: "400009",
       summary: "Matched with pipeline maintenance ticket #WM-204. Supply restoration estimated within 4 hours."
     },
@@ -117,7 +115,6 @@ export default function Queries({ onNavigate }) {
       date: "13 Aug 2026",
       department: "Electrical Works",
       aiStatus: "Pending Review",
-      confidence: "74%",
       pincode: "400008",
       summary: "Pending verification against streetlight inventory DB. Dispatched to ward inspector."
     },
@@ -128,7 +125,6 @@ export default function Queries({ onNavigate }) {
       date: "13 Aug 2026",
       department: "Public Works",
       aiStatus: "Flagged",
-      confidence: "89%",
       pincode: "400004",
       summary: "Flagged by AI as duplicate submission of INQ-9460. Merged into active ticket."
     }
@@ -192,11 +188,37 @@ export default function Queries({ onNavigate }) {
       (item.citizen && item.citizen.toLowerCase().includes(searchQuery.toLowerCase()));
 
     if (activeTab === "all") return matchesSearch;
-    if (activeTab === "verified") return matchesSearch && item.aiStatus === "Verified";
+    if (activeTab === "resolved" || activeTab === "verified") return matchesSearch && (item.aiStatus === "Resolved" || item.aiStatus === "Verified");
     if (activeTab === "pending") return matchesSearch && (item.aiStatus === "Pending Review" || item.aiStatus === "Pending");
     if (activeTab === "flagged") return matchesSearch && item.aiStatus === "Flagged";
     return matchesSearch;
   });
+
+  // Compute category distribution dynamically from live backend inquiries
+  const categoryCounts = {};
+  inquiries.forEach((item) => {
+    const dept = item.department || "General Administration";
+    categoryCounts[dept] = (categoryCounts[dept] || 0) + 1;
+  });
+
+  const totalInquiriesCount = inquiries.length || 1;
+  const barColors = [
+    "bg-[#2D7FF9]",
+    "bg-[#00A68E]",
+    "bg-[#FFC107]",
+    "bg-[#FF5252]",
+    "bg-[#8E24AA]",
+    "bg-[#00ACC1]",
+  ];
+
+  const categoryDistribution = Object.entries(categoryCounts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, count], idx) => ({
+      name,
+      count,
+      percentage: Math.round((count / totalInquiriesCount) * 100),
+      barColor: barColors[idx % barColors.length],
+    }));
 
   return (
     <div className="space-y-8 text-[#0D1B2A] font-['Inter',sans-serif]">
@@ -217,13 +239,6 @@ export default function Queries({ onNavigate }) {
             <p className="mt-2 text-lg font-semibold text-[#59687A]">
               Real-time audit of citizen inquiries and vector-clustered topic trends.
             </p>
-
-            <div className="flex items-center gap-2 mt-4">
-              <span className="h-1.5 w-7 rounded-full bg-[#2D7FF9]" />
-              <span className="h-1.5 w-7 rounded-full bg-[#00A68E]" />
-              <span className="h-1.5 w-7 rounded-full bg-[#FFC107]" />
-              <span className="h-1.5 w-7 rounded-full bg-[#FF5252]" />
-            </div>
           </div>
 
           <div className="flex items-center gap-3">
@@ -235,74 +250,29 @@ export default function Queries({ onNavigate }) {
         </div>
       </div>
 
-      {/* 2. ADMINISTRATIVE AI INSIGHT */}
-      <div className="space-y-3.5">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="flex items-center gap-2 text-sm font-black tracking-widest text-slate-400 uppercase mb-1">
-              <span className="h-[3px] w-6 bg-slate-300 rounded-full inline-block" />
-              AGGREGATED BREAKDOWN
-            </p>
-            <h3 className="text-2xl font-black text-[#0D1B2A] tracking-tight">
-              Administrative AI Insight
-            </h3>
-          </div>
-        </div>
+      {/* 2. QUERY CATEGORIES DISTRIBUTION BAR */}
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-14 h-1.5 bg-[#2D7FF9] rounded-b" />
 
-        <div className="rounded-2xl border border-slate-800 bg-[#0D1B2A] p-7 text-white shadow-md space-y-4">
-          <div className="border-l-4 border-[#2D7FF9] pl-4 py-1">
-            <p className="text-lg font-bold text-slate-100 leading-relaxed">
-              "{aiInsight.summaryText}"
-            </p>
-          </div>
+        <span className="text-xs font-black uppercase tracking-wider text-slate-400 block mb-5 font-mono">
+          QUERY CATEGORIES DISTRIBUTION
+        </span>
 
-          <div className="pt-2 border-t border-slate-800">
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 block mb-3">
-              Supporting Information & Metrics:
-            </span>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 font-mono text-xs">
-              <div className="rounded-xl bg-white/5 p-4 border border-white/10">
-                <span className="block text-2xl font-bold text-[#2D7FF9]">
-                  {aiInsight.totalRelatedQueries || inquiries.length}
-                </span>
-                <span className="text-slate-300 font-sans text-sm">Total Logged Inquiries</span>
+        <div className="space-y-5">
+          {categoryDistribution.map((cat, idx) => (
+            <div key={idx} className="flex items-center gap-5 text-base font-semibold">
+              <span className="w-44 text-[#0D1B2A] font-black shrink-0 text-base">{cat.name}</span>
+              <div className="flex-1 bg-slate-100 rounded-xl h-7 overflow-hidden border border-slate-200/60 p-0.5">
+                <div
+                  style={{ width: `${cat.percentage * 2}%` }}
+                  className={`h-full rounded-lg ${cat.barColor} transition-all duration-500`}
+                />
               </div>
-
-              <div className="rounded-xl bg-white/5 p-4 border border-white/10">
-                <span className="block text-2xl font-bold text-[#00A68E]">
-                  {aiInsight.projectRelationPercent || 68}%
-                </span>
-                <span className="text-slate-300 font-sans text-sm">Related to Active Projects</span>
-              </div>
-
-              <div className="rounded-xl bg-white/5 p-4 border border-white/10">
-                <span className="block text-xs font-black uppercase tracking-wider text-[#FFC107] mb-1 font-sans">
-                  Most Affected Areas:
-                </span>
-                <ul className="space-y-0.5 font-sans text-xs font-semibold text-slate-300">
-                  {aiInsight.mostAffectedLocations && aiInsight.mostAffectedLocations.length > 0 ? (
-                    aiInsight.mostAffectedLocations.map((loc, i) => <li key={i}>• {loc}</li>)
-                  ) : (
-                    <li>• Sector 12</li>
-                  )}
-                </ul>
-              </div>
-
-              <div className="rounded-xl bg-white/5 p-4 border border-white/10">
-                <span className="block text-xs font-black uppercase tracking-wider text-[#8DBBFF] mb-1 font-sans">
-                  Primary Departments:
-                </span>
-                <ul className="space-y-0.5 font-sans text-xs font-semibold text-slate-300">
-                  {aiInsight.primaryDepartments && aiInsight.primaryDepartments.length > 0 ? (
-                    aiInsight.primaryDepartments.map((dept, i) => <li key={i}>• {dept}</li>)
-                  ) : (
-                    <li>• Engineering & Ops</li>
-                  )}
-                </ul>
-              </div>
+              <span className="w-16 text-right font-mono font-black text-[#0D1B2A] text-lg">
+                {cat.count}
+              </span>
             </div>
-          </div>
+          ))}
         </div>
       </div>
 
@@ -324,45 +294,29 @@ export default function Queries({ onNavigate }) {
         </div>
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          {commonQueries.map((query) => {
-            const percentage = Math.round(((query.requestCount || 50) / (query.maxCount || 100)) * 100);
-            return (
-              <div
-                key={query.id}
-                onClick={() => setSelectedCommonQuery(query)}
-                className="group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition-all hover:border-[#2D7FF9] hover:shadow-md cursor-pointer overflow-hidden"
-              >
-                <div className={`absolute top-0 left-0 w-14 h-1.5 ${query.topAccent || "bg-[#2D7FF9]"} rounded-b`} />
+          {commonQueries.map((query) => (
+            <div
+              key={query.id}
+              onClick={() => setSelectedCommonQuery(query)}
+              className="group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition-all hover:border-[#2D7FF9] hover:shadow-md cursor-pointer overflow-hidden"
+            >
+              <div className={`absolute top-0 left-0 w-14 h-1.5 ${query.topAccent || "bg-[#2D7FF9]"} rounded-b`} />
 
-                <div>
-                  <div className="flex items-center justify-between mb-3 pt-1">
-                    <span className={`rounded-lg border px-3 py-1 text-xs font-black uppercase ${query.badgeStyle || "bg-blue-50 text-[#2D7FF9] border-blue-200"}`}>
-                      {query.category || "General"}
-                    </span>
-                    <span className="font-mono text-sm font-black text-slate-600">
-                      {query.requestCount} Requests
-                    </span>
-                  </div>
-                  <h4 className="text-lg font-black text-[#0D1B2A] group-hover:text-[#2D7FF9] transition-colors leading-snug">
-                    {query.question}
-                  </h4>
+              <div>
+                <div className="flex items-center justify-between mb-3 pt-1">
+                  <span className={`rounded-lg border px-3 py-1 text-xs font-black uppercase ${query.badgeStyle || "bg-blue-50 text-[#2D7FF9] border-blue-200"}`}>
+                    {query.category || "General"}
+                  </span>
+                  <span className="font-mono text-sm font-black text-slate-600">
+                    {query.requestCount} Requests
+                  </span>
                 </div>
-
-                <div className="mt-5 pt-4 border-t border-slate-100">
-                  <div className="flex items-center justify-between text-sm text-slate-500 font-extrabold mb-2">
-                    <span>Frequency</span>
-                    <span className="font-mono font-black text-[#0D1B2A] text-base">{percentage}%</span>
-                  </div>
-                  <div className="h-2.5 w-full rounded-full bg-slate-100 overflow-hidden border border-slate-200/60 p-0.5">
-                    <div
-                      style={{ width: `${percentage}%` }}
-                      className={`h-full rounded-full ${query.barColor || "bg-[#2D7FF9]"}`}
-                    />
-                  </div>
-                </div>
+                <h4 className="text-lg font-black text-[#0D1B2A] group-hover:text-[#2D7FF9] transition-colors leading-snug">
+                  {query.question}
+                </h4>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </div>
 
@@ -390,12 +344,12 @@ export default function Queries({ onNavigate }) {
               All ({inquiries.length})
             </button>
             <button
-              onClick={() => setActiveTab("verified")}
+              onClick={() => setActiveTab("resolved")}
               className={`rounded-lg px-4 py-2 transition ${
-                activeTab === "verified" ? "bg-[#00A68E] text-white" : "text-slate-600 hover:text-slate-900"
+                activeTab === "resolved" || activeTab === "verified" ? "bg-[#00A68E] text-white" : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              Verified ({aiInsight.verifiedCount ?? 0})
+              Resolved ({aiInsight.verifiedCount ?? 0})
             </button>
             <button
               onClick={() => setActiveTab("pending")}
@@ -436,7 +390,7 @@ export default function Queries({ onNavigate }) {
               </div>
             ) : (
               <table className="w-full text-left text-base">
-                <thead className="bg-slate-50/80 text-xs font-black text-slate-500 uppercase border-b border-slate-200">
+                <thead className="bg-slate-50/80 text-[13px] font-black text-slate-500 uppercase border-b border-slate-200">
                   <tr>
                     <th className="px-5 py-4">Inquiry ID</th>
                     <th className="px-5 py-4">Topic & Citizen</th>
@@ -448,34 +402,34 @@ export default function Queries({ onNavigate }) {
                 <tbody className="divide-y divide-slate-100 font-semibold">
                   {filteredInquiries.map((item) => (
                     <tr key={item.id} className="hover:bg-slate-50/70 transition">
-                      <td className="px-5 py-4.5 font-mono font-black text-[#2D7FF9]">
+                      <td className="px-5 py-4.5 font-mono font-black text-[#2D7FF9] text-[15px]">
                         {item.id}
                       </td>
                       <td className="px-5 py-4.5">
-                        <span className="font-black text-[#0D1B2A] block text-base">{item.topic}</span>
-                        <span className="text-slate-400 text-xs font-bold">{item.citizen || "Citizen"} • {item.date || "14 Aug 2026"}</span>
+                        <span className="font-black text-[#0D1B2A] block text-[17px] leading-snug">{item.topic}</span>
+                        <span className="text-slate-400 text-[13px] font-bold">{item.citizen || "Citizen"} • {item.date || "14 Aug 2026"}</span>
                       </td>
-                      <td className="px-5 py-4.5 text-slate-700 font-extrabold text-sm">
+                      <td className="px-5 py-4.5 text-slate-700 font-extrabold text-[15px]">
                         {item.department}
                       </td>
                       <td className="px-5 py-4.5">
-                        <span className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-black ${
-                          item.aiStatus === "Verified"
+                        <span className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-[13px] font-black ${
+                          item.aiStatus === "Resolved" || item.aiStatus === "Verified"
                             ? "bg-teal-50 text-[#008D78] border border-teal-200"
                             : item.aiStatus === "Pending Review" || item.aiStatus === "Pending"
                             ? "bg-amber-50 text-[#B48000] border border-amber-200"
                             : "bg-rose-50 text-rose-800 border border-rose-200"
                         }`}>
                           <span className={`h-2 w-2 rounded-full ${
-                            item.aiStatus === "Verified" ? "bg-[#008D78]" : item.aiStatus === "Pending Review" || item.aiStatus === "Pending" ? "bg-[#FFC107]" : "bg-rose-600"
+                            item.aiStatus === "Resolved" || item.aiStatus === "Verified" ? "bg-[#008D78]" : item.aiStatus === "Pending Review" || item.aiStatus === "Pending" ? "bg-[#FFC107]" : "bg-rose-600"
                           }`} />
-                          {item.aiStatus} ({item.confidence || "95%"})
+                          {item.aiStatus === "Verified" ? "Resolved" : item.aiStatus}
                         </span>
                       </td>
                       <td className="px-5 py-4.5 text-right">
                         <button
                           onClick={() => setSelectedInquiry(item)}
-                          className="rounded-xl border border-slate-200 px-4 py-2 text-xs font-black text-[#0D1B2A] hover:bg-[#2D7FF9] hover:text-white hover:border-[#2D7FF9] transition shadow-2xs"
+                          className="rounded-xl border border-slate-200 px-4.5 py-2 text-[13px] font-black text-[#0D1B2A] hover:bg-[#2D7FF9] hover:text-white hover:border-[#2D7FF9] transition shadow-2xs"
                         >
                           Inspect →
                         </button>
@@ -498,89 +452,104 @@ export default function Queries({ onNavigate }) {
                 <span className="text-xs font-black text-slate-400 uppercase tracking-wider">Query Topic Breakdown</span>
                 <h3 className="text-2xl font-black text-[#0D1B2A] mt-0.5">{selectedCommonQuery.question}</h3>
               </div>
-              <button onClick={() => setSelectedCommonQuery(null)} className="text-slate-400 hover:text-slate-700 text-xl font-bold">✕</button>
-            </div>
-
-            <div className="my-5 max-h-[60vh] overflow-y-auto space-y-4 text-sm text-slate-800">
-              <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
-                <span className="font-black text-[#0D1B2A] block mb-1">Sample Related Requests</span>
-                <ul className="list-disc pl-4 space-y-1 font-semibold text-slate-700">
-                  {selectedCommonQuery.relatedRequests?.map((req, i) => (
-                    <li key={i}>{req}</li>
-                  )) || <li>No additional related requests logged.</li>}
-                </ul>
-              </div>
-
-              <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
-                <span className="font-black text-[#0D1B2A] block mb-1.5">Affected Locations</span>
-                <div className="flex flex-wrap gap-2">
-                  {selectedCommonQuery.locations?.map((loc, i) => (
-                    <span key={i} className="rounded-lg bg-white px-3 py-1 font-extrabold text-slate-700 border border-slate-200 text-xs">{loc}</span>
-                  )) || <span className="text-xs text-slate-400">All Wards</span>}
-                </div>
-              </div>
-
-              <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
-                <span className="font-black text-[#0D1B2A] block mb-1">Handling Departments</span>
-                <p className="font-extrabold text-slate-700">{selectedCommonQuery.departments?.join(", ") || "General Administrative Desk"}</p>
-              </div>
-
-              {selectedCommonQuery.projects && selectedCommonQuery.projects.length > 0 && (
-                <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
-                  <span className="font-black text-[#0D1B2A] block mb-1">Associated Projects</span>
-                  <p className="font-extrabold text-[#2D7FF9]">{selectedCommonQuery.projects.join(", ")}</p>
-                </div>
-              )}
-            </div>
-
-            <div className="flex justify-end pt-4 border-t border-slate-100">
               <button
                 onClick={() => setSelectedCommonQuery(null)}
-                className="rounded-xl border border-slate-200 px-5 py-2.5 text-xs font-black text-slate-600 hover:bg-slate-50"
+                className="rounded-xl border border-slate-200 p-2 text-slate-400 hover:bg-slate-50 hover:text-slate-800 text-lg font-bold"
               >
-                Close
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4 text-sm text-[#0D1B2A]">
+              <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                <span className="font-bold text-slate-500">Category & Volume</span>
+                <span className="font-extrabold text-[#2D7FF9]">{selectedCommonQuery.category} • {selectedCommonQuery.requestCount} requests</span>
+              </div>
+
+              <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                <span className="text-xs font-black text-slate-400 uppercase block mb-1.5">Responsible Departments</span>
+                <div className="flex flex-wrap gap-1.5">
+                  {selectedCommonQuery.departments?.map((d, i) => (
+                    <span key={i} className="rounded-lg bg-[#2D7FF9]/10 border border-[#2D7FF9]/20 px-2.5 py-1 text-xs font-bold text-[#2D7FF9]">
+                      {d}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                <span className="text-xs font-black text-slate-400 uppercase block mb-1.5">Clustered Citizen Inquiry Examples</span>
+                <ul className="space-y-1.5 font-semibold text-slate-700">
+                  {selectedCommonQuery.relatedRequests?.map((req, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="text-[#2D7FF9]">•</span>
+                      <span>{req}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-3 border-t border-slate-100">
+              <button
+                onClick={() => setSelectedCommonQuery(null)}
+                className="rounded-xl border border-slate-200 px-5 py-2 text-xs font-black text-slate-600 hover:bg-slate-50"
+              >
+                Close Breakdown
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* AUDIT TRAIL INSPECTOR MODAL */}
+      {/* INDIVIDUAL INQUIRY INSPECTION MODAL */}
       {selectedInquiry && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
           <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-7 shadow-2xl space-y-5">
             <div className="flex items-start justify-between border-b border-slate-100 pb-4">
               <div>
-                <span className="font-mono text-xs font-black text-[#2D7FF9]">{selectedInquiry.id}</span>
-                <h3 className="text-2xl font-black text-[#0D1B2A] mt-0.5">{selectedInquiry.topic}</h3>
-                {selectedInquiry.pincode && (
-                  <span className="text-xs font-bold text-slate-400">Citizen Pincode: {selectedInquiry.pincode}</span>
-                )}
+                <span className="font-mono text-xs font-black text-[#2D7FF9] uppercase tracking-wider">{selectedInquiry.id}</span>
+                <h3 className="text-xl font-black text-[#0D1B2A] mt-0.5">{selectedInquiry.topic}</h3>
               </div>
-              <button onClick={() => setSelectedInquiry(null)} className="text-slate-400 hover:text-slate-700 text-xl font-bold">✕</button>
+              <button
+                onClick={() => setSelectedInquiry(null)}
+                className="rounded-xl border border-slate-200 p-2 text-slate-400 hover:bg-slate-50 hover:text-slate-800 text-lg font-bold"
+              >
+                ✕
+              </button>
             </div>
 
-            <div className="space-y-4 text-sm text-[#0D1B2A]">
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                <span className="font-black text-slate-500 block mb-1">Summary / AI Audit Trail</span>
-                <p className="text-slate-800 font-semibold leading-relaxed">{selectedInquiry.summary || selectedInquiry.topic}</p>
-              </div>
-
+            <div className="space-y-3.5 text-sm text-[#0D1B2A]">
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
-                  <span className="text-xs font-black text-slate-400 uppercase block mb-1">Department</span>
+                <div className="rounded-xl bg-slate-50 p-3 border border-slate-100">
+                  <span className="text-xs font-black text-slate-400 uppercase block mb-0.5">Submitted By</span>
+                  <span className="font-extrabold text-[#0D1B2A]">{selectedInquiry.citizen || "Anonymous Resident"}</span>
+                </div>
+                <div className="rounded-xl bg-slate-50 p-3 border border-slate-100">
+                  <span className="text-xs font-black text-slate-400 uppercase block mb-0.5">Assigned Department</span>
                   <span className="font-extrabold text-[#0D1B2A]">{selectedInquiry.department}</span>
                 </div>
-                <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
-                  <span className="text-xs font-black text-slate-400 uppercase block mb-1">AI Verification Status</span>
-                  <span className="font-extrabold text-[#00A68E]">{selectedInquiry.aiStatus} ({selectedInquiry.confidence || "95%"})</span>
-                </div>
+              </div>
+
+              <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                <span className="text-xs font-black text-slate-400 uppercase block mb-1">AI Audit & Verification Log</span>
+                <p className="text-sm font-semibold text-slate-700 leading-relaxed">
+                  {selectedInquiry.summary || "Inquiry cross-referenced against active project records."}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between rounded-xl bg-teal-50 p-3.5 border border-teal-200 text-xs font-black text-[#008D78]">
+                <span>Status: {selectedInquiry.aiStatus === "Verified" ? "Resolved" : selectedInquiry.aiStatus}</span>
+                <span className="font-mono">Pincode: {selectedInquiry.pincode || "400012"}</span>
               </div>
             </div>
 
-            <div className="flex justify-end pt-4 border-t border-slate-100">
-              <button onClick={() => setSelectedInquiry(null)} className="rounded-xl border border-slate-200 px-5 py-2.5 text-xs font-black text-slate-600 hover:bg-slate-50">
-                Close
+            <div className="flex justify-end pt-3 border-t border-slate-100">
+              <button
+                onClick={() => setSelectedInquiry(null)}
+                className="rounded-xl border border-slate-200 px-5 py-2.5 text-xs font-black text-slate-600 hover:bg-slate-50"
+              >
+                Close Audit Detail
               </button>
             </div>
           </div>

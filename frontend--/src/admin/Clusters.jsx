@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getComplaintClusters } from "../api/admin.api";
 
 export default function Clusters({ onNavigate }) {
   // Filter & Search State
@@ -8,133 +9,46 @@ export default function Clusters({ onNavigate }) {
 
   // Modal State
   const [selectedCluster, setSelectedCluster] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Initial Cluster Data matching backend spec
-  const clusterData = [
-    {
-      id: "CLS-STREET-01",
-      title: "STREETLIGHT CLUSTER",
-      category: "Streetlight",
-      categoryFull: "Streetlight failures & electrical outages",
-      location: "Shanti Nagar",
-      pincode: "110025",
-      complaintCount: 23,
-      department: "Electrical Works",
-      priority: "High",
-      priorityStyle: "bg-red-50 text-red-600 border-red-200",
-      topAccent: "bg-[#2D7FF9]",
-      barColor: "bg-[#2D7FF9]",
-      cardHoverBorder: "hover:border-[#2D7FF9]",
-      btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
-      titleHover: "group-hover:text-[#2D7FF9]",
-      deptColor: "text-[#2D7FF9]",
-      flowChain: [
-        "23 COMPLAINTS",
-        "STREETLIGHT FAILURES",
-        "SHANTI NAGAR",
-        "ELECTRICAL WORKS",
-        "RELATED MUNICIPAL CONTEXT"
-      ],
-      relatedComplaints: [
-        "Streetlight not working near Shanti Nagar Main Road",
-        "Streetlight flickering violently near Pole #409",
-        "Dark road near intersection causing safety concern",
-        "Streetlight fixture damaged after storm"
-      ]
-    },
-    {
-      id: "CLS-ROAD-02",
-      title: "ROAD DAMAGE CLUSTER",
-      category: "Roads",
-      categoryFull: "Pavement & Pothole Surface Damage",
-      location: "Shanti Nagar",
-      pincode: "110025",
-      complaintCount: 17,
-      department: "Engineering",
-      priority: "Medium",
-      priorityStyle: "bg-amber-50 text-amber-700 border-amber-200",
-      topAccent: "bg-[#FFC107]",
-      barColor: "bg-[#FFC107]",
-      cardHoverBorder: "hover:border-[#FFC107]",
-      btnHover: "hover:bg-[#FFC107] hover:border-[#FFC107] hover:text-[#0D1B2A]",
-      titleHover: "group-hover:text-[#D97706]",
-      deptColor: "text-[#D97706]",
-      flowChain: [
-        "17 COMPLAINTS",
-        "ROAD SURFACE DAMAGE",
-        "SHANTI NAGAR",
-        "ENGINEERING",
-        "RELATED MUNICIPAL CONTEXT"
-      ],
-      relatedComplaints: [
-        "Deep pothole near Shanti Nagar market entrance",
-        "Asphalt erosion along 3rd cross road",
-        "Cracked pavement causing traffic slowdown",
-        "Loose gravel on major bus transit curve"
-      ]
-    },
-    {
-      id: "CLS-WATER-03",
-      title: "WATER LEAKAGE CLUSTER",
-      category: "Water",
-      categoryFull: "Mainline Seepage & Low Water Pressure",
-      location: "Sector 12",
-      pincode: "110012",
-      complaintCount: 21,
-      department: "Water Supply & Sanitation",
-      priority: "High",
-      priorityStyle: "bg-red-50 text-red-600 border-red-200",
-      topAccent: "bg-[#00A68E]",
-      barColor: "bg-[#00A68E]",
-      cardHoverBorder: "hover:border-[#00A68E]",
-      btnHover: "hover:bg-[#00A68E] hover:border-[#00A68E] hover:text-white",
-      titleHover: "group-hover:text-[#00A68E]",
-      deptColor: "text-[#00A68E]",
-      flowChain: [
-        "21 COMPLAINTS",
-        "MAINLINE PIPE LEAKAGE",
-        "SECTOR 12",
-        "WATER SUPPLY & SANITATION",
-        "RELATED MUNICIPAL CONTEXT"
-      ],
-      relatedComplaints: [
-        "Low water pressure reported across Block B",
-        "Clean water seepage observed on main road curb",
-        "Water outage during morning peak hours",
-        "Dirty water supply in residential tap line"
-      ]
-    },
-    {
-      id: "CLS-DRAIN-04",
-      title: "DRAINAGE OVERFLOW CLUSTER",
-      category: "Sanitation",
-      categoryFull: "Stormwater Grate Blockage & Overflow",
-      location: "Green Park",
-      pincode: "110045",
-      complaintCount: 18,
-      department: "Stormwater Management",
-      priority: "Medium",
-      priorityStyle: "bg-amber-50 text-amber-700 border-amber-200",
-      topAccent: "bg-[#6366F1]",
-      barColor: "bg-[#6366F1]",
-      cardHoverBorder: "hover:border-[#6366F1]",
-      btnHover: "hover:bg-[#6366F1] hover:border-[#6366F1] hover:text-white",
-      titleHover: "group-hover:text-[#6366F1]",
-      deptColor: "text-[#6366F1]",
-      flowChain: [
-        "18 COMPLAINTS",
-        "DRAINAGE BLOCKAGE",
-        "GREEN PARK",
-        "STORMWATER MANAGEMENT",
-        "RELATED MUNICIPAL CONTEXT"
-      ],
-      relatedComplaints: [
-        "Storm drain overflowing post rain",
-        "Blocked culvert causing standing water",
-        "Foul odor near storm grate entrance",
-        "Silt accumulation clogging drainage outlet"
-      ]
+  // Dynamic Backend Cluster Data (Empty by default - populated strictly by Backend API)
+  const [clusterData, setClusterData] = useState([]);
+
+  // -------------------------------------------------------------------
+  // FETCH BACKEND CLUSTERS ON MOUNT
+  // -------------------------------------------------------------------
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadClustersData() {
+      setLoading(true);
+      try {
+        const res = await getComplaintClusters();
+        if (isMounted && res?.data) {
+          setClusterData(res.data);
+        }
+      } catch (err) {
+        console.error("Error fetching complaint clusters from backend:", err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
     }
+
+    loadClustersData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Compute unique dropdown options dynamically from backend data
+  const availableCategories = [
+    "All",
+    ...Array.from(new Set(clusterData.map((c) => c.category).filter(Boolean))),
+  ];
+
+  const availablePincodes = [
+    "All",
+    ...Array.from(new Set(clusterData.map((c) => c.pincode).filter(Boolean))),
   ];
 
   // Filtering Logic
@@ -167,20 +81,13 @@ export default function Clusters({ onNavigate }) {
               <span className="h-[3px] w-6 bg-[#2D7FF9] rounded-full inline-block" />
               GEOGRAPHIC CONCENTRATIONS
             </p>
-            <h1 className="text-4xl sm:text-5xl font-black text-[#0D1B2A] tracking-tight">
+            <h1 className="text-4xl sm:text-5xl font-black text-[#0D1B2A] tracking-tight flex items-center gap-3">
               Complaint <span className="text-[#2D7FF9]">Clusters</span>
+              {loading && <span className="text-xs font-semibold text-slate-400 animate-pulse">(Fetching live data...)</span>}
             </h1>
             <p className="mt-2 text-lg font-semibold text-[#59687A] max-w-2xl">
-              Turn thousands of individual complaints into <strong>meaningful groups</strong>. Identify geographic concentrations of similar civic problems.
+              Turn individual complaints into <strong>actionable issue clusters</strong>. Identify geographic concentrations of similar civic problems.
             </p>
-
-            {/* Accent Line Dashes */}
-            <div className="flex items-center gap-2 mt-4">
-              <span className="h-1.5 w-7 rounded-full bg-[#2D7FF9]" />
-              <span className="h-1.5 w-7 rounded-full bg-[#00A68E]" />
-              <span className="h-1.5 w-7 rounded-full bg-[#FFC107]" />
-              <span className="h-1.5 w-7 rounded-full bg-[#FF5252]" />
-            </div>
           </div>
 
           {/* Stat Box */}
@@ -215,11 +122,11 @@ export default function Clusters({ onNavigate }) {
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="bg-transparent text-[#0D1B2A] font-black outline-none cursor-pointer"
               >
-                <option value="All">All Categories</option>
-                <option value="Streetlight">Streetlight</option>
-                <option value="Roads">Roads</option>
-                <option value="Water">Water</option>
-                <option value="Sanitation">Sanitation</option>
+                {availableCategories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat === "All" ? "All Categories" : cat}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -231,10 +138,11 @@ export default function Clusters({ onNavigate }) {
                 onChange={(e) => setSelectedPincode(e.target.value)}
                 className="bg-transparent text-[#0D1B2A] font-black outline-none cursor-pointer font-mono"
               >
-                <option value="All">All Pincodes</option>
-                <option value="110025">110025 (Shanti Nagar)</option>
-                <option value="110012">110012 (Sector 12)</option>
-                <option value="110045">110045 (Green Park)</option>
+                {availablePincodes.map((pin) => (
+                  <option key={pin} value={pin}>
+                    {pin === "All" ? "All Pincodes" : `Pincode ${pin}`}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -253,69 +161,79 @@ export default function Clusters({ onNavigate }) {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {filteredClusters.map((cluster) => (
-            <div
-              key={cluster.id}
-              className={`group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition-all ${cluster.cardHoverBorder} hover:shadow-md overflow-hidden`}
-            >
-              {/* Top Accent line */}
-              <div className={`absolute top-0 left-0 w-16 h-1.5 ${cluster.topAccent} rounded-b`} />
+        {loading && clusterData.length === 0 ? (
+          <div className="py-16 text-center text-xs font-semibold text-slate-400 animate-pulse">
+            Loading issue clusters from database...
+          </div>
+        ) : filteredClusters.length === 0 ? (
+          <div className="py-16 text-center text-xs font-semibold text-slate-400">
+            No active complaint clusters found matching your filter criteria.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            {filteredClusters.map((cluster) => (
+              <div
+                key={cluster.id}
+                className={`group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition-all ${cluster.cardHoverBorder} hover:shadow-md overflow-hidden`}
+              >
+                {/* Top Accent line */}
+                <div className={`absolute top-0 left-0 w-16 h-1.5 ${cluster.topAccent} rounded-b`} />
 
-              <div>
-                {/* Header Row */}
-                <div className="flex items-start justify-between mb-4 pt-1">
-                  <div>
-                    <span className="font-mono text-xs font-black tracking-wider text-slate-400 uppercase block mb-0.5">
-                      {cluster.id}
+                <div>
+                  {/* Header Row */}
+                  <div className="flex items-start justify-between mb-4 pt-1">
+                    <div>
+                      <span className="font-mono text-xs font-black tracking-wider text-slate-400 uppercase block mb-0.5">
+                        {cluster.id}
+                      </span>
+                      <h3 className={`text-xl font-black text-[#0D1B2A] ${cluster.titleHover} transition-colors leading-tight`}>
+                        {cluster.title}
+                      </h3>
+                    </div>
+
+                    <span className={`rounded-lg border px-3 py-1 text-xs font-black uppercase tracking-wider ${cluster.priorityStyle}`}>
+                      • {cluster.priority} PRIORITY
                     </span>
-                    <h3 className={`text-xl font-black text-[#0D1B2A] ${cluster.titleHover} transition-colors leading-tight`}>
-                      {cluster.title}
-                    </h3>
                   </div>
 
-                  <span className={`rounded-lg border px-3 py-1 text-xs font-black uppercase tracking-wider ${cluster.priorityStyle}`}>
-                    • {cluster.priority} PRIORITY
-                  </span>
+                  {/* Main Stats Box */}
+                  <div className="rounded-xl bg-slate-50/70 p-4 border border-slate-100 space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
+                      <span className="text-sm font-bold text-slate-500">Aggregated Complaints</span>
+                      <span className="font-mono font-black text-[#0D1B2A] text-lg">
+                        {cluster.complaintCount} complaints
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
+                      <span className="text-sm font-bold text-slate-500">Geographic Location</span>
+                      <span className="font-black text-[#0D1B2A] text-base">
+                        {cluster.location} <span className="font-mono text-slate-400 font-medium">({cluster.pincode})</span>
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-bold text-slate-500">Responsible Department</span>
+                      <span className={`font-extrabold ${cluster.deptColor} text-base`}>
+                        {cluster.department}
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Main Stats Box */}
-                <div className="rounded-xl bg-slate-50/70 p-4 border border-slate-100 space-y-3">
-                  <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
-                    <span className="text-sm font-bold text-slate-500">Aggregated Complaints</span>
-                    <span className="font-mono font-black text-[#0D1B2A] text-lg">
-                      {cluster.complaintCount} complaints
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
-                    <span className="text-sm font-bold text-slate-500">Geographic Location</span>
-                    <span className="font-black text-[#0D1B2A] text-base">
-                      {cluster.location} <span className="font-mono text-slate-400 font-medium">({cluster.pincode})</span>
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-bold text-slate-500">Responsible Department</span>
-                    <span className={`font-extrabold ${cluster.deptColor} text-base`}>
-                      {cluster.department}
-                    </span>
-                  </div>
+                {/* Card Footer Button */}
+                <div className="mt-5 pt-4 border-t border-slate-100 flex justify-end">
+                  <button
+                    onClick={() => setSelectedCluster(cluster)}
+                    className={`rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-black text-[#0D1B2A] ${cluster.btnHover} transition-all shadow-2xs`}
+                  >
+                    View Cluster
+                  </button>
                 </div>
               </div>
-
-              {/* Card Footer Button */}
-              <div className="mt-5 pt-4 border-t border-slate-100 flex justify-end">
-                <button
-                  onClick={() => setSelectedCluster(cluster)}
-                  className={`rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-black text-[#0D1B2A] ${cluster.btnHover} transition-all shadow-2xs`}
-                >
-                  View Cluster
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 4. CLUSTER DETAILS MODAL (FULL WORKFLOW & BREAKDOWN & AI CTA) */}
@@ -347,8 +265,6 @@ export default function Clusters({ onNavigate }) {
                 ✕
               </button>
             </div>
-
-
 
             {/* CLUSTER BREAKDOWN METADATA */}
             <div className="space-y-3">
@@ -394,10 +310,10 @@ export default function Clusters({ onNavigate }) {
 
               <div className="rounded-xl bg-slate-50 p-4 border border-slate-200/80 space-y-2">
                 <span className="text-xs font-black uppercase tracking-wider text-slate-400 font-mono block mb-2">
-                  AGGREGATED INCOMING TICKETS
+                  AGGREGATED INCOMING TICKETS ({selectedCluster.relatedComplaints?.length || 0})
                 </span>
                 <ul className="space-y-2 text-sm font-semibold text-slate-700">
-                  {selectedCluster.relatedComplaints.map((item, idx) => (
+                  {selectedCluster.relatedComplaints?.map((item, idx) => (
                     <li key={idx} className="flex items-start gap-2.5">
                       <span className="text-[#2D7FF9] font-black">•</span>
                       <span>{item}</span>
@@ -406,8 +322,6 @@ export default function Clusters({ onNavigate }) {
                 </ul>
               </div>
             </div>
-
-
 
             {/* Modal Close Footer */}
             <div className="flex justify-end pt-3 border-t border-slate-100">

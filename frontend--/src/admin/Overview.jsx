@@ -71,8 +71,9 @@ export default function Overview() {
         const queriesRes = await getUniqueQueries();
         if (isMounted && queriesRes?.data) {
           const mappedQueries = queriesRes.data.map((q) => ({
-            text: q.query,
-            count: q.count,
+            ...q,
+            text: q.text || q.question || q.query || "Citizen Query",
+            count: q.count ?? q.requestCount ?? 0,
             category: "Citizen Query"
           }));
           setCommonQueries(mappedQueries);
@@ -181,7 +182,7 @@ export default function Overview() {
       {/* Welcome Header Bar */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+          <h2 className="text-xl font-extrabold text-slate-900">
             Welcome back, Admin
             {loading && <span className="text-xs font-semibold text-slate-400 animate-pulse">(Fetching live data...)</span>}
           </h2>
@@ -336,19 +337,16 @@ export default function Overview() {
             </div>
 
             <div className="mt-4 space-y-3.5">
-              {loading && commonQueries.length === 0 ? (
-                <div className="py-8 text-center text-xs font-semibold text-slate-400 animate-pulse">
-                  Loading common queries from backend...
-                </div>
-              ) : commonQueries.length === 0 ? (
-                <div className="py-8 text-center text-xs font-semibold text-slate-400">
-                  No citizen queries recorded yet.
+              {commonQueries.length === 0 ? (
+                <div className="py-6 text-center text-xs font-semibold text-slate-400">
+                  No common citizen queries logged yet.
                 </div>
               ) : (
-                commonQueries.slice(0, 5).map((query, idx) => (
+                commonQueries.map((query, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center justify-between text-sm text-slate-800 p-2 rounded-xl hover:bg-slate-50 relative z-10 transition border border-transparent hover:border-slate-200"
+                    onClick={() => alert(`Query detail: "${query.text}" (${query.count} citizen requests)`)}
+                    className="flex items-center justify-between text-sm text-slate-800 cursor-pointer p-2 rounded-xl hover:bg-slate-50 relative z-10 transition border border-transparent hover:border-slate-200"
                   >
                     <div className="flex items-center gap-3">
                       <svg
@@ -364,7 +362,7 @@ export default function Overview() {
                           d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      <span className="font-extrabold text-slate-700 hover:text-[#2D7FF9] transition line-clamp-1">
+                      <span className="font-extrabold text-slate-700 hover:text-[#2D7FF9] transition">
                         {query.text}
                       </span>
                     </div>
