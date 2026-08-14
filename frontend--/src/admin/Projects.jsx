@@ -255,7 +255,7 @@ export default function Projects() {
         
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="flex items-center gap-2 text-xs font-black tracking-widest text-[#2D7FF9] uppercase mb-2">
+            <p className="flex items-center gap-2 text-sm font-black tracking-widest text-[#2D7FF9] uppercase mb-2">
               CAPITAL INFRASTRUCTURE & PROJECTS
             </p>
             <h1 className="text-4xl sm:text-5xl font-black text-[#0D1B2A] tracking-tight">
@@ -268,7 +268,7 @@ export default function Projects() {
 
           <div className="flex items-center gap-3">
             <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-5 py-3.5 text-base font-semibold">
-              <span className="text-[#657386] block text-xs font-black uppercase tracking-wider">Active Infrastructure</span>
+              <span className="text-[#657386] block text-sm font-black uppercase tracking-wider">Active Infrastructure</span>
               <span className="text-[#0D1B2A] font-black text-xl">{projectsList.length} Tracked</span>
             </div>
           </div>
@@ -279,15 +279,15 @@ export default function Projects() {
       <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-5">
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <div>
-            <h2 className="text-sm font-black uppercase tracking-wider text-[#0D1B2A]">
+            <h2 className="text-base font-black uppercase tracking-wider text-[#0D1B2A]">
               REGISTER NEW CAPITAL PROJECT
             </h2>
-            <p className="text-xs text-[#59687A] font-medium mt-0.5">
+            <p className="text-sm text-[#59687A] font-medium mt-0.5">
               Input comprehensive infrastructure specifications to correlate incoming citizen inquiries.
             </p>
           </div>
           {addSuccessMsg && (
-            <span className="rounded-lg bg-emerald-50 text-[#008D78] border border-emerald-200 px-3 py-1 text-xs font-black">
+            <span className="rounded-lg bg-emerald-50 text-[#008D78] border border-emerald-200 px-3 py-1 text-sm font-black">
               ✓ {addSuccessMsg}
             </span>
           )}
@@ -297,7 +297,7 @@ export default function Projects() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {/* Field 1: Project Name */}
             <div>
-              <label className="block text-[11px] font-black uppercase text-slate-500 tracking-wider mb-1">
+              <label className="block text-sm font-black uppercase text-slate-500 tracking-wider mb-1">
                 Project Name *
               </label>
               <input
@@ -306,19 +306,19 @@ export default function Projects() {
                 value={newProject.name}
                 onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
                 placeholder="e.g. Sector 4 Drainage Upgrade"
-                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-xs font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
+                className="h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-sm font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
               />
             </div>
 
             {/* Field 2: Department */}
             <div>
-              <label className="block text-[11px] font-black uppercase text-slate-500 tracking-wider mb-1">
+              <label className="block text-sm font-black uppercase text-slate-500 tracking-wider mb-1">
                 Department
               </label>
               <select
                 value={newProject.department}
                 onChange={(e) => setNewProject({ ...newProject, department: e.target.value })}
-                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-xs font-semibold text-[#0D1B2A] focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all cursor-pointer"
+                className="h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-sm font-semibold text-[#0D1B2A] focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all cursor-pointer"
               >
                 <option value="Engineering & Road Ops">Engineering & Road Ops</option>
                 <option value="Electrical Works">Electrical Works</option>
@@ -330,7 +330,7 @@ export default function Projects() {
 
             {/* Field 3: Pincode */}
             <div>
-              <label className="block text-[11px] font-black uppercase text-slate-500 tracking-wider mb-1">
+              <label className="block text-sm font-black uppercase text-slate-500 tracking-wider mb-1">
                 Pincode *
               </label>
               <input
@@ -339,13 +339,13 @@ export default function Projects() {
                 value={newProject.pincode}
                 onChange={(e) => setNewProject({ ...newProject, pincode: e.target.value })}
                 placeholder="e.g. 110025"
-                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-xs font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
+                className="h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-sm font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
               />
             </div>
 
             {/* Field 4: Start Date */}
             <div>
-              <label className="block text-[11px] font-black uppercase text-slate-500 tracking-wider mb-1">
+              <label className="block text-sm font-black uppercase text-slate-500 tracking-wider mb-1">
                 Start Date
               </label>
               <input
@@ -353,13 +353,13 @@ export default function Projects() {
                 value={newProject.startDate}
                 onChange={(e) => setNewProject({ ...newProject, startDate: e.target.value })}
                 placeholder="e.g. 01 Aug 2026"
-                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-xs font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
+                className="h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-sm font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
               />
             </div>
 
             {/* Field 5: Expected Completion */}
             <div>
-              <label className="block text-[11px] font-black uppercase text-slate-500 tracking-wider mb-1">
+              <label className="block text-sm font-black uppercase text-slate-500 tracking-wider mb-1">
                 Expected Completion
               </label>
               <input
@@ -367,13 +367,13 @@ export default function Projects() {
                 value={newProject.expectedCompletion}
                 onChange={(e) => setNewProject({ ...newProject, expectedCompletion: e.target.value })}
                 placeholder="e.g. 30 Nov 2026"
-                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-xs font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
+                className="h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-sm font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
               />
             </div>
 
             {/* Field 6: Total Budget */}
             <div>
-              <label className="block text-[11px] font-black uppercase text-slate-500 tracking-wider mb-1">
+              <label className="block text-sm font-black uppercase text-slate-500 tracking-wider mb-1">
                 Total Budget (₹) *
               </label>
               <input
@@ -382,13 +382,13 @@ export default function Projects() {
                 value={newProject.budget}
                 onChange={(e) => setNewProject({ ...newProject, budget: e.target.value })}
                 placeholder="e.g. 2500000"
-                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-xs font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
+                className="h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-sm font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
               />
             </div>
 
             {/* Field 7: Initial Utilized Budget */}
             <div>
-              <label className="block text-[11px] font-black uppercase text-slate-500 tracking-wider mb-1">
+              <label className="block text-sm font-black uppercase text-slate-500 tracking-wider mb-1">
                 Utilized Budget (₹)
               </label>
               <input
@@ -396,13 +396,13 @@ export default function Projects() {
                 value={newProject.utilizedBudget}
                 onChange={(e) => setNewProject({ ...newProject, utilizedBudget: e.target.value })}
                 placeholder="e.g. 500000"
-                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-xs font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
+                className="h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-sm font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
               />
             </div>
 
             {/* Field 8: Affected Citizens */}
             <div>
-              <label className="block text-[11px] font-black uppercase text-slate-500 tracking-wider mb-1">
+              <label className="block text-sm font-black uppercase text-slate-500 tracking-wider mb-1">
                 Impacted Citizens
               </label>
               <input
@@ -410,7 +410,7 @@ export default function Projects() {
                 value={newProject.affectedCitizens}
                 onChange={(e) => setNewProject({ ...newProject, affectedCitizens: e.target.value })}
                 placeholder="e.g. 150"
-                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-xs font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
+                className="h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-sm font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
               />
             </div>
           </div>
@@ -418,13 +418,13 @@ export default function Projects() {
           {/* Row 3: Status & Action Button */}
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 pt-2 border-t border-slate-100">
             <div className="w-full sm:w-64">
-              <label className="block text-[11px] font-black uppercase text-slate-500 tracking-wider mb-1">
+              <label className="block text-sm font-black uppercase text-slate-500 tracking-wider mb-1">
                 Initial Status
               </label>
               <select
                 value={newProject.status}
                 onChange={(e) => setNewProject({ ...newProject, status: e.target.value })}
-                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-xs font-semibold text-[#0D1B2A] focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all cursor-pointer"
+                className="h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-sm font-semibold text-[#0D1B2A] focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all cursor-pointer"
               >
                 {statusOptions.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -436,7 +436,7 @@ export default function Projects() {
 
             <button
               type="submit"
-              className="h-10 rounded-xl bg-[#2D7FF9] px-6 text-xs font-black text-white hover:bg-[#1E4FA3] active:scale-95 transition-all shadow-xs flex items-center justify-center gap-1.5 shrink-0"
+              className="h-[42px] rounded-xl bg-[#2D7FF9] px-6 text-sm font-black text-white hover:bg-[#1E4FA3] active:scale-95 transition-all shadow-xs flex items-center justify-center gap-1.5 shrink-0 cursor-pointer"
             >
               + Add Project
             </button>
@@ -450,10 +450,10 @@ export default function Projects() {
           <h2 className="text-sm font-black uppercase tracking-wider text-slate-500">
             Project Status & Audit
           </h2>
-          <p className="text-xs text-[#59687A] font-semibold">Filter projects by operational status and inspect detailed infrastructure specifications.</p>
+          <p className="text-sm text-[#59687A] font-semibold">Filter projects by operational status and inspect detailed infrastructure specifications.</p>
         </div>
 
-        <div className="flex rounded-xl bg-slate-100 p-1.5 text-xs font-black gap-1 flex-wrap">
+        <div className="flex rounded-xl bg-slate-100 p-1.5 text-sm font-black gap-1 flex-wrap">
           {["all", "in progress", "completed"].map((tab) => (
             <button
               key={tab}
@@ -480,20 +480,20 @@ export default function Projects() {
             <div>
               <div className="flex items-start justify-between border-b border-slate-100 pb-4">
                 <div>
-                  <span className="text-xs font-black tracking-wider text-[#2D7FF9] uppercase block mb-1">
+                  <span className="text-sm font-black tracking-wider text-[#2D7FF9] uppercase block mb-1">
                     {project.id}
                   </span>
                   <h3 className="text-xl font-black text-[#0D1B2A] group-hover:text-[#2D7FF9] transition-colors">
                     {project.name}
                   </h3>
-                  <p className="text-xs font-bold text-slate-500 mt-1">📍 Pincode: {project.pincode} • {project.department}</p>
+                  <p className="text-sm font-bold text-slate-500 mt-1">📍 Pincode: {project.pincode} • {project.department}</p>
                 </div>
 
                 {/* EDITABLE STATUS DROPDOWN PILL */}
                 <select
                   value={project.status}
                   onChange={(e) => handleStatusChange(project.id, e.target.value)}
-                  className={`rounded-md border px-2.5 py-1 text-xs font-black uppercase tracking-wider cursor-pointer focus:outline-none transition-all ${project.statusBadge}`}
+                  className={`rounded-md border px-2.5 py-1 text-sm font-black uppercase tracking-wider cursor-pointer focus:outline-none transition-all ${project.statusBadge}`}
                 >
                   {statusOptions.map((opt) => (
                     <option key={opt.value} value={opt.value} className="bg-white text-slate-900 font-semibold">
@@ -505,7 +505,7 @@ export default function Projects() {
 
               {/* Progress Bar */}
               <div className="mt-4 space-y-1.5">
-                <div className="flex items-center justify-between text-xs font-extrabold">
+                <div className="flex items-center justify-between text-sm font-extrabold">
                   <span className="text-slate-500">Execution Progress</span>
                   <span className="text-[#2D7FF9] font-black">{project.progress}%</span>
                 </div>
@@ -518,24 +518,24 @@ export default function Projects() {
               </div>
 
               {/* Budget & Complaints Summary Grid */}
-              <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
+              <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="block text-slate-400 font-bold text-xs uppercase mb-1">Total Budget</span>
+                  <span className="block text-slate-400 font-bold text-sm uppercase mb-1">Total Budget</span>
                   <span className="text-base font-black text-[#0D1B2A]">{formatINR(project.budget)}</span>
                 </div>
 
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="block text-slate-400 font-bold text-xs uppercase mb-1">Utilized Budget</span>
+                  <span className="block text-slate-400 font-bold text-sm uppercase mb-1">Utilized Budget</span>
                   <span className="text-base font-black text-[#008D78]">{formatINR(project.utilizedBudget)}</span>
                 </div>
 
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="block text-slate-400 font-bold text-xs uppercase mb-1">Connected Complaints</span>
+                  <span className="block text-slate-400 font-bold text-sm uppercase mb-1">Connected Complaints</span>
                   <span className="text-base font-black text-[#2D7FF9]">{project.relatedComplaintsCount} tickets</span>
                 </div>
 
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="block text-slate-400 font-bold text-xs uppercase mb-1">Impacted Citizens</span>
+                  <span className="block text-slate-400 font-bold text-sm uppercase mb-1">Impacted Citizens</span>
                   <span className="text-base font-black text-[#0D1B2A]">{project.affectedCitizens} residents</span>
                 </div>
               </div>
@@ -545,7 +545,7 @@ export default function Projects() {
             <div className="mt-4 flex items-center justify-end gap-3 border-t border-slate-100 pt-4">
               <button
                 onClick={() => setSelectedProjectModal(project)}
-                className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-black text-[#2D7FF9] hover:bg-slate-50 transition-all"
+                className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-black text-[#2D7FF9] hover:bg-slate-50 transition-all cursor-pointer"
               >
                 Project Specs →
               </button>
@@ -561,18 +561,18 @@ export default function Projects() {
             
             <div className="flex items-start justify-between border-b border-slate-100 pb-4">
               <div>
-                <span className="text-xs font-black text-[#2D7FF9] uppercase tracking-wider block mb-1">
+                <span className="text-sm font-black text-[#2D7FF9] uppercase tracking-wider block mb-1">
                   FULL INFRASTRUCTURE SPECIFICATIONS
                 </span>
                 <h3 className="text-2xl font-black text-[#0D1B2A]">{selectedProjectModal.name}</h3>
                 
                 {/* EDITABLE STATUS SELECTOR IN MODAL */}
                 <div className="flex items-center gap-2 mt-2">
-                  <span className="text-[11px] font-black text-slate-400 uppercase">Status:</span>
+                  <span className="text-xs font-black text-slate-400 uppercase">Status:</span>
                   <select
                     value={selectedProjectModal.status}
                     onChange={(e) => handleStatusChange(selectedProjectModal.id, e.target.value)}
-                    className={`rounded-md border px-3 py-0.5 text-xs font-black uppercase tracking-wider cursor-pointer focus:outline-none transition-all ${selectedProjectModal.statusBadge}`}
+                    className={`rounded-md border px-3 py-0.5 text-sm font-black uppercase tracking-wider cursor-pointer focus:outline-none transition-all ${selectedProjectModal.statusBadge}`}
                   >
                     {statusOptions.map((opt) => (
                       <option key={opt.value} value={opt.value} className="bg-white text-slate-900 font-semibold">
@@ -585,35 +585,35 @@ export default function Projects() {
 
               <button
                 onClick={() => setSelectedProjectModal(null)}
-                className="rounded-xl border border-slate-200 p-2 text-slate-400 hover:bg-slate-50 hover:text-slate-800 text-lg font-bold"
+                className="rounded-xl border border-slate-200 p-2 text-slate-400 hover:bg-slate-50 hover:text-slate-800 text-lg font-bold cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
             {/* Metrics Breakdown Grid */}
-            <div className="space-y-4 text-xs">
+            <div className="space-y-4 text-sm">
               <div className="grid grid-cols-2 gap-3">
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-slate-400 block font-bold uppercase mb-1">Department</span>
+                  <span className="text-slate-400 block font-bold uppercase mb-1 text-xs">Department</span>
                   <span className="font-extrabold text-[#0D1B2A] text-sm">{selectedProjectModal.department}</span>
                 </div>
 
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-slate-400 block font-bold uppercase mb-1">Pincode</span>
+                  <span className="text-slate-400 block font-bold uppercase mb-1 text-xs">Pincode</span>
                   <span className="font-extrabold text-[#0D1B2A] text-sm">📍 {selectedProjectModal.pincode}</span>
                 </div>
 
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-slate-400 block font-bold uppercase mb-1">Start Date</span>
+                  <span className="text-slate-400 block font-bold uppercase mb-1 text-xs">Start Date</span>
                   <span className="font-extrabold text-[#0D1B2A] text-sm">{selectedProjectModal.startDate}</span>
                 </div>
 
                 {/* EDITABLE EXPECTED COMPLETION */}
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-200 focus-within:border-[#2D7FF9] focus-within:bg-white transition-all">
-                  <label className="text-slate-400 block font-bold uppercase mb-1 text-[11px] flex items-center justify-between">
+                  <label className="text-slate-400 block font-bold uppercase mb-1 text-xs flex items-center justify-between">
                     <span>Expected Completion</span>
-                    <span className="text-[#2D7FF9] text-[10px] font-black">✏️ EDITABLE</span>
+                    <span className="text-[#2D7FF9] text-xs font-black">✏️ EDITABLE</span>
                   </label>
                   <input
                     type="text"
@@ -625,15 +625,15 @@ export default function Projects() {
                 </div>
 
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-slate-400 block font-bold uppercase mb-1">Total Budget</span>
+                  <span className="text-slate-400 block font-bold uppercase mb-1 text-xs">Total Budget</span>
                   <span className="text-base font-black text-[#0D1B2A]">{formatINR(selectedProjectModal.budget)}</span>
                 </div>
 
                 {/* EDITABLE UTILIZED BUDGET */}
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-200 focus-within:border-[#008D78] focus-within:bg-white transition-all">
-                  <label className="text-slate-400 block font-bold uppercase mb-1 text-[11px] flex items-center justify-between">
+                  <label className="text-slate-400 block font-bold uppercase mb-1 text-xs flex items-center justify-between">
                     <span>Utilized Budget (₹)</span>
-                    <span className="text-[#008D78] text-[10px] font-black">✏️ EDITABLE</span>
+                    <span className="text-[#008D78] text-xs font-black">✏️ EDITABLE</span>
                   </label>
                   <input
                     type="number"
@@ -645,22 +645,22 @@ export default function Projects() {
                 </div>
 
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-slate-400 block font-bold uppercase mb-1">Remaining Budget</span>
+                  <span className="text-slate-400 block font-bold uppercase mb-1 text-xs">Remaining Budget</span>
                   <span className="text-base font-black text-[#2D7FF9]">{formatINR(selectedProjectModal.remainingBudget)}</span>
                 </div>
 
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-slate-400 block font-bold uppercase mb-1">Affected Citizens</span>
+                  <span className="text-slate-400 block font-bold uppercase mb-1 text-xs">Affected Citizens</span>
                   <span className="text-base font-black text-[#0D1B2A]">{selectedProjectModal.affectedCitizens} citizens</span>
                 </div>
               </div>
 
               {/* EDITABLE EXECUTION PROGRESS */}
               <div className="rounded-xl bg-slate-50 p-4 border border-slate-200 focus-within:border-[#2D7FF9] transition-all space-y-3">
-                <div className="flex justify-between items-center font-bold text-xs">
+                <div className="flex justify-between items-center font-bold text-sm">
                   <div className="flex items-center gap-2">
                     <span className="text-slate-600 uppercase font-black">Execution Progress</span>
-                    <span className="text-[#2D7FF9] text-[10px] font-black">✏️ EDITABLE</span>
+                    <span className="text-[#2D7FF9] text-xs font-black">✏️ EDITABLE</span>
                   </div>
                   <span className="text-[#2D7FF9] font-black text-sm">{selectedProjectModal.progress}%</span>
                 </div>
@@ -682,7 +682,7 @@ export default function Projects() {
                       key={step}
                       type="button"
                       onClick={() => handleProgressChange(step)}
-                      className={`py-1.5 rounded-lg text-xs font-black transition-all text-center ${
+                      className={`py-1.5 rounded-lg text-sm font-black transition-all text-center cursor-pointer ${
                         selectedProjectModal.progress === step
                           ? "bg-[#2D7FF9] text-white shadow-xs scale-105"
                           : "bg-white border border-slate-200 text-slate-600 hover:border-[#2D7FF9] hover:text-[#2D7FF9]"
@@ -698,7 +698,7 @@ export default function Projects() {
             <div className="flex justify-end border-t border-slate-100 pt-3">
               <button
                 onClick={() => setSelectedProjectModal(null)}
-                className="rounded-xl bg-[#0D1B2A] px-5 py-2.5 text-xs font-black text-white hover:bg-[#2D7FF9] transition-all"
+                className="rounded-xl bg-[#0D1B2A] px-5 py-2.5 text-sm font-black text-white hover:bg-[#2D7FF9] transition-all cursor-pointer"
               >
                 Save & Close
               </button>

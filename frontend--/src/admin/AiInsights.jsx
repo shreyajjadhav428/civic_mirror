@@ -92,44 +92,46 @@ export default function AiInsights() {
 
   return (
     <div className="space-y-8 text-[#0D1B2A] font-['Inter',sans-serif]">
-      {/* 1. HEADER BANNER (100% Identical Layout & Styling to Complaint Clusters) */}
+      {/* 1. HEADER BANNER MATCHING DASHBOARD DESIGN SYSTEM */}
       <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs relative overflow-hidden">
-        {/* Top Accent bar */}
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#2D7FF9]" />
 
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="flex items-center gap-2 text-sm font-black tracking-widest text-[#2D7FF9] uppercase mb-2">
-              <span className="h-[3px] w-6 bg-[#2D7FF9] rounded-full inline-block" />
               EXPLAINABLE MUNICIPAL INTELLIGENCE
             </p>
-            <h1 className="text-4xl sm:text-5xl font-black text-[#0D1B2A] tracking-tight flex items-center gap-3">
+            <h1 className="text-4xl sm:text-5xl font-black text-[#0D1B2A] tracking-tight">
               AI <span className="text-[#2D7FF9]">Insights</span>
-              {isAnalyzing && <span className="text-xs font-semibold text-slate-400 animate-pulse">(Running AI correlation...)</span>}
+              {isAnalyzing && (
+                <span className="text-sm font-semibold text-[#2D7FF9] animate-pulse ml-3">
+                  (Running AI correlation...)
+                </span>
+              )}
             </h1>
-            <p className="mt-2 text-lg font-semibold text-[#59687A] max-w-2xl">
-              Transform complaint patterns into <strong>explainable administrative intelligence</strong> and root cause analysis.
+            <p className="mt-2 text-base font-semibold text-[#59687A]">
+              Transform complaint patterns into explainable administrative intelligence and root cause analysis.
             </p>
           </div>
 
-          {/* Stat Box */}
-          <div className="flex flex-col sm:items-end gap-3 shrink-0">
-            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-5 py-3 text-base font-semibold">
-              <span className="text-[#657386] block text-xs font-black uppercase tracking-wider">Reasoning Engine</span>
+          <div className="flex items-center gap-3">
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-5 py-3.5 text-base font-semibold">
+              <span className="text-[#657386] block text-sm font-black uppercase tracking-wider">Reasoning Engine</span>
               <span className="text-[#0D1B2A] font-black text-xl">{clustersList.length} Correlated Clusters</span>
             </div>
           </div>
         </div>
 
-        {/* 2. CLUSTER SELECTOR & SEARCH/TRIGGER BAR INSIDE BANNER */}
-        <div className="mt-7 pt-6 border-t border-slate-100 flex flex-col gap-3.5 sm:flex-row sm:items-center justify-between">
-          {/* Target Cluster Dropdown */}
-          <div className="flex-1 max-w-xl flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-2.5 text-sm font-bold">
-            <span className="text-slate-500 whitespace-nowrap">Target Cluster:</span>
+        {/* 2. TARGET CLUSTER SELECTOR & ACTION BAR */}
+        <div className="mt-6 pt-5 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex-1 max-w-xl flex items-center gap-3">
+            <label className="text-sm font-black uppercase tracking-wider text-slate-500 whitespace-nowrap">
+              Target Cluster:
+            </label>
             <select
               value={selectedClusterId}
               onChange={(e) => setSelectedClusterId(e.target.value)}
-              className="w-full bg-transparent text-[#0D1B2A] font-black outline-none cursor-pointer text-sm"
+              className="h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-sm font-bold text-[#0D1B2A] focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all cursor-pointer"
             >
               {clustersList.map((cluster) => (
                 <option key={cluster.id} value={cluster.id}>
@@ -139,186 +141,201 @@ export default function AiInsights() {
             </select>
           </div>
 
-          {/* Analyze Trigger Button */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleAnalyze}
-              disabled={isAnalyzing}
-              className="rounded-xl bg-[#0D1B2A] px-6 py-3 text-xs font-black text-white hover:bg-[#2D7FF9] transition-all shadow-xs disabled:opacity-50 cursor-pointer flex items-center gap-2"
-            >
-              {isAnalyzing ? (
-                <>
-                  <span className="h-3.5 w-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                  <span>ANALYZING WITH AI...</span>
-                </>
-              ) : (
-                <>
-                  <span>✦ ANALYZE WITH CIVICMIRROR AI</span>
-                </>
-              )}
-            </button>
-          </div>
+          <button
+            onClick={handleAnalyze}
+            disabled={isAnalyzing}
+            className="h-[42px] rounded-xl bg-[#2D7FF9] px-6 text-sm font-black text-white hover:bg-[#1E4FA3] active:scale-95 transition-all shadow-xs disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 shrink-0"
+          >
+            {isAnalyzing ? (
+              <>
+                <span className="h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                <span>ANALYZING WITH AI...</span>
+              </>
+            ) : (
+              <>
+                <span>✦ ANALYZE WITH CIVICMIRROR AI</span>
+              </>
+            )}
+          </button>
         </div>
 
         {analyzedSuccess && (
-          <div className="mt-4 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-2.5 text-xs font-black text-[#008D78] flex items-center gap-2">
+          <div className="mt-4 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-2.5 text-sm font-black text-[#008D78] flex items-center gap-2">
             <span>✓</span>
             <span>AI Root Cause Analysis updated successfully for {activeCluster.name}.</span>
           </div>
         )}
       </div>
 
-      {/* SUB-SECTION HEADER LINE (Matching Complaint Clusters layout) */}
-      <div className="flex items-center justify-between pt-1">
-        <span className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400">
-          <span className="h-[2px] w-4 bg-slate-300 rounded-full" />
-          ROOT CAUSE & EVIDENCE CORRELATION
-        </span>
-        <span className="text-xs font-bold text-slate-400">
+      {/* 3. SUB-SECTION DIVIDER HEADER */}
+      <div className="flex items-center justify-between pt-1 border-b border-slate-200/60 pb-3">
+        <h2 className="text-sm font-black uppercase tracking-widest text-[#2D7FF9]">
+          — ROOT CAUSE & EVIDENCE CORRELATION
+        </h2>
+        <span className="text-sm font-bold text-slate-400">
           Endpoint: POST /api/admin/insights
         </span>
       </div>
 
-      {/* 3. AI ANALYSIS & ROOT CAUSE DISPLAY GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column: Root Cause & Why Breakdown & Recommendation */}
-        <div className="lg:col-span-7 space-y-6">
-          {/* CIVICMIRROR AI ANALYSIS CARD */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <span className="text-sm font-black uppercase tracking-wider text-[#2D7FF9]">
+      {/* 4. ROW-WISE CONTAINER LAYOUT */}
+      <div className="space-y-6">
+        {/* ROW 1: CIVICMIRROR AI ROOT CAUSE & WHY BREAKDOWN */}
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs space-y-6">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div>
+              <h3 className="text-sm font-black uppercase tracking-wider text-[#2D7FF9]">
                 CIVICMIRROR AI ANALYSIS
-              </span>
-              <span className="text-xs font-extrabold text-slate-500">
-                Cluster Ref: {activeCluster.id}
-              </span>
-            </div>
-
-            {/* Root Cause Box */}
-            <div className="rounded-xl bg-slate-50/80 p-4.5 border border-slate-200 space-y-1.5">
-              <span className="text-xs font-black uppercase tracking-wider text-slate-400 block">
-                ROOT CAUSE IDENTIFIED
-              </span>
-              <p className="text-base font-extrabold text-[#0D1B2A] leading-relaxed">
-                "{activeCluster.rootCause}"
+              </h3>
+              <p className="text-sm font-bold text-slate-500 mt-0.5">
+                Cluster Ref: {activeCluster.id} • {activeCluster.department}
               </p>
             </div>
+            <span className="rounded-lg bg-blue-50 border border-blue-200 px-3 py-1 text-sm font-black text-[#2D7FF9] uppercase tracking-wider">
+              HIGH PRIORITY CORRELATION
+            </span>
+          </div>
 
-            {/* Why Is This Cluster Important? Breakdown */}
-            <div className="space-y-3 pt-1">
-              <span className="text-sm font-black uppercase tracking-wider text-[#0D1B2A] block">
-                WHY IS THIS CLUSTER IMPORTANT?
-              </span>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            {/* Left Box: Root Cause Identified */}
+            <div className="lg:col-span-5 rounded-2xl bg-slate-50/80 p-5 border border-slate-200 flex flex-col justify-between space-y-3">
+              <div>
+                <span className="text-sm font-black uppercase tracking-wider text-slate-500 block mb-2">
+                  ROOT CAUSE IDENTIFIED
+                </span>
+                <p className="text-base font-black text-[#0D1B2A] leading-relaxed">
+                  "{activeCluster.rootCause}"
+                </p>
+              </div>
+              <div className="pt-3 border-t border-slate-200/60 flex items-center justify-between text-sm font-bold text-slate-500">
+                <span>Location Pincode</span>
+                <span className="font-black text-[#0D1B2A]">{activeCluster.pincode}</span>
+              </div>
+            </div>
 
-              <div className="rounded-xl bg-slate-50/80 p-4 border border-slate-200 space-y-2.5 text-sm font-bold">
-                <div className="flex items-center gap-2 text-[#0D1B2A]">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#0D1B2A] text-xs font-black text-white">
-                    #
-                  </span>
-                  <span className="font-extrabold text-base">{activeCluster.complaintCount} Citizen Complaints Aggregated</span>
-                </div>
+            {/* Right Box: Why Is This Cluster Important? */}
+            <div className="lg:col-span-7 space-y-3 flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-black uppercase tracking-wider text-[#0D1B2A]">
+                  WHY IS THIS CLUSTER IMPORTANT?
+                </span>
+                <span className="rounded-lg bg-[#0D1B2A] text-white px-3 py-1 text-sm font-black">
+                  {activeCluster.complaintCount} Citizen Complaints Aggregated
+                </span>
+              </div>
 
+              <div className="rounded-2xl bg-white border border-slate-200/90 divide-y divide-slate-100 overflow-hidden shadow-xs">
                 {activeCluster.whyFactors.map((factor, idx) => (
-                  <div key={idx} className="flex items-start gap-2.5 text-slate-600 pl-1 pt-2 border-t border-slate-200/60">
-                    <span className="text-[#2D7FF9] font-black text-base leading-none">+</span>
-                    <span className="font-semibold text-slate-700 text-[13px]">{factor}</span>
+                  <div key={idx} className="p-3.5 flex items-start gap-3 text-sm font-semibold text-slate-700">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-md bg-[#2D7FF9]/10 text-[#2D7FF9] text-sm font-black shrink-0">
+                      {idx + 1}
+                    </span>
+                    <span className="leading-snug">{factor}</span>
                   </div>
                 ))}
               </div>
             </div>
           </div>
+        </div>
 
-          {/* AI RECOMMENDATION CARD */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
-            <div className="border-b border-slate-100 pb-3">
-              <span className="text-xs font-black uppercase tracking-wider text-[#008D78]">
-                AI RECOMMENDATION
-              </span>
-              <h3 className="text-xl font-black text-[#0D1B2A] mt-0.5">
-                {activeCluster.recommendation}
-              </h3>
+        {/* ROW 2: AI RECOMMENDATION & ADMINISTRATIVE ACTION */}
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+            <div className="lg:col-span-8 space-y-4">
+              <div>
+                <span className="text-sm font-black uppercase tracking-wider text-[#008D78] block mb-1">
+                  AI RECOMMENDATION
+                </span>
+                <h3 className="text-xl font-black text-[#0D1B2A]">
+                  {activeCluster.recommendation}
+                </h3>
+              </div>
+
+              <div className="rounded-xl bg-[#008D78]/5 p-4 border border-[#008D78]/20 space-y-1">
+                <span className="text-sm font-black uppercase tracking-wider text-[#008D78] block">
+                  ADMINISTRATIVE REASONING
+                </span>
+                <p className="text-sm font-bold text-[#0D1B2A] leading-relaxed">
+                  "{activeCluster.reasoning}"
+                </p>
+              </div>
             </div>
 
-            {/* Reasoning Box */}
-            <div className="rounded-xl bg-teal-50/60 p-4 border border-teal-200/80 space-y-1">
-              <span className="text-xs font-black uppercase tracking-wider text-[#008D78] block">
-                ADMINISTRATIVE REASONING
-              </span>
-              <p className="text-sm font-bold text-[#0D1B2A] leading-relaxed">
-                "{activeCluster.reasoning}"
-              </p>
-            </div>
-
-            <div className="pt-2 flex justify-end">
+            <div className="lg:col-span-4 flex items-center lg:justify-end">
               <button
                 onClick={() => alert(`Work Order dispatched for ${activeCluster.name}`)}
-                className="rounded-xl bg-[#008D78] px-5 py-2.5 text-sm font-black text-white hover:bg-[#0D1B2A] transition-all shadow-xs cursor-pointer"
+                className="h-[46px] w-full sm:w-auto rounded-xl bg-[#008D78] px-7 text-sm font-black text-white hover:bg-[#0D1B2A] active:scale-95 transition-all shadow-xs cursor-pointer flex items-center justify-center gap-2"
               >
-                Approve & Dispatch Work Order →
+                <span>Approve & Dispatch Work Order</span>
+                <span>→</span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* Right Column: SUPPORTING EVIDENCE WITH AI INSIGHTS */}
-        <div className="lg:col-span-5">
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4 sticky top-6">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div>
-                <h3 className="text-sm font-black uppercase tracking-wider text-[#0D1B2A]">
-                  SUPPORTING EVIDENCE
-                </h3>
-                <p className="text-xs font-semibold text-slate-500">
-                  Click any document to inspect vector-indexed source records.
-                </p>
-              </div>
-              <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-black text-slate-700">
-                {activeCluster.evidence.length} Files
-              </span>
+        {/* ROW 3: SUPPORTING EVIDENCE (GRID OF CARDS ROW-WISE) */}
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs space-y-5">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div>
+              <h3 className="text-base font-black uppercase tracking-wider text-[#0D1B2A]">
+                SUPPORTING EVIDENCE & SOURCE RECORDS
+              </h3>
+              <p className="text-sm font-medium text-slate-500 mt-0.5">
+                Inspect vector-indexed source records correlated with this cluster.
+              </p>
             </div>
+            <span className="rounded-lg bg-slate-100 px-3 py-1 text-sm font-black text-slate-700">
+              {activeCluster.evidence.length} Vector Index Files
+            </span>
+          </div>
 
-            {/* Clickable Evidence List */}
-            <div className="space-y-2.5">
-              {activeCluster.evidence.map((doc) => (
-                <button
-                  key={doc.id}
-                  onClick={() => setSelectedEvidenceDoc(doc)}
-                  className="w-full text-left rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 hover:border-[#2D7FF9] hover:bg-white transition-all group cursor-pointer space-y-1.5 shadow-2xs"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-base">📄</span>
-                      <span className="text-sm font-black text-[#0D1B2A] group-hover:text-[#2D7FF9] transition-colors">
-                        {doc.name}
-                      </span>
-                    </div>
-                    <span className="rounded-md bg-white border border-slate-200 px-2 py-0.5 text-xs font-black text-slate-600">
+          {/* Row-wise Horizontal Grid of Evidence Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {activeCluster.evidence.map((doc) => (
+              <button
+                key={doc.id}
+                onClick={() => setSelectedEvidenceDoc(doc)}
+                className="text-left rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 hover:border-[#2D7FF9] hover:bg-white transition-all group cursor-pointer flex flex-col justify-between space-y-3 shadow-2xs"
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-[#2D7FF9] text-sm font-black">
+                      📄
+                    </span>
+                    <span className="rounded-md bg-white border border-slate-200 px-2 py-0.5 text-sm font-black text-slate-600">
                       {doc.type}
                     </span>
                   </div>
-                  <p className="text-xs font-medium text-slate-500 line-clamp-2 pl-6">
+
+                  <h4 className="text-sm font-black text-[#0D1B2A] group-hover:text-[#2D7FF9] transition-colors leading-snug">
+                    {doc.name}
+                  </h4>
+
+                  <p className="text-sm font-medium text-slate-600 line-clamp-3 leading-snug">
                     {doc.summary}
                   </p>
-                  <div className="pl-6 pt-1 flex items-center justify-between text-[11px] font-bold text-slate-400 border-t border-slate-100">
-                    <span>{doc.records} Extracted Records</span>
-                    <span className="text-[#2D7FF9] group-hover:underline">Inspect Document →</span>
-                  </div>
-                </button>
-              ))}
-            </div>
+                </div>
+
+                <div className="pt-2 flex items-center justify-between text-sm font-bold text-slate-400 border-t border-slate-100">
+                  <span>{doc.records} Records</span>
+                  <span className="text-[#2D7FF9] font-black group-hover:underline">Inspect →</span>
+                </div>
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* 4. EVIDENCE DOCUMENT INSPECTION MODAL */}
+      {/* 5. EVIDENCE DOCUMENT INSPECTION MODAL */}
       {selectedEvidenceDoc && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 p-4 backdrop-blur-sm">
-          <div className="modal-popup-container w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl space-y-5">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl space-y-5">
             <div className="flex items-start justify-between border-b border-slate-100 pb-4">
               <div className="flex items-center gap-3">
-                <span className="text-3xl">📄</span>
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-[#2D7FF9] text-lg font-black">
+                  📄
+                </span>
                 <div>
-                  <span className="text-xs font-black text-[#2D7FF9] uppercase tracking-wider block mb-0.5">
+                  <span className="text-sm font-black text-[#2D7FF9] uppercase tracking-wider block mb-0.5">
                     SUPPORTING EVIDENCE INSPECTION ({selectedEvidenceDoc.id})
                   </span>
                   <h3 className="text-lg font-black text-[#0D1B2A]">{selectedEvidenceDoc.name}</h3>
@@ -326,42 +343,42 @@ export default function AiInsights() {
               </div>
               <button
                 onClick={() => setSelectedEvidenceDoc(null)}
-                className="rounded-xl border border-slate-200 p-2 text-slate-400 hover:bg-slate-50 hover:text-slate-800 text-lg font-bold"
+                className="rounded-xl border border-slate-200 p-2 text-slate-400 hover:bg-slate-50 hover:text-slate-800 text-sm font-bold cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            <div className="space-y-3 text-xs">
-              <div className="rounded-xl bg-slate-50 p-4 border border-slate-100 space-y-1">
-                <span className="text-[11px] font-black text-slate-400 uppercase block">Document Summary</span>
-                <p className="font-bold text-[#0D1B2A] leading-relaxed">
+            <div className="space-y-3.5 text-sm">
+              <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100 space-y-1">
+                <span className="text-sm font-black text-slate-400 uppercase block">Document Summary</span>
+                <p className="font-semibold text-[#0D1B2A] leading-relaxed">
                   "{selectedEvidenceDoc.summary}"
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-slate-400 block font-bold uppercase text-[10px] mb-0.5">File Format</span>
+                <div className="rounded-xl bg-slate-50 p-3 border border-slate-100">
+                  <span className="text-slate-400 block font-bold uppercase text-sm mb-0.5">File Format</span>
                   <span className="text-sm font-black text-[#0D1B2A]">{selectedEvidenceDoc.type}</span>
                 </div>
 
-                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-slate-400 block font-bold uppercase text-[10px] mb-0.5">Extracted Vector Records</span>
+                <div className="rounded-xl bg-slate-50 p-3 border border-slate-100">
+                  <span className="text-slate-400 block font-bold uppercase text-sm mb-0.5">Extracted Vector Records</span>
                   <span className="text-sm font-black text-[#2D7FF9]">{selectedEvidenceDoc.records} records</span>
                 </div>
               </div>
 
-              <div className="rounded-xl bg-teal-50 border border-teal-200 p-3.5 text-xs font-black text-[#008D78] flex items-center justify-between">
+              <div className="rounded-xl bg-teal-50 border border-teal-200 p-3.5 text-sm font-black text-[#008D78] flex items-center justify-between">
                 <span>Knowledge Graph Status</span>
                 <span>Verified Source ✓</span>
               </div>
             </div>
 
-            <div className="flex justify-end border-t border-slate-100 pt-4">
+            <div className="flex justify-end border-t border-slate-100 pt-3">
               <button
                 onClick={() => setSelectedEvidenceDoc(null)}
-                className="rounded-xl bg-[#0D1B2A] px-5 py-2.5 text-xs font-black text-white hover:bg-[#2D7FF9] transition-all cursor-pointer"
+                className="h-[42px] rounded-xl bg-[#0D1B2A] px-5 text-sm font-black text-white hover:bg-[#2D7FF9] transition-all cursor-pointer"
               >
                 Close Inspection Drawer
               </button>
