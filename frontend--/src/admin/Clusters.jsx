@@ -173,14 +173,6 @@ export default function Clusters({ onNavigate }) {
             <p className="mt-2 text-lg font-semibold text-[#59687A] max-w-2xl">
               Turn thousands of individual complaints into <strong>meaningful groups</strong>. Identify geographic concentrations of similar civic problems.
             </p>
-
-            {/* Accent Line Dashes */}
-            <div className="flex items-center gap-2 mt-4">
-              <span className="h-1.5 w-7 rounded-full bg-[#2D7FF9]" />
-              <span className="h-1.5 w-7 rounded-full bg-[#00A68E]" />
-              <span className="h-1.5 w-7 rounded-full bg-[#FFC107]" />
-              <span className="h-1.5 w-7 rounded-full bg-[#FF5252]" />
-            </div>
           </div>
 
           {/* Stat Box */}

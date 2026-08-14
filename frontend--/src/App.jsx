@@ -27,7 +27,7 @@ export default function App() {
 
       <Route path="/login" element={<Login />} />
       <Route path="/citizen/*" element={<CitizenDashboard />} />
-      <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/admin/*" element={<AdminDashboard />} />
     </Routes>
   );
 }

@@ -94,7 +94,7 @@ export default function Queries({ onNavigate }) {
       citizen: "Rajesh Sharma",
       date: "14 Aug 2026",
       department: "Engineering & Road Ops",
-      aiStatus: "Verified",
+      aiStatus: "Resolved",
       confidence: "98%",
       pincode: "400012",
       summary: "Inquiry cross-referenced against PRJ-01 active work order. AI verified contractor status is on schedule."
@@ -105,7 +105,7 @@ export default function Queries({ onNavigate }) {
       citizen: "Priya Nair",
       date: "14 Aug 2026",
       department: "Water Supply",
-      aiStatus: "Verified",
+      aiStatus: "Resolved",
       confidence: "95%",
       pincode: "400009",
       summary: "Matched with pipeline maintenance ticket #WM-204. Supply restoration estimated within 4 hours."
@@ -192,7 +192,7 @@ export default function Queries({ onNavigate }) {
       (item.citizen && item.citizen.toLowerCase().includes(searchQuery.toLowerCase()));
 
     if (activeTab === "all") return matchesSearch;
-    if (activeTab === "verified") return matchesSearch && item.aiStatus === "Verified";
+    if (activeTab === "resolved" || activeTab === "verified") return matchesSearch && (item.aiStatus === "Resolved" || item.aiStatus === "Verified");
     if (activeTab === "pending") return matchesSearch && (item.aiStatus === "Pending Review" || item.aiStatus === "Pending");
     if (activeTab === "flagged") return matchesSearch && item.aiStatus === "Flagged";
     return matchesSearch;
@@ -217,13 +217,6 @@ export default function Queries({ onNavigate }) {
             <p className="mt-2 text-lg font-semibold text-[#59687A]">
               Real-time audit of citizen inquiries and vector-clustered topic trends.
             </p>
-
-            <div className="flex items-center gap-2 mt-4">
-              <span className="h-1.5 w-7 rounded-full bg-[#2D7FF9]" />
-              <span className="h-1.5 w-7 rounded-full bg-[#00A68E]" />
-              <span className="h-1.5 w-7 rounded-full bg-[#FFC107]" />
-              <span className="h-1.5 w-7 rounded-full bg-[#FF5252]" />
-            </div>
           </div>
 
           <div className="flex items-center gap-3">
@@ -235,76 +228,7 @@ export default function Queries({ onNavigate }) {
         </div>
       </div>
 
-      {/* 2. ADMINISTRATIVE AI INSIGHT */}
-      <div className="space-y-3.5">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="flex items-center gap-2 text-sm font-black tracking-widest text-slate-400 uppercase mb-1">
-              <span className="h-[3px] w-6 bg-slate-300 rounded-full inline-block" />
-              AGGREGATED BREAKDOWN
-            </p>
-            <h3 className="text-2xl font-black text-[#0D1B2A] tracking-tight">
-              Administrative AI Insight
-            </h3>
-          </div>
-        </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-[#0D1B2A] p-7 text-white shadow-md space-y-4">
-          <div className="border-l-4 border-[#2D7FF9] pl-4 py-1">
-            <p className="text-lg font-bold text-slate-100 leading-relaxed">
-              "{aiInsight.summaryText}"
-            </p>
-          </div>
-
-          <div className="pt-2 border-t border-slate-800">
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 block mb-3">
-              Supporting Information & Metrics:
-            </span>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 font-mono text-xs">
-              <div className="rounded-xl bg-white/5 p-4 border border-white/10">
-                <span className="block text-2xl font-bold text-[#2D7FF9]">
-                  {aiInsight.totalRelatedQueries || inquiries.length}
-                </span>
-                <span className="text-slate-300 font-sans text-sm">Total Logged Inquiries</span>
-              </div>
-
-              <div className="rounded-xl bg-white/5 p-4 border border-white/10">
-                <span className="block text-2xl font-bold text-[#00A68E]">
-                  {aiInsight.projectRelationPercent || 68}%
-                </span>
-                <span className="text-slate-300 font-sans text-sm">Related to Active Projects</span>
-              </div>
-
-              <div className="rounded-xl bg-white/5 p-4 border border-white/10">
-                <span className="block text-xs font-black uppercase tracking-wider text-[#FFC107] mb-1 font-sans">
-                  Most Affected Areas:
-                </span>
-                <ul className="space-y-0.5 font-sans text-xs font-semibold text-slate-300">
-                  {aiInsight.mostAffectedLocations && aiInsight.mostAffectedLocations.length > 0 ? (
-                    aiInsight.mostAffectedLocations.map((loc, i) => <li key={i}>• {loc}</li>)
-                  ) : (
-                    <li>• Sector 12</li>
-                  )}
-                </ul>
-              </div>
-
-              <div className="rounded-xl bg-white/5 p-4 border border-white/10">
-                <span className="block text-xs font-black uppercase tracking-wider text-[#8DBBFF] mb-1 font-sans">
-                  Primary Departments:
-                </span>
-                <ul className="space-y-0.5 font-sans text-xs font-semibold text-slate-300">
-                  {aiInsight.primaryDepartments && aiInsight.primaryDepartments.length > 0 ? (
-                    aiInsight.primaryDepartments.map((dept, i) => <li key={i}>• {dept}</li>)
-                  ) : (
-                    <li>• Engineering & Ops</li>
-                  )}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* 3. MOST COMMON CITIZEN QUERIES */}
       <div className="space-y-3.5">
@@ -348,18 +272,6 @@ export default function Queries({ onNavigate }) {
                   </h4>
                 </div>
 
-                <div className="mt-5 pt-4 border-t border-slate-100">
-                  <div className="flex items-center justify-between text-sm text-slate-500 font-extrabold mb-2">
-                    <span>Frequency</span>
-                    <span className="font-mono font-black text-[#0D1B2A] text-base">{percentage}%</span>
-                  </div>
-                  <div className="h-2.5 w-full rounded-full bg-slate-100 overflow-hidden border border-slate-200/60 p-0.5">
-                    <div
-                      style={{ width: `${percentage}%` }}
-                      className={`h-full rounded-full ${query.barColor || "bg-[#2D7FF9]"}`}
-                    />
-                  </div>
-                </div>
               </div>
             );
           })}
@@ -390,12 +302,12 @@ export default function Queries({ onNavigate }) {
               All ({inquiries.length})
             </button>
             <button
-              onClick={() => setActiveTab("verified")}
+              onClick={() => setActiveTab("resolved")}
               className={`rounded-lg px-4 py-2 transition ${
-                activeTab === "verified" ? "bg-[#00A68E] text-white" : "text-slate-600 hover:text-slate-900"
+                activeTab === "resolved" || activeTab === "verified" ? "bg-[#00A68E] text-white" : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              Verified ({aiInsight.verifiedCount ?? 0})
+              Resolved ({aiInsight.verifiedCount ?? 0})
             </button>
             <button
               onClick={() => setActiveTab("pending")}
@@ -436,7 +348,7 @@ export default function Queries({ onNavigate }) {
               </div>
             ) : (
               <table className="w-full text-left text-base">
-                <thead className="bg-slate-50/80 text-xs font-black text-slate-500 uppercase border-b border-slate-200">
+                <thead className="bg-slate-50/80 text-[13px] font-black text-slate-500 uppercase border-b border-slate-200">
                   <tr>
                     <th className="px-5 py-4">Inquiry ID</th>
                     <th className="px-5 py-4">Topic & Citizen</th>
@@ -448,34 +360,34 @@ export default function Queries({ onNavigate }) {
                 <tbody className="divide-y divide-slate-100 font-semibold">
                   {filteredInquiries.map((item) => (
                     <tr key={item.id} className="hover:bg-slate-50/70 transition">
-                      <td className="px-5 py-4.5 font-mono font-black text-[#2D7FF9]">
+                      <td className="px-5 py-4.5 font-mono font-black text-[#2D7FF9] text-[15px]">
                         {item.id}
                       </td>
                       <td className="px-5 py-4.5">
-                        <span className="font-black text-[#0D1B2A] block text-base">{item.topic}</span>
-                        <span className="text-slate-400 text-xs font-bold">{item.citizen || "Citizen"} • {item.date || "14 Aug 2026"}</span>
+                        <span className="font-black text-[#0D1B2A] block text-[17px] leading-snug">{item.topic}</span>
+                        <span className="text-slate-400 text-[13px] font-bold">{item.citizen || "Citizen"} • {item.date || "14 Aug 2026"}</span>
                       </td>
-                      <td className="px-5 py-4.5 text-slate-700 font-extrabold text-sm">
+                      <td className="px-5 py-4.5 text-slate-700 font-extrabold text-[15px]">
                         {item.department}
                       </td>
                       <td className="px-5 py-4.5">
-                        <span className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-black ${
-                          item.aiStatus === "Verified"
+                        <span className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-[13px] font-black ${
+                          item.aiStatus === "Resolved" || item.aiStatus === "Verified"
                             ? "bg-teal-50 text-[#008D78] border border-teal-200"
                             : item.aiStatus === "Pending Review" || item.aiStatus === "Pending"
                             ? "bg-amber-50 text-[#B48000] border border-amber-200"
                             : "bg-rose-50 text-rose-800 border border-rose-200"
                         }`}>
                           <span className={`h-2 w-2 rounded-full ${
-                            item.aiStatus === "Verified" ? "bg-[#008D78]" : item.aiStatus === "Pending Review" || item.aiStatus === "Pending" ? "bg-[#FFC107]" : "bg-rose-600"
+                            item.aiStatus === "Resolved" || item.aiStatus === "Verified" ? "bg-[#008D78]" : item.aiStatus === "Pending Review" || item.aiStatus === "Pending" ? "bg-[#FFC107]" : "bg-rose-600"
                           }`} />
-                          {item.aiStatus} ({item.confidence || "95%"})
+                          {item.aiStatus === "Verified" ? "Resolved" : item.aiStatus}
                         </span>
                       </td>
                       <td className="px-5 py-4.5 text-right">
                         <button
                           onClick={() => setSelectedInquiry(item)}
-                          className="rounded-xl border border-slate-200 px-4 py-2 text-xs font-black text-[#0D1B2A] hover:bg-[#2D7FF9] hover:text-white hover:border-[#2D7FF9] transition shadow-2xs"
+                          className="rounded-xl border border-slate-200 px-4.5 py-2 text-[13px] font-black text-[#0D1B2A] hover:bg-[#2D7FF9] hover:text-white hover:border-[#2D7FF9] transition shadow-2xs"
                         >
                           Inspect →
                         </button>
@@ -573,7 +485,7 @@ export default function Queries({ onNavigate }) {
                 </div>
                 <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
                   <span className="text-xs font-black text-slate-400 uppercase block mb-1">AI Verification Status</span>
-                  <span className="font-extrabold text-[#00A68E]">{selectedInquiry.aiStatus} ({selectedInquiry.confidence || "95%"})</span>
+                  <span className="font-extrabold text-[#00A68E]">{selectedInquiry.aiStatus === "Verified" ? "Resolved" : selectedInquiry.aiStatus}</span>
                 </div>
               </div>
             </div>

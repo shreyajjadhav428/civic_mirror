@@ -4,7 +4,9 @@ export default function Data() {
   // Filter & Search States
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFileType, setSelectedFileType] = useState("All");
-  const [selectedStatus, setSelectedStatus] = useState("All");
+
+  // Pagination / Visible items limit (6 per page)
+  const [visibleCount, setVisibleCount] = useState(6);
 
   // Modal State for Inspecting Document
   const [selectedFileModal, setSelectedFileModal] = useState(null);
@@ -26,8 +28,6 @@ export default function Data() {
       id: "DOC-01",
       filename: "Budget_2026.pdf",
       updatedDate: "12 Aug 2026",
-      status: "Indexed",
-      statusStyle: "bg-emerald-50 text-emerald-700 border-emerald-200",
       extractedRecords: 428,
       departments: ["Engineering", "Electrical", "Water"],
       relatedProjects: 17,
@@ -42,8 +42,6 @@ export default function Data() {
       id: "DOC-02",
       filename: "RoadProjects.csv",
       updatedDate: "12 Aug 2026",
-      status: "Indexed",
-      statusStyle: "bg-emerald-50 text-emerald-700 border-emerald-200",
       extractedRecords: 194,
       departments: ["Engineering & Road Ops"],
       relatedProjects: 8,
@@ -58,8 +56,6 @@ export default function Data() {
       id: "DOC-03",
       filename: "WorkOrders.xlsx",
       updatedDate: "11 Aug 2026",
-      status: "Indexed",
-      statusStyle: "bg-emerald-50 text-emerald-700 border-emerald-200",
       extractedRecords: 312,
       departments: ["Electrical Works", "Water Supply"],
       relatedProjects: 12,
@@ -74,8 +70,6 @@ export default function Data() {
       id: "DOC-04",
       filename: "Zoning_Ordinance_2026.pdf",
       updatedDate: "10 Aug 2026",
-      status: "Pending",
-      statusStyle: "bg-amber-50 text-amber-700 border-amber-200",
       extractedRecords: 156,
       departments: ["Urban Planning", "Zoning Compliance"],
       relatedProjects: 6,
@@ -90,8 +84,6 @@ export default function Data() {
       id: "DOC-05",
       filename: "Infrastructure_Grants.csv",
       updatedDate: "08 Aug 2026",
-      status: "Indexed",
-      statusStyle: "bg-emerald-50 text-emerald-700 border-emerald-200",
       extractedRecords: 89,
       departments: ["Finance", "Public Works"],
       relatedProjects: 4,
@@ -106,8 +98,6 @@ export default function Data() {
       id: "DOC-06",
       filename: "Environmental_Report_Q2.xlsx",
       updatedDate: "05 Aug 2026",
-      status: "Processing",
-      statusStyle: "bg-indigo-50 text-indigo-700 border-indigo-200",
       extractedRecords: 74,
       departments: ["Environmental Protection"],
       relatedProjects: 3,
@@ -117,42 +107,50 @@ export default function Data() {
       topAccent: "bg-[#6366F1]",
       btnHover: "hover:bg-[#6366F1] hover:border-[#6366F1] hover:text-white",
       contributionSummary: "Quarterly groundwater quality, noise density, and air index metrics currently undergoing vector embedding."
+    },
+    {
+      id: "DOC-07",
+      filename: "Traffic_Flow_Audit.pdf",
+      updatedDate: "03 Aug 2026",
+      extractedRecords: 215,
+      departments: ["Traffic Operations", "Urban Mobility"],
+      relatedProjects: 5,
+      size: "5.1 MB",
+      fileType: "PDF",
+      icon: "📄",
+      topAccent: "bg-[#2D7FF9]",
+      btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+      contributionSummary: "Automated vehicle counts and bottleneck congestion index logs across major municipal intersections."
+    },
+    {
+      id: "DOC-08",
+      filename: "Public_Health_Sanitation.csv",
+      updatedDate: "01 Aug 2026",
+      extractedRecords: 142,
+      departments: ["Public Health", "Sanitation"],
+      relatedProjects: 7,
+      size: "1.4 MB",
+      fileType: "CSV",
+      icon: "📊",
+      topAccent: "bg-[#00A68E]",
+      btnHover: "hover:bg-[#00A68E] hover:border-[#00A68E] hover:text-white",
+      contributionSummary: "Inspection schedules and commercial waste disposal compliance logs for market areas."
+    },
+    {
+      id: "DOC-09",
+      filename: "Smart_Grid_Telecom_Logs.xlsx",
+      updatedDate: "28 Jul 2026",
+      extractedRecords: 380,
+      departments: ["Electrical Works", "Smart City Tech"],
+      relatedProjects: 11,
+      size: "4.8 MB",
+      fileType: "XLSX",
+      icon: "📋",
+      topAccent: "bg-[#FFC107]",
+      btnHover: "hover:bg-[#FFC107] hover:border-[#FFC107] hover:text-[#0D1B2A]",
+      contributionSummary: "IoT sensor uptime telemetry and fiber optic connectivity logs for municipal smart poles."
     }
   ]);
-
-  // Helper for dynamic status pill styles
-  const getStatusStyle = (status) => {
-    switch (status) {
-      case "Indexed":
-        return "bg-emerald-50 text-emerald-700 border-emerald-200 focus:ring-emerald-400";
-      case "Pending":
-        return "bg-amber-50 text-amber-700 border-amber-200 focus:ring-amber-400";
-      case "Processing":
-        return "bg-indigo-50 text-indigo-700 border-indigo-200 focus:ring-indigo-400";
-      default:
-        return "bg-slate-50 text-slate-700 border-slate-200";
-    }
-  };
-
-  // Change Indexing Status Handler
-  const handleStatusChange = (fileId, newStatus) => {
-    const newStyle = getStatusStyle(newStatus);
-    setFilesLibrary((prev) =>
-      prev.map((file) =>
-        file.id === fileId
-          ? { ...file, status: newStatus, statusStyle: newStyle }
-          : file
-      )
-    );
-
-    if (selectedFileModal && selectedFileModal.id === fileId) {
-      setSelectedFileModal((prev) => ({
-        ...prev,
-        status: newStatus,
-        statusStyle: newStyle,
-      }));
-    }
-  };
 
   // Handle File Ingestion
   const handleUploadSimulate = (fileName, fileType) => {
@@ -198,8 +196,6 @@ export default function Data() {
         id: `DOC-0${filesLibrary.length + 1}`,
         filename: fileName || "New_Municipal_Document.pdf",
         updatedDate: "14 Aug 2026",
-        status: "Indexed",
-        statusStyle: "bg-emerald-50 text-emerald-700 border-emerald-200",
         extractedRecords: Math.floor(Math.random() * 200) + 100,
         departments: ["Capital Works", "Infrastructure Ops"],
         relatedProjects: Math.floor(Math.random() * 8) + 2,
@@ -237,11 +233,11 @@ export default function Data() {
     const matchesType =
       selectedFileType === "All" || file.fileType === selectedFileType;
 
-    const matchesStatus =
-      selectedStatus === "All" || file.status === selectedStatus;
-
-    return matchesSearch && matchesType && matchesStatus;
+    return matchesSearch && matchesType;
   });
+
+  // Limit rendering to visibleCount items
+  const visibleFiles = filteredFiles.slice(0, visibleCount);
 
   return (
     <div className="space-y-8 text-[#0D1B2A] font-['Inter',sans-serif]">
@@ -262,14 +258,6 @@ export default function Data() {
             <p className="mt-2 text-lg font-semibold text-[#59687A] max-w-2xl">
               Documents currently available to CivicMirror AI.
             </p>
-
-            {/* Accent Line Dashes */}
-            <div className="flex items-center gap-2 mt-4">
-              <span className="h-1.5 w-7 rounded-full bg-[#2D7FF9]" />
-              <span className="h-1.5 w-7 rounded-full bg-[#00A68E]" />
-              <span className="h-1.5 w-7 rounded-full bg-[#FFC107]" />
-              <span className="h-1.5 w-7 rounded-full bg-[#FF5252]" />
-            </div>
           </div>
 
           {/* Stat Box */}
@@ -357,7 +345,10 @@ export default function Data() {
               type="text"
               placeholder="Search files..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setVisibleCount(6);
+              }}
               className="w-full rounded-xl border border-slate-200 bg-slate-50/60 px-4.5 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-[#2D7FF9] focus:bg-white transition"
             />
           </div>
@@ -370,7 +361,10 @@ export default function Data() {
                 {["All", "PDF", "CSV", "XLSX"].map((type) => (
                   <button
                     key={type}
-                    onClick={() => setSelectedFileType(type)}
+                    onClick={() => {
+                      setSelectedFileType(type);
+                      setVisibleCount(6);
+                    }}
                     className={`rounded-lg px-2.5 py-1 text-xs font-black transition ${
                       selectedFileType === type
                         ? "bg-[#0D1B2A] text-white"
@@ -378,26 +372,6 @@ export default function Data() {
                     }`}
                   >
                     {type}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Status Filter */}
-            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 py-2.5 text-sm font-bold">
-              <span className="text-slate-500">Status:</span>
-              <div className="flex items-center gap-1">
-                {["All", "Indexed", "Pending", "Processing"].map((st) => (
-                  <button
-                    key={st}
-                    onClick={() => setSelectedStatus(st)}
-                    className={`rounded-lg px-2.5 py-1 text-xs font-black transition ${
-                      selectedStatus === st
-                        ? "bg-[#2D7FF9] text-white"
-                        : "text-slate-600 hover:bg-slate-200/60"
-                    }`}
-                  >
-                    {st}
                   </button>
                 ))}
               </div>
@@ -412,16 +386,17 @@ export default function Data() {
             MUNICIPAL DATA LIBRARY
           </p>
           <span className="text-sm font-bold text-slate-500">
-            Showing {filteredFiles.length} of {filesLibrary.length} documents
+            Showing {Math.min(visibleCount, filteredFiles.length)} of {filteredFiles.length} documents
           </span>
         </div>
 
         {/* Files Grid */}
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {filteredFiles.map((file) => (
+          {visibleFiles.map((file) => (
             <div
               key={file.id}
-              className="group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition-all hover:border-[#2D7FF9] hover:shadow-md overflow-hidden"
+              onClick={() => setSelectedFileModal(file)}
+              className="group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition-all hover:border-[#2D7FF9] hover:shadow-md overflow-hidden cursor-pointer"
             >
               {/* Top Accent Bar */}
               <div className={`absolute top-0 left-0 w-14 h-1.5 ${file.topAccent} rounded-b`} />
@@ -445,13 +420,6 @@ export default function Data() {
                 {/* File Details Box */}
                 <div className="mt-4 rounded-xl bg-slate-50/70 p-4 border border-slate-100 space-y-2.5">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="font-bold text-slate-500">Status</span>
-                    <span className={`rounded-md border px-2.5 py-0.5 text-xs font-black uppercase ${file.statusStyle}`}>
-                      {file.status === "Indexed" ? "✓ INDEXED" : file.status === "Pending" ? "⏳ PENDING" : "⚙ PROCESSING"}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between text-sm">
                     <span className="font-bold text-slate-500">Extracted Records</span>
                     <span className="font-mono font-black text-[#0D1B2A]">
                       {file.extractedRecords} records
@@ -464,19 +432,24 @@ export default function Data() {
                   </div>
                 </div>
               </div>
-
-              {/* Action Button */}
-              <div className="mt-5 pt-4 border-t border-slate-100 flex justify-end">
-                <button
-                  onClick={() => setSelectedFileModal(file)}
-                  className={`rounded-xl border border-slate-200 bg-white px-5 py-2 text-sm font-black text-[#0D1B2A] ${file.btnHover} transition-all shadow-2xs`}
-                >
-                  Inspect Knowledge
-                </button>
-              </div>
             </div>
           ))}
         </div>
+
+        {/* SHOW MORE BUTTON IF MORE THAN VISIBLE COUNT */}
+        {visibleCount < filteredFiles.length && (
+          <div className="flex justify-center pt-6">
+            <button
+              onClick={() => setVisibleCount((prev) => prev + 6)}
+              className="group flex items-center gap-2.5 rounded-xl border border-[#2D7FF9] bg-white px-8 py-3.5 text-sm font-extrabold text-[#2D7FF9] hover:bg-[#2D7FF9] hover:text-white transition-all shadow-xs"
+            >
+              <span>Show More Documents</span>
+              <span className="rounded-full bg-[#2D7FF9]/10 px-2.5 py-0.5 text-xs font-mono font-black text-[#2D7FF9] group-hover:bg-white group-hover:text-[#2D7FF9] transition">
+                +{filteredFiles.length - visibleCount}
+              </span>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* 4. DOCUMENT INSPECTOR MODAL */}
@@ -510,17 +483,9 @@ export default function Data() {
                   <span className="font-extrabold text-[#0D1B2A]">{selectedFileModal.updatedDate}</span>
                 </div>
 
-                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100 flex flex-col justify-between">
-                  <span className="text-xs font-black text-slate-400 uppercase block mb-1">Indexing Status</span>
-                  <select
-                    value={selectedFileModal.status}
-                    onChange={(e) => handleStatusChange(selectedFileModal.id, e.target.value)}
-                    className={`w-full rounded-md border px-2 py-1 text-xs font-black uppercase outline-none cursor-pointer transition focus:ring-2 ${selectedFileModal.statusStyle}`}
-                  >
-                    <option value="Indexed">✓ Indexed</option>
-                    <option value="Pending">⏳ Pending</option>
-                    <option value="Processing">⚙ Processing</option>
-                  </select>
+                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                  <span className="text-xs font-black text-slate-400 uppercase block mb-1">File Size</span>
+                  <span className="font-extrabold text-[#0D1B2A]">{selectedFileModal.size}</span>
                 </div>
 
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
