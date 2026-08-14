@@ -160,26 +160,35 @@ export const getPincodeIntelligence = async (req, res) => {
  */
 export const getUniqueQueries = async (req, res) => {
   try {
-    // In a production environment, you might use Gemini to dynamically cluster these.
-    // For this MVP, we will pull recent chat sessions and group them by raw prompt frequency.
-    const { data: sessions, error } = await supabase
-      .from('chat_sessions')
-      .select('prompt');
+    let sessionPrompts = [];
+    try {
+      const { data: sessions } = await supabase
+        .from('chat_sessions')
+        .select('prompt');
+      if (sessions) sessionPrompts = sessions.map(s => s.prompt);
+    } catch (e) {
+      // Ignore if table not present
+    }
 
-    if (error) throw error;
+    const { data: flaggedComplaints } = await supabase
+      .from('complaints')
+      .select('description, pincode, category')
+      .eq('admin_flagged', true);
 
-    // Aggregate exact query matches (or similar phrasing logic)
-    const queryCounts = (sessions || []).reduce((acc, session) => {
-      const q = session.prompt.trim();
+    const complaintPrompts = (flaggedComplaints || []).map(c => `[Pincode ${c.pincode}] ${c.category}: ${c.description}`);
+
+    const allPrompts = [...sessionPrompts, ...complaintPrompts];
+
+    const queryCounts = allPrompts.reduce((acc, raw) => {
+      const q = raw.trim();
       acc[q] = (acc[q] || 0) + 1;
       return acc;
     }, {});
 
-    // Format for the frontend UI: "Why is my road repair delayed? - 84 requests"
     const uniqueQueries = Object.entries(queryCounts)
       .map(([query, count]) => ({ query, count }))
       .sort((a, b) => b.count - a.count)
-      .slice(0, 10); // Top 10 trending queries
+      .slice(0, 10);
 
     return res.status(200).json({ status: 'success', data: uniqueQueries });
   } catch (error) {

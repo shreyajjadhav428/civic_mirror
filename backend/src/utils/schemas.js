@@ -9,6 +9,18 @@ export const explainableDecisionSchema = {
     priority: { type: Type.STRING },
     expectedAction: { type: Type.STRING },
     estimatedTimeline: { type: Type.STRING },
+    isUniqueRequest: { 
+      type: Type.BOOLEAN, 
+      description: "True if no matching active project exists in the municipal evidence for this pincode/issue." 
+    },
+    detectedPincode: { 
+      type: Type.STRING, 
+      description: "The 6-digit postal pincode identified in the prompt." 
+    },
+    detectedCategory: { 
+      type: Type.STRING, 
+      description: "The municipal category identified (e.g., Street Lighting, Roads, Water Supply, Sanitation, Public Parks)." 
+    },
     evidence: {
       type: Type.ARRAY,
       items: {
@@ -21,7 +33,7 @@ export const explainableDecisionSchema = {
       }
     }
   },
-  required: ["summary", "reason", "status", "priority", "expectedAction", "estimatedTimeline", "evidence"]
+  required: ["summary", "reason", "status", "priority", "expectedAction", "estimatedTimeline", "isUniqueRequest", "evidence"]
 };
 
 /**
