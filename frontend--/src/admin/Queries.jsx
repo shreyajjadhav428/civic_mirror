@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getUniqueQueries, getAdminInquiries } from "../api/admin.api";
 
 export default function Queries() {
   // Most Common Queries Modal State
@@ -8,130 +9,63 @@ export default function Queries() {
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedInquiry, setSelectedInquiry] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Most Common Citizen Queries Data
-  const commonQueries = [
-    {
-      id: "CQ-101",
-      question: "Why is my road repair delayed?",
-      requestCount: 84,
-      relatedRequests: ["REQ-8821: Resurfacing Timeline", "REQ-8845: Contractor Schedule", "REQ-8902: Asphalt Supply"],
-      locations: ["Ward 3 (Main St)", "Ward 5 (Oak District)", "Ward 8 (Highway 12 Junction)"],
-      departments: ["Department of Public Works", "Capital Infrastructure Bureau"],
-      projects: ["Project 2026-B: Urban Resurfacing", "Metro Transit Overlay Initiative"],
-      dates: ["Aug 01, 2026 - Present"],
-      similarQueries: [
-        "When will Main Street repaving finish?",
-        "Is there a delay in road construction on 5th Ave?",
-        "Road repair status update request"
-      ]
-    },
-    {
-      id: "CQ-102",
-      question: "When will water supply resume?",
-      requestCount: 63,
-      relatedRequests: ["REQ-9102: Mainline Maintenance", "REQ-9140: Valve Replacement", "REQ-9188: Pressure Check"],
-      locations: ["Sector 7 Residential", "Harbor View Apartments", "Westside Suburb"],
-      departments: ["Municipal Water & Sanitation Department"],
-      projects: ["Project Water-2026: Pipe Upgrades"],
-      dates: ["Aug 12, 2026 - Aug 14, 2026"],
-      similarQueries: [
-        "Water outage duration in Sector 7",
-        "Why is there low water pressure today?",
-        "Emergency water supply schedule"
-      ]
-    },
-    {
-      id: "CQ-103",
-      question: "Why hasn't my streetlight been repaired?",
-      requestCount: 41,
-      relatedRequests: ["REQ-7712: Pole #409 Dark", "REQ-7734: Transformer Fuse", "REQ-7790: LED Replacement"],
-      locations: ["Downtown Commercial Zone", "Parkside Walkway", "Station Road"],
-      departments: ["Municipal Electrical & Lighting Department"],
-      projects: ["Smart Streetlight Retrofit Campaign"],
-      dates: ["Aug 05, 2026 - Present"],
-      similarQueries: [
-        "Dark street lights on 4th street",
-        "Streetlight outage report follow-up",
-        "Repair status for streetlight ticket"
-      ]
-    },
-    {
-      id: "CQ-104",
-      question: "Why is drainage work taking so long?",
-      requestCount: 32,
-      relatedRequests: ["REQ-6021: Canal Dredging", "REQ-6088: Culvert Extension", "REQ-6110: Storm Grate Clearance"],
-      locations: ["Eastside Lowland Basin", "Riverbed Culvert Zone"],
-      departments: ["Stormwater Management & Environmental Protection"],
-      projects: ["Flood Mitigation Plan Phase 3"],
-      dates: ["July 20, 2026 - Present"],
-      similarQueries: [
-        "Drainage clearance completion date",
-        "Why are storm drains blocked in Eastside?",
-        "Status of flood barrier installation"
-      ]
+  // Dynamic Backend State (Zero / empty by default - populated strictly by Backend API)
+  const [commonQueries, setCommonQueries] = useState([]);
+  const [inquiries, setInquiries] = useState([]);
+  const [aiInsight, setAiInsight] = useState({
+    summaryText: "Loading administrative intelligence from backend...",
+    totalRelatedQueries: 0,
+    projectRelationPercent: 0,
+    mostAffectedLocations: [],
+    primaryDepartments: [],
+    verifiedCount: 0,
+    pendingCount: 0,
+    flaggedCount: 0,
+  });
+
+  // -------------------------------------------------------------------
+  // FETCH BACKEND DATA ON MOUNT
+  // -------------------------------------------------------------------
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadQueriesData() {
+      setLoading(true);
+      try {
+        // 1. Fetch Inquiries Logs & AI Insight Analytics
+        const inquiriesRes = await getAdminInquiries();
+        if (isMounted && inquiriesRes?.data) {
+          setInquiries(inquiriesRes.data.inquiries || []);
+          if (inquiriesRes.data.aiInsight) {
+            setAiInsight(inquiriesRes.data.aiInsight);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching inquiries from backend:", err);
+      }
+
+      try {
+        // 2. Fetch Common Clustered Queries
+        const queriesRes = await getUniqueQueries();
+        if (isMounted && queriesRes?.data) {
+          setCommonQueries(queriesRes.data);
+        }
+      } catch (err) {
+        console.error("Error fetching unique queries from backend:", err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
     }
-  ];
 
-  // Inquiries Table Data
-  const [inquiries] = useState([
-    {
-      id: "INQ-2026-881",
-      topic: "Downtown Bikeway Expansion Project",
-      department: "Urban Transit & Infrastructure",
-      date: "Aug 13, 2026",
-      citizen: "Marcus Vance",
-      aiStatus: "Verified",
-      confidence: "99.2%",
-      evidenceCount: 14,
-      summary: "Query regarding environmental impact report & budget allocation breakdown for Phase 2."
-    },
-    {
-      id: "INQ-2026-879",
-      topic: "Zoning Variance: Green Valley Housing",
-      department: "City Planning & Zoning",
-      date: "Aug 12, 2026",
-      citizen: "Elena Rostova",
-      aiStatus: "Pending Review",
-      confidence: "94.5%",
-      evidenceCount: 8,
-      summary: "Requesting municipal ordinance references and public hearing transcripts for residential density changes."
-    },
-    {
-      id: "INQ-2026-875",
-      topic: "Municipal Solar Grid Subsidy Allocation",
-      department: "Energy & Sustainability",
-      date: "Aug 11, 2026",
-      citizen: "Devon Miller",
-      aiStatus: "Verified",
-      confidence: "98.7%",
-      evidenceCount: 22,
-      summary: "Inquiry into eligibility criteria and public funding distribution algorithm for rooftop solar."
-    },
-    {
-      id: "INQ-2026-870",
-      topic: "Public Park Water Management Ordinance",
-      department: "Parks & Recreation",
-      date: "Aug 10, 2026",
-      citizen: "Sophia Chen",
-      aiStatus: "Flagged",
-      confidence: "87.1%",
-      evidenceCount: 5,
-      summary: "AI detected ambiguity in water conservation citation requirement #402. Needs official staff clarification."
-    },
-    {
-      id: "INQ-2026-864",
-      topic: "Commercial Noise Limitation Regulations",
-      department: "Public Safety & Code Enforcement",
-      date: "Aug 09, 2026",
-      citizen: "Arthur Pendelton",
-      aiStatus: "Verified",
-      confidence: "97.9%",
-      evidenceCount: 11,
-      summary: "Clarification request on decibel thresholds for evening construction permits in Mixed-Use Zones."
-    }
-  ]);
+    loadQueriesData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
+  // Filter inquiries table dynamically
   const filteredInquiries = inquiries.filter((item) => {
     const matchesSearch =
       item.topic.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -150,9 +84,9 @@ export default function Queries() {
       {/* Section Header */}
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between border-b border-[#D6E6F7] pb-4">
         <div>
-          
-          <h1 className="text-2xl font-black tracking-[-0.03em] text-[#0D1B2A]">
+          <h1 className="text-2xl font-black tracking-[-0.03em] text-[#0D1B2A] flex items-center gap-3">
             Citizen Queries & Inquiries Logs
+            {loading && <span className="text-xs font-semibold text-slate-400 animate-pulse">(Fetching live data...)</span>}
           </h1>
         </div>
       </div>
@@ -173,7 +107,7 @@ export default function Queries() {
 
         <div className="my-4 border-l-4 border-[#2D7FF9] pl-4 py-1">
           <p className="text-lg font-bold text-white leading-relaxed">
-            A significant concentration of citizen queries relates to infrastructure project delays.
+            {aiInsight.summaryText}
           </p>
         </div>
 
@@ -184,13 +118,17 @@ export default function Queries() {
 
           <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 font-mono text-xs">
             <div className="rounded-xl bg-white/5 p-4 border border-white/10">
-              <span className="block text-2xl font-semibold text-[#2D7FF9]">84</span>
-              <span className="text-white/70 font-sans text-md">related queries</span>
+              <span className="block text-2xl font-semibold text-[#2D7FF9]">
+                {aiInsight.totalRelatedQueries}
+              </span>
+              <span className="text-white/70 font-sans text-md">total logged inquiries</span>
             </div>
 
             <div className="rounded-xl bg-white/5 p-4 border border-white/10">
-              <span className="block text-2xl font-semibold text-[#00A68E]">67%</span>
-              <span className="text-white/70 font-sans text-md">related to ongoing projects</span>
+              <span className="block text-2xl font-semibold text-[#00A68E]">
+                {aiInsight.projectRelationPercent}%
+              </span>
+              <span className="text-white/70 font-sans text-md">related to active projects</span>
             </div>
 
             <div className="rounded-xl bg-white/5 p-4 border border-white/10">
@@ -198,9 +136,11 @@ export default function Queries() {
                 Most Affected:
               </span>
               <ul className="space-y-0.5 font-sans text-md font-semibold text-white/80">
-                <li>• Shanti Nagar</li>
-                <li>• Green Park</li>
-                <li>• Sector 12</li>
+                {aiInsight.mostAffectedLocations.length > 0 ? (
+                  aiInsight.mostAffectedLocations.map((loc, i) => <li key={i}>• {loc}</li>)
+                ) : (
+                  <li>• None</li>
+                )}
               </ul>
             </div>
 
@@ -209,20 +149,22 @@ export default function Queries() {
                 Primary Departments:
               </span>
               <ul className="space-y-0.5 font-sans text-md font-semibold text-white/80">
-                <li>• Engineering</li>
-                <li>• Electrical Works</li>
-                <li>• Water Supply</li>
+                {aiInsight.primaryDepartments.length > 0 ? (
+                  aiInsight.primaryDepartments.map((dept, i) => <li key={i}>• {dept}</li>)
+                ) : (
+                  <li>• None</li>
+                )}
               </ul>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 5. MOST COMMON CITIZEN QUERIES CARD */}
+      {/* MOST COMMON CITIZEN QUERIES CARD */}
       <div className="rounded-2xl border border-[#D6E6F7] bg-white p-6 shadow-sm">
         <div className="border-b border-[#D6E6F7] pb-4">
           <span className="text-xs font-black uppercase tracking-[0.16em] text-[#2D7FF9]">
-            5. MOST COMMON CITIZEN QUERIES
+            MOST COMMON CITIZEN QUERIES
           </span>
           <p className="mt-1 text-sm font-bold text-[#0D1B2A]">
             What are citizens repeatedly asking?
@@ -230,22 +172,32 @@ export default function Queries() {
         </div>
 
         <div className="mt-5 space-y-3">
-          {commonQueries.map((query) => (
-            <button
-              key={query.id}
-              onClick={() => setSelectedCommonQuery(query)}
-              className="flex w-full items-center justify-between rounded-xl border border-[#D6E6F7] bg-[#FAFAFC] p-4 text-left transition-all hover:bg-slate-100 hover:border-[#2D7FF9]"
-            >
-              <div>
-                <p className="font-extrabold text-[#0D1B2A] text-sm">{query.question}</p>
-                <p className="text-xs font-semibold text-[#2D7FF9]">{query.requestCount} requests</p>
-              </div>
-              <span className="text-xs font-bold text-slate-400 hover:text-[#0D1B2A]">Inspect →</span>
-            </button>
-          ))}
+          {loading && commonQueries.length === 0 ? (
+            <div className="py-8 text-center text-xs font-semibold text-slate-400 animate-pulse">
+              Loading citizen query trends from database...
+            </div>
+          ) : commonQueries.length === 0 ? (
+            <div className="py-8 text-center text-xs font-semibold text-slate-400">
+              No repeated citizen queries logged yet.
+            </div>
+          ) : (
+            commonQueries.map((query) => (
+              <button
+                key={query.id}
+                onClick={() => setSelectedCommonQuery(query)}
+                className="flex w-full items-center justify-between rounded-xl border border-[#D6E6F7] bg-[#FAFAFC] p-4 text-left transition-all hover:bg-slate-100 hover:border-[#2D7FF9]"
+              >
+                <div>
+                  <p className="font-extrabold text-[#0D1B2A] text-sm">{query.question}</p>
+                  <p className="text-xs font-semibold text-[#2D7FF9]">{query.requestCount} requests</p>
+                </div>
+                <span className="text-xs font-bold text-slate-400 hover:text-[#0D1B2A]">Inspect →</span>
+              </button>
+            ))
+          )}
         </div>
         <p className="mt-4 text-xs font-medium text-slate-400">
-          Admin can click a query to see related requests, locations, departments, projects, dates, and similar queries.
+          Click any query to inspect related requests, locations, departments, associated projects, and similar clustered queries.
         </p>
       </div>
 
@@ -268,19 +220,19 @@ export default function Queries() {
               onClick={() => setActiveTab("verified")}
               className={`rounded-md px-3 py-1.5 ${activeTab === "verified" ? "bg-[#00A68E] text-white" : "text-[#4B5563]"}`}
             >
-              Verified
+              Verified ({aiInsight.verifiedCount ?? 0})
             </button>
             <button
               onClick={() => setActiveTab("pending")}
               className={`rounded-md px-3 py-1.5 ${activeTab === "pending" ? "bg-[#D97706] text-white" : "text-[#4B5563]"}`}
             >
-              Pending
+              Pending ({aiInsight.pendingCount ?? 0})
             </button>
             <button
               onClick={() => setActiveTab("flagged")}
               className={`rounded-md px-3 py-1.5 ${activeTab === "flagged" ? "bg-[#FF5252] text-white" : "text-[#4B5563]"}`}
             >
-              Flagged
+              Flagged ({aiInsight.flaggedCount ?? 0})
             </button>
           </div>
         </div>
@@ -291,40 +243,62 @@ export default function Queries() {
             placeholder="Search by topic, ID, or department..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-11 w-full max-w-md rounded-xl border border-[#D6E6F7] bg-[#FAFAFC] px-4 text-sm text-[#0D1B2A] outline-none"
+            className="h-11 w-full max-w-md rounded-xl border border-[#D6E6F7] bg-[#FAFAFC] px-4 text-sm text-[#0D1B2A] outline-none focus:border-[#2D7FF9]"
           />
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-[#0D1B2A]">
-            <thead className="bg-[#FAFAFC] text-xs font-black uppercase text-[#4B5563]">
-              <tr>
-                <th className="px-4 py-3">Inquiry ID</th>
-                <th className="px-4 py-3">Topic / Citizen</th>
-                <th className="px-4 py-3">Department</th>
-                <th className="px-4 py-3">AI Verification</th>
-                <th className="px-4 py-3 text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#D6E6F7]/60">
-              {filteredInquiries.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-50">
-                  <td className="px-4 py-4 font-mono text-xs font-extrabold text-[#2D7FF9]">{item.id}</td>
-                  <td className="px-4 py-4 font-bold">{item.topic}</td>
-                  <td className="px-4 py-4 text-xs">{item.department}</td>
-                  <td className="px-4 py-4 text-xs font-bold text-[#00A68E]">{item.aiStatus}</td>
-                  <td className="px-4 py-4 text-right">
-                    <button
-                      onClick={() => setSelectedInquiry(item)}
-                      className="rounded-lg border border-[#D6E6F7] px-3 py-1.5 text-xs font-bold text-[#2D7FF9]"
-                    >
-                      Inspect
-                    </button>
-                  </td>
+          {loading && inquiries.length === 0 ? (
+            <div className="py-12 text-center text-xs font-semibold text-slate-400 animate-pulse">
+              Loading public inquiries from database...
+            </div>
+          ) : filteredInquiries.length === 0 ? (
+            <div className="py-12 text-center text-xs font-semibold text-slate-400">
+              No inquiries match your current filter or search criteria.
+            </div>
+          ) : (
+            <table className="w-full text-left text-sm text-[#0D1B2A]">
+              <thead className="bg-[#FAFAFC] text-xs font-black uppercase text-[#4B5563]">
+                <tr>
+                  <th className="px-4 py-3">Inquiry ID</th>
+                  <th className="px-4 py-3">Topic / Citizen</th>
+                  <th className="px-4 py-3">Department</th>
+                  <th className="px-4 py-3">AI Verification</th>
+                  <th className="px-4 py-3 text-right">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-[#D6E6F7]/60">
+                {filteredInquiries.map((item) => (
+                  <tr key={item.id} className="hover:bg-slate-50">
+                    <td className="px-4 py-4 font-mono text-xs font-extrabold text-[#2D7FF9]">{item.id}</td>
+                    <td className="px-4 py-4 font-bold max-w-md line-clamp-1">{item.topic}</td>
+                    <td className="px-4 py-4 text-xs">{item.department}</td>
+                    <td className="px-4 py-4 text-xs font-bold">
+                      <span
+                        className={`inline-block px-2.5 py-1 rounded-full ${
+                          item.aiStatus === "Verified"
+                            ? "bg-emerald-100 text-emerald-800"
+                            : item.aiStatus === "Flagged"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-amber-100 text-amber-800"
+                        }`}
+                      >
+                        {item.aiStatus} ({item.confidence})
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 text-right">
+                      <button
+                        onClick={() => setSelectedInquiry(item)}
+                        className="rounded-lg border border-[#D6E6F7] px-3 py-1.5 text-xs font-bold text-[#2D7FF9] hover:bg-slate-100"
+                      >
+                        Inspect
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
 
@@ -350,7 +324,7 @@ export default function Queries() {
               <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
                 <span className="font-extrabold text-[#1E4FA3] uppercase block mb-1">Related Requests</span>
                 <ul className="list-disc pl-4 space-y-1 font-semibold text-slate-700">
-                  {selectedCommonQuery.relatedRequests.map((req, i) => (
+                  {selectedCommonQuery.relatedRequests?.map((req, i) => (
                     <li key={i}>{req}</li>
                   ))}
                 </ul>
@@ -359,7 +333,7 @@ export default function Queries() {
               <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
                 <span className="font-extrabold text-[#1E4FA3] uppercase block mb-1">Affected Locations</span>
                 <div className="flex flex-wrap gap-1.5">
-                  {selectedCommonQuery.locations.map((loc, i) => (
+                  {selectedCommonQuery.locations?.map((loc, i) => (
                     <span key={i} className="rounded bg-slate-200 px-2 py-0.5 font-bold text-[#0D1B2A]">{loc}</span>
                   ))}
                 </div>
@@ -367,23 +341,18 @@ export default function Queries() {
 
               <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
                 <span className="font-extrabold text-[#1E4FA3] uppercase block mb-1">Handling Departments</span>
-                <p className="font-bold text-slate-700">{selectedCommonQuery.departments.join(", ")}</p>
+                <p className="font-bold text-slate-700">{selectedCommonQuery.departments?.join(", ")}</p>
               </div>
 
               <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
                 <span className="font-extrabold text-[#1E4FA3] uppercase block mb-1">Associated Capital Projects</span>
-                <p className="font-bold text-slate-700">{selectedCommonQuery.projects.join(", ")}</p>
-              </div>
-
-              <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                <span className="font-extrabold text-[#1E4FA3] uppercase block mb-1">Timeline & Activity Dates</span>
-                <p className="font-bold text-slate-700">{selectedCommonQuery.dates.join(", ")}</p>
+                <p className="font-bold text-slate-700">{selectedCommonQuery.projects?.join(", ")}</p>
               </div>
 
               <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
                 <span className="font-extrabold text-[#1E4FA3] uppercase block mb-1">Similar Clustered Queries</span>
                 <ul className="list-disc pl-4 space-y-1 font-medium text-slate-600">
-                  {selectedCommonQuery.similarQueries.map((sim, i) => (
+                  {selectedCommonQuery.similarQueries?.map((sim, i) => (
                     <li key={i}>{sim}</li>
                   ))}
                 </ul>
@@ -409,15 +378,39 @@ export default function Queries() {
             <div className="flex items-start justify-between border-b border-[#D6E6F7] pb-4">
               <div>
                 <span className="font-mono text-xs font-extrabold text-[#2D7FF9]">{selectedInquiry.id}</span>
-                <h3 className="text-xl font-black text-[#0D1B2A]">{selectedInquiry.topic}</h3>
+                <h3 className="text-xl font-black text-[#0D1B2A]">Inquiry Audit Trail</h3>
+                <span className="text-xs font-semibold text-slate-500">Citizen Pincode: {selectedInquiry.pincode}</span>
               </div>
               <button onClick={() => setSelectedInquiry(null)} className="rounded-full p-1 text-slate-400">✕</button>
             </div>
-            <div className="my-5">
-              <p className="text-sm text-slate-700">{selectedInquiry.summary}</p>
+
+            <div className="my-5 space-y-4 text-xs text-slate-700">
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <span className="font-extrabold text-[#0D1B2A] block mb-1">Citizen Inquiry Topic / Description:</span>
+                <p className="font-medium text-slate-800 leading-relaxed">{selectedInquiry.topic}</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  <span className="font-bold text-slate-500 block">Department:</span>
+                  <span className="font-extrabold text-[#0D1B2A]">{selectedInquiry.department}</span>
+                </div>
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  <span className="font-bold text-slate-500 block">AI Verification Status:</span>
+                  <span className="font-extrabold text-[#00A68E]">{selectedInquiry.aiStatus} ({selectedInquiry.confidence})</span>
+                </div>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <span className="font-extrabold text-[#0D1B2A] block mb-1">AI Explanation & Summary:</span>
+                <p className="font-medium text-slate-800 leading-relaxed">{selectedInquiry.summary}</p>
+              </div>
             </div>
+
             <div className="flex justify-end border-t border-[#D6E6F7] pt-4">
-              <button onClick={() => setSelectedInquiry(null)} className="rounded-lg border border-[#D6E6F7] px-4 py-2 text-xs font-bold">Close</button>
+              <button onClick={() => setSelectedInquiry(null)} className="rounded-lg border border-[#D6E6F7] px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100">
+                Close
+              </button>
             </div>
           </div>
         </div>
