@@ -34,20 +34,58 @@ export default function CitizenDashboard({ onLogout }) {
         </span>
       </div>
 
-      <main className="min-h-screen px-5 pb-12 pt-6 min-[861px]:ml-[248px] min-[861px]:w-[calc(100%-248px)] min-[861px]:px-8 min-[861px]:pt-8 lg:px-10 xl:px-12">
-        <div className="mx-auto w-full max-w-[1440px]">
-          <Routes>
-            <Route index element={<Overview />} />
-            <Route path="request" element={<Request />} />
-            <Route path="requests" element={<Requests />} />
-            <Route
-              path="repairs"
-              element={<TrackRepairs onNavigate={handleCitizenNavigation} />}
-            />
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="settings" element={<SettingsPage />} />
-            <Route path="*" element={<Navigate to="/citizen" replace />} />
-          </Routes>
+     <main className="min-h-screen min-[861px]:ml-[248px] min-[861px]:w-[calc(100%-248px)]">
+  <div className="mx-auto w-full max-w-[1440px]">
+        <Routes>
+  <Route index element={<Overview />} />
+
+  <Route
+    path="request"
+    element={
+      <div className="px-5 py-6 sm:px-7 sm:py-8 lg:px-10">
+        <Request />
+      </div>
+    }
+  />
+
+  <Route
+    path="requests"
+    element={
+      <div className="px-5 py-6 sm:px-7 sm:py-8 lg:px-10">
+        <Requests />
+      </div>
+    }
+  />
+
+  <Route
+    path="repairs"
+    element={
+      <div className="px-5 py-6 sm:px-7 sm:py-8 lg:px-10">
+        <TrackRepairs onNavigate={handleCitizenNavigation} />
+      </div>
+    }
+  />
+
+  <Route
+    path="profile"
+    element={
+      <div className="px-5 py-6 sm:px-7 sm:py-8 lg:px-10">
+        <ProfilePage />
+      </div>
+    }
+  />
+
+  <Route
+    path="settings"
+    element={
+      <div className="px-5 py-6 sm:px-7 sm:py-8 lg:px-10">
+        <SettingsPage />
+      </div>
+    }
+  />
+
+  <Route path="*" element={<Navigate to="/citizen" replace />} />
+</Routes>
         </div>
       </main>
     </div>
