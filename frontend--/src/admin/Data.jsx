@@ -320,7 +320,7 @@ export default function Data() {
           <div className="flex flex-col sm:items-end gap-3 shrink-0">
             <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-5 py-3 text-base font-semibold">
               <span className="text-[#657386] block text-xs font-black uppercase tracking-wider">Indexed Knowledge</span>
-              <span className="text-[#0D1B2A] font-black font-mono text-xl">{filteredFiles.length} Ingested Documents</span>
+              <span className="text-[#0D1B2A] font-black text-xl">{filteredFiles.length} Ingested Documents</span>
             </div>
           </div>
         </div>
@@ -371,7 +371,7 @@ export default function Data() {
         {/* Ingestion Progress or Success Feedback */}
         {isUploading && (
           <div className="max-w-2xl mx-auto rounded-2xl border border-slate-200 bg-slate-50 p-5 text-left space-y-3">
-            <div className="flex items-center justify-between text-xs font-mono font-bold">
+            <div className="flex items-center justify-between text-xs font-bold">
               <span className="text-[#0D1B2A]">Uploading & Vector Indexing...</span>
               <span className="text-[#2D7FF9]">{uploadProgress}%</span>
             </div>
@@ -387,7 +387,7 @@ export default function Data() {
         {uploadSuccessMsg && (
           <div className="max-w-2xl mx-auto rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-xs font-extrabold text-emerald-800 flex items-center justify-between">
             <span>✓ {uploadSuccessMsg}</span>
-            <span className="font-mono text-[10px] text-emerald-600 uppercase">Indexed into Knowledge Graph</span>
+            <span className="text-[10px] text-emerald-600 uppercase font-semibold">Indexed into Knowledge Graph</span>
           </div>
         )}
       </div>
@@ -477,7 +477,7 @@ export default function Data() {
                 <div className="mt-4 rounded-xl bg-slate-50/70 p-4 border border-slate-100 space-y-2.5">
                   <div className="flex items-center justify-between text-sm">
                     <span className="font-bold text-slate-500">Extracted Records</span>
-                    <span className="font-mono font-black text-[#0D1B2A]">
+                    <span className="font-black text-[#0D1B2A]">
                       {file.extractedRecords} records
                     </span>
                   </div>
@@ -500,7 +500,7 @@ export default function Data() {
               className="group flex items-center gap-2.5 rounded-xl border border-[#2D7FF9] bg-white px-8 py-3.5 text-sm font-extrabold text-[#2D7FF9] hover:bg-[#2D7FF9] hover:text-white transition-all shadow-xs"
             >
               <span>Show More Documents</span>
-              <span className="rounded-full bg-[#2D7FF9]/10 px-2.5 py-0.5 text-xs font-mono font-black text-[#2D7FF9] group-hover:bg-white group-hover:text-[#2D7FF9] transition">
+              <span className="rounded-full bg-[#2D7FF9]/10 px-2.5 py-0.5 text-xs font-black text-[#2D7FF9] group-hover:bg-white group-hover:text-[#2D7FF9] transition">
                 +{filteredFiles.length - visibleCount}
               </span>
             </button>
@@ -517,7 +517,7 @@ export default function Data() {
               <div className="flex items-center gap-3">
                 <span className="text-3xl">{selectedFileModal.icon}</span>
                 <div>
-                  <span className="font-mono text-xs font-black text-[#2D7FF9] uppercase tracking-wider block mb-0.5">
+                  <span className="text-xs font-black text-[#2D7FF9] uppercase tracking-wider block mb-0.5">
                     DOCUMENT KNOWLEDGE METADATA
                   </span>
                   <h3 className="text-xl font-black text-[#0D1B2A]">{selectedFileModal.filename}</h3>
@@ -546,12 +546,12 @@ export default function Data() {
 
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
                   <span className="text-xs font-black text-slate-400 uppercase block mb-1">Records Extracted</span>
-                  <span className="font-mono text-base font-black text-[#2D7FF9]">{selectedFileModal.extractedRecords} records</span>
+                  <span className="text-base font-black text-[#2D7FF9]">{selectedFileModal.extractedRecords} records</span>
                 </div>
 
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
                   <span className="text-xs font-black text-slate-400 uppercase block mb-1">Related Projects</span>
-                  <span className="font-mono text-base font-black text-[#0D1B2A]">{selectedFileModal.relatedProjects} projects</span>
+                  <span className="text-base font-black text-[#0D1B2A]">{selectedFileModal.relatedProjects} projects</span>
                 </div>
               </div>
 
@@ -567,7 +567,7 @@ export default function Data() {
               </div>
 
               <div className="rounded-2xl border border-slate-800 bg-[#0D1B2A] p-5 text-white shadow-md">
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">
                   How Document Contributes to CivicMirror Knowledge:
                 </span>
                 <p className="text-sm font-semibold leading-relaxed text-slate-200 mt-1">

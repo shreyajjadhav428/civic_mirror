@@ -224,7 +224,7 @@ export default function Requests() {
           <div className="flex items-center gap-3">
             <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-5 py-3.5 text-base font-semibold">
               <span className="text-[#657386] block text-xs font-black uppercase tracking-wider">Active Requests</span>
-              <span className="text-[#0D1B2A] font-black font-mono text-xl">{filteredRequests.length} Filtered</span>
+              <span className="text-[#0D1B2A] font-black text-xl">{filteredRequests.length} Filtered</span>
             </div>
           </div>
         </div>
@@ -253,7 +253,7 @@ export default function Requests() {
 
         {/* Useful Filters Bar */}
         <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center gap-3 text-[13px] font-bold">
-          <span className="text-slate-400 uppercase font-mono tracking-wider text-[11px]">Useful Filters:</span>
+          <span className="text-slate-400 uppercase tracking-wider text-[11px]">Useful Filters:</span>
 
           {/* Pincode Filter */}
           <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5">
@@ -410,7 +410,7 @@ export default function Requests() {
                           {item.category}
                         </span>
                       </td>
-                      <td className="px-5 py-4.5 font-mono font-black text-slate-800 text-[14px]">
+                      <td className="px-5 py-4.5 font-black text-slate-800 text-[14px]">
                         {item.pincode}
                       </td>
                       <td className="px-5 py-4.5">
@@ -439,7 +439,7 @@ export default function Requests() {
             {/* Modal Header */}
             <div className="flex items-start justify-between border-b border-slate-100 pb-4">
               <div>
-                <span className="font-mono text-xs font-black text-[#2D7FF9] uppercase tracking-wider block mb-0.5">
+                <span className="text-xs font-black text-[#2D7FF9] uppercase tracking-wider block mb-0.5">
                   CITIZEN REQUEST DETAIL ({selectedRequestModal.id})
                 </span>
                 <h3 className="text-2xl font-black text-[#0D1B2A]">{selectedRequestModal.title}</h3>
@@ -470,7 +470,7 @@ export default function Requests() {
 
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
                   <span className="text-xs font-black text-slate-400 uppercase block mb-1">Pincode</span>
-                  <span className="font-mono font-extrabold text-[#0D1B2A]">{selectedRequestModal.pincode}</span>
+                  <span className="font-extrabold text-[#0D1B2A]">{selectedRequestModal.pincode}</span>
                 </div>
 
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">

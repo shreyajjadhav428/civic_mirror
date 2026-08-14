@@ -244,7 +244,7 @@ export default function Queries({ onNavigate }) {
           <div className="flex items-center gap-3">
             <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-5 py-3.5 text-base font-semibold">
               <span className="text-[#657386] block text-xs font-black uppercase tracking-wider">Total Inquiries</span>
-              <span className="text-[#0D1B2A] font-black font-mono text-xl">{inquiries.length} Logged</span>
+              <span className="text-[#0D1B2A] font-black text-xl">{inquiries.length} Logged</span>
             </div>
           </div>
         </div>
@@ -254,7 +254,7 @@ export default function Queries({ onNavigate }) {
       <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs relative overflow-hidden">
         <div className="absolute top-0 left-0 w-14 h-1.5 bg-[#2D7FF9] rounded-b" />
 
-        <span className="text-xs font-black uppercase tracking-wider text-slate-400 block mb-5 font-mono">
+        <span className="text-xs font-black uppercase tracking-wider text-slate-400 block mb-5">
           QUERY CATEGORIES DISTRIBUTION
         </span>
 
@@ -268,7 +268,7 @@ export default function Queries({ onNavigate }) {
                   className={`h-full rounded-lg ${cat.barColor} transition-all duration-500`}
                 />
               </div>
-              <span className="w-16 text-right font-mono font-black text-[#0D1B2A] text-lg">
+              <span className="w-16 text-right font-black text-[#0D1B2A] text-lg">
                 {cat.count}
               </span>
             </div>
@@ -307,7 +307,7 @@ export default function Queries({ onNavigate }) {
                   <span className={`rounded-lg border px-3 py-1 text-xs font-black uppercase ${query.badgeStyle || "bg-blue-50 text-[#2D7FF9] border-blue-200"}`}>
                     {query.category || "General"}
                   </span>
-                  <span className="font-mono text-sm font-black text-slate-600">
+                  <span className="text-sm font-black text-slate-600">
                     {query.requestCount} Requests
                   </span>
                 </div>
@@ -402,7 +402,7 @@ export default function Queries({ onNavigate }) {
                 <tbody className="divide-y divide-slate-100 font-semibold">
                   {filteredInquiries.map((item) => (
                     <tr key={item.id} className="hover:bg-slate-50/70 transition">
-                      <td className="px-5 py-4.5 font-mono font-black text-[#2D7FF9] text-[15px]">
+                      <td className="px-5 py-4.5 font-black text-[#2D7FF9] text-[15px]">
                         {item.id}
                       </td>
                       <td className="px-5 py-4.5">
@@ -508,7 +508,7 @@ export default function Queries({ onNavigate }) {
           <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-7 shadow-2xl space-y-5">
             <div className="flex items-start justify-between border-b border-slate-100 pb-4">
               <div>
-                <span className="font-mono text-xs font-black text-[#2D7FF9] uppercase tracking-wider">{selectedInquiry.id}</span>
+                <span className="text-xs font-black text-[#2D7FF9] uppercase tracking-wider">{selectedInquiry.id}</span>
                 <h3 className="text-xl font-black text-[#0D1B2A] mt-0.5">{selectedInquiry.topic}</h3>
               </div>
               <button
@@ -540,7 +540,7 @@ export default function Queries({ onNavigate }) {
 
               <div className="flex items-center justify-between rounded-xl bg-teal-50 p-3.5 border border-teal-200 text-xs font-black text-[#008D78]">
                 <span>Status: {selectedInquiry.aiStatus === "Verified" ? "Resolved" : selectedInquiry.aiStatus}</span>
-                <span className="font-mono">Pincode: {selectedInquiry.pincode || "400012"}</span>
+                <span>Pincode: {selectedInquiry.pincode || "400012"}</span>
               </div>
             </div>
 

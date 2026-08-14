@@ -310,7 +310,7 @@ export default function Overview() {
                       <span className="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-extrabold text-slate-600">
                         {issue.status}
                       </span>
-                      <span className="text-sm font-black font-mono text-slate-800">
+                      <span className="text-sm font-black text-slate-800">
                         {issue.count}
                       </span>
                     </div>
@@ -366,7 +366,7 @@ export default function Overview() {
                         {query.text}
                       </span>
                     </div>
-                    <span className="font-black font-mono text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg text-sm shrink-0 ml-2">
+                    <span className="font-black text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg text-sm shrink-0 ml-2">
                       {query.count}
                     </span>
                   </div>
@@ -405,7 +405,7 @@ export default function Overview() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
                   <span className="font-bold text-slate-500 block mb-1 text-xs uppercase tracking-wider">Active Citizen Reports</span>
-                  <span className="font-black text-3xl font-mono text-[#2D7FF9]">
+                  <span className="font-black text-3xl text-[#2D7FF9]">
                     {selectedPriorityIssue.count}
                   </span>
                 </div>
@@ -518,7 +518,7 @@ export default function Overview() {
                       <span className="rounded-lg bg-white px-3 py-1 text-xs font-extrabold text-slate-700 border border-slate-200">
                         {issue.status}
                       </span>
-                      <span className="font-black font-mono text-slate-800 text-sm">{issue.count} reports</span>
+                      <span className="font-black text-slate-800 text-sm">{issue.count} reports</span>
                       <button
                         onClick={() => {
                           setSelectedPriorityIssue(issue);
@@ -589,7 +589,7 @@ export default function Overview() {
                         <span className="text-xs text-slate-500 font-semibold">Category: {query.category}</span>
                       </div>
                     </div>
-                    <span className="font-extrabold font-mono text-[#2D7FF9] text-sm bg-white px-3 py-1 rounded-lg border border-slate-200 shrink-0 ml-2">
+                    <span className="font-extrabold text-[#2D7FF9] text-sm bg-white px-3 py-1 rounded-lg border border-slate-200 shrink-0 ml-2">
                       {query.count} citizen queries
                     </span>
                   </div>

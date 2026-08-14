@@ -32,9 +32,9 @@ export default function AdminDashboard() {
 
   const navItems = [
     { id: "overview", label: "Overview", icon: "📊" },
+    { id: "clusters", label: "Clusters", icon: "🧩" },
     { id: "requests", label: "Requests", icon: "📑" },
     { id: "queries", label: "Queries", icon: "💬" },
-    { id: "clusters", label: "Clusters", icon: "🧩" },
     { id: "data", label: "Data", icon: "📁" },
     { id: "projects", label: "Projects", icon: "🏗️" },
     { id: "ai_insights", label: "AI Insights", icon: "⚡" }
@@ -65,23 +65,20 @@ export default function AdminDashboard() {
       >
         <div>
           {/* Logo & Header */}
-          <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
-            <div className="flex items-center gap-3">
-              <a
-                href="/"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate("/");
-                }}
-                className="group inline-flex items-center text-2xl font-black tracking-tight outline-none"
-              >
-                <span className="text-white">C</span>
-                <span className="relative text-[#2D7FF9] after:absolute after:-bottom-1 after:left-0 after:h-[2.5px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 group-hover:after:scale-x-100">
-                  M
-                </span>
-              </a>
-              <span className="text-xs font-semibold text-slate-400">Admin portal</span>
-            </div>
+          <div className="flex items-center justify-between border-b border-white/10 py-5 pr-6 pl-[48px]">
+            <a
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/");
+              }}
+              className="group inline-flex items-center text-4xl font-black tracking-tight outline-none"
+            >
+              <span className="text-white">C</span>
+              <span className="relative text-[#2D7FF9] after:absolute after:-bottom-1 after:left-0 after:h-[2.5px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 group-hover:after:scale-x-100">
+                M
+              </span>
+            </a>
             <button
               onClick={() => setIsMobileSidebarOpen(false)}
               className="rounded-lg p-1 text-white/60 hover:bg-white/10 hover:text-white md:hidden"
@@ -118,100 +115,26 @@ export default function AdminDashboard() {
 
         {/* User Account Profile Widget */}
         <div className="p-4 border-t border-white/10">
-          <div className="px-2 pb-3">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 text-lg font-black text-[#2D7FF9] border border-slate-700">
-                A
-              </div>
-              <div>
-                <span className="block text-md font-black text-white leading-tight">Admin account</span>
-                <span className="block text-md font-medium text-slate-400">Manage system</span>
-              </div>
-            </div>
-
-            <div className="mt-3 flex flex-col gap-1.5 text-md font-bold text-slate-400">
-              <button
-                onClick={() => handleNavClick("overview")}
-                className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 hover:bg-white/5 hover:text-white transition"
-              >
-                <span>👤</span> Profile
-              </button>
-              <button
-                onClick={() => handleNavClick("overview")}
-                className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 hover:bg-white/5 hover:text-white transition"
-              >
-                <span>⚙</span> Settings
-              </button>
-              <button
-                onClick={() => navigate("/login")}
-                className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition"
-              >
-                <span>➔</span> Log out
-              </button>
-            </div>
-          </div>
+          <button
+            onClick={() => navigate("/login")}
+            className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-md font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition"
+          >
+            <span>➔</span> Log out
+          </button>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex flex-1 flex-col overflow-y-auto">
-        
-        {/* Top Header Bar matching Citizen Portal */}
-        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-slate-200/80 bg-white/90 px-6 py-4 backdrop-blur-md shadow-xs">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-              className="rounded-lg border border-slate-200 p-2 text-slate-700 hover:bg-slate-50 md:hidden"
-            >
-              ☰
-            </button>
-
-            <span className="text-sm font-semibold text-slate-500">
-              Admin dashboard
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {/* Notification Bell with Badge */}
-            <div className="relative">
-              <button
-                onClick={() => setShowNotifications(!showNotifications)}
-                className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition"
-                aria-label="Notifications"
-              >
-                🔔
-                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-black text-white">
-                  2
-                </span>
-              </button>
-
-              {/* Notification Popover */}
-              {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl z-50">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                    <span className="text-xs font-bold text-slate-900">System Notifications</span>
-                    <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700">2 new</span>
-                  </div>
-                  <div className="mt-3 space-y-2 text-xs">
-                    <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-100">
-                      <span className="font-bold text-slate-800 block">Critical Issue Flagged</span>
-                      <span className="text-slate-500 text-[11px]">Water pipe burst reported in Ward 3 • 10m ago</span>
-                    </div>
-                    <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-100">
-                      <span className="font-bold text-slate-800 block">AI Explainability Audit Completed</span>
-                      <span className="text-slate-500 text-[11px]">22 inquiries verified • 1h ago</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Profile Avatar dropdown icon */}
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0D1B2A] text-xs font-black text-white border border-slate-200">
-              A
-            </div>
-          </div>
-        </header>
+      <main className="flex flex-1 flex-col overflow-y-auto relative">
+        {/* Mobile Sidebar Toggle Button */}
+        <div className="p-4 pb-0 md:hidden flex items-center justify-between">
+          <button
+            onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+            className="rounded-lg border border-slate-200 bg-white p-2 text-slate-700 shadow-xs"
+          >
+            ☰ Menu
+          </button>
+        </div>
 
         {/* Dynamic Section Content based on activeNav */}
         <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full">

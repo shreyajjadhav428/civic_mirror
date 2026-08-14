@@ -1,16 +1,12 @@
 import React, { useState } from "react";
 
 export default function Projects() {
-  const [selectedProjectModal, setSelectedProjectModal] = useState(null);
-  const [selectedTreeModal, setSelectedTreeModal] = useState(null);
-  const [activeTab, setActiveTab] = useState("all");
-
-  const projectsData = [
+  const initialProjectsData = [
     {
       id: "PRJ-ELEC-01",
       name: "Electrical Maintenance Phase II",
       department: "Electrical Works",
-      location: "Shanti Nagar",
+      pincode: "110025",
       startDate: "01 June 2026",
       expectedCompletion: "30 August 2026",
       progress: 82,
@@ -19,12 +15,12 @@ export default function Projects() {
       remainingBudget: 360000,
       relatedComplaintsCount: 23,
       affectedCitizens: 147,
-      status: "Active",
-      statusBadge: "bg-emerald-500/10 text-emerald-600 border-emerald-500/30",
+      status: "In Progress",
+      statusBadge: "bg-teal-50 text-[#008D78] border-teal-200",
       connectedComplaints: [
         { id: "#4921", title: "Streetlight complaint #4921 (Main St Pole #409)", citizen: "Amit Sharma", status: "In Progress" },
         { id: "#4932", title: "Streetlight complaint #4932 (Block C Crossway)", citizen: "Pooja Verma", status: "Pending" },
-        { id: "#4951", title: "Streetlight complaint #4951 (Shanti Nagar Park Rd)", citizen: "Rohan Patel", status: "Verified" },
+        { id: "#4951", title: "Streetlight complaint #4951 (Shanti Nagar Park Rd)", citizen: "Rohan Patel", status: "Resolved" },
         { id: "#4967", title: "Streetlight complaint #4967 (Sector 4 Junction)", citizen: "Meera Das", status: "In Progress" },
         { id: "#4988", title: "Streetlight complaint #4988 (Lane 2 Transformer)", citizen: "Kavita Rao", status: "In Progress" },
       ]
@@ -33,7 +29,7 @@ export default function Projects() {
       id: "PRJ-ROAD-02",
       name: "Sector 12 Resurfacing Phase I",
       department: "Engineering & Road Ops",
-      location: "Sector 12",
+      pincode: "110025",
       startDate: "15 May 2026",
       expectedCompletion: "15 September 2026",
       progress: 45,
@@ -42,19 +38,19 @@ export default function Projects() {
       remainingBudget: 2100000,
       relatedComplaintsCount: 17,
       affectedCitizens: 89,
-      status: "Delayed",
-      statusBadge: "bg-red-500/10 text-red-500 border-red-500/30",
+      status: "In Progress",
+      statusBadge: "bg-teal-50 text-[#008D78] border-teal-200",
       connectedComplaints: [
         { id: "#5102", title: "Pothole complaint #5102 (Sector 12 Main Ave)", citizen: "Rajesh Iyer", status: "In Progress" },
         { id: "#5119", title: "Asphalt Cracking #5119 (Bypass Junction)", citizen: "Tina Singh", status: "Pending" },
-        { id: "#5140", title: "Road Surface Subsidence #5140 (Block D)", citizen: "Farhan Qureshi", status: "Verified" },
+        { id: "#5140", title: "Road Surface Subsidence #5140 (Block D)", citizen: "Farhan Qureshi", status: "Resolved" },
       ]
     },
     {
       id: "PRJ-WATER-03",
       name: "Green Park Water Pipe Upgrade",
       department: "Water Supply & Sanitation",
-      location: "Green Park",
+      pincode: "110026",
       startDate: "10 July 2026",
       expectedCompletion: "01 October 2026",
       progress: 60,
@@ -63,8 +59,8 @@ export default function Projects() {
       remainingBudget: 1520000,
       relatedComplaintsCount: 21,
       affectedCitizens: 210,
-      status: "Active",
-      statusBadge: "bg-emerald-500/10 text-emerald-600 border-emerald-500/30",
+      status: "In Progress",
+      statusBadge: "bg-teal-50 text-[#008D78] border-teal-200",
       connectedComplaints: [
         { id: "#6012", title: "Water Seepage #6012 (Market Gate #2)", citizen: "Sanjay Gupta", status: "In Progress" },
         { id: "#6034", title: "Mainline Pressure Drop #6034 (Block F)", citizen: "Neha Reddy", status: "In Progress" },
@@ -74,22 +70,45 @@ export default function Projects() {
       id: "PRJ-DRAIN-04",
       name: "Flood Mitigation Dredging Phase III",
       department: "Stormwater Operations",
-      location: "Eastside Lowland Basin",
+      pincode: "400012",
       startDate: "20 August 2026",
       expectedCompletion: "15 November 2026",
-      progress: 10,
+      progress: 100,
       budget: 1800000,
-      utilizedBudget: 180000,
-      remainingBudget: 1620000,
+      utilizedBudget: 1800000,
+      remainingBudget: 0,
       relatedComplaintsCount: 18,
       affectedCitizens: 115,
-      status: "Planned",
-      statusBadge: "bg-amber-500/10 text-amber-600 border-amber-500/30",
+      status: "Completed",
+      statusBadge: "bg-emerald-50 text-emerald-700 border-emerald-300",
       connectedComplaints: [
-        { id: "#7101", title: "Storm Drain Blockage #7101 (Lowland Culvert)", citizen: "Farhan Akhtar", status: "Pending" }
+        { id: "#7101", title: "Storm Drain Blockage #7101 (Lowland Culvert)", citizen: "Farhan Akhtar", status: "Resolved" }
       ]
     }
   ];
+
+  const statusOptions = [
+    { value: "In Progress", label: "In Progress", badgeClass: "bg-teal-50 text-[#008D78] border-teal-200" },
+    { value: "Completed", label: "Completed", badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-300" },
+  ];
+
+  const [projectsList, setProjectsList] = useState(initialProjectsData);
+  const [selectedProjectModal, setSelectedProjectModal] = useState(null);
+  const [activeTab, setActiveTab] = useState("all");
+
+  // New Project Form State with all necessary parameters
+  const [newProject, setNewProject] = useState({
+    name: "",
+    department: "Engineering & Road Ops",
+    pincode: "",
+    startDate: "",
+    expectedCompletion: "",
+    budget: "",
+    utilizedBudget: "",
+    affectedCitizens: "",
+    status: "In Progress",
+  });
+  const [addSuccessMsg, setAddSuccessMsg] = useState("");
 
   const formatINR = (val) => {
     return new Intl.NumberFormat("en-IN", {
@@ -99,332 +118,589 @@ export default function Projects() {
     }).format(val);
   };
 
-  const filteredProjects = projectsData.filter((p) => {
+  const handleStatusChange = (projectId, newStatus) => {
+    const found = statusOptions.find((opt) => opt.value === newStatus) || statusOptions[0];
+
+    setProjectsList((list) =>
+      list.map((p) => {
+        if (p.id === projectId) {
+          return {
+            ...p,
+            status: found.value,
+            statusBadge: found.badgeClass,
+            progress: found.value === "Completed" ? 100 : (p.progress === 100 ? 50 : p.progress),
+          };
+        }
+        return p;
+      })
+    );
+
+    setSelectedProjectModal((prev) => {
+      if (!prev || prev.id !== projectId) return prev;
+      return {
+        ...prev,
+        status: found.value,
+        statusBadge: found.badgeClass,
+        progress: found.value === "Completed" ? 100 : (prev.progress === 100 ? 50 : prev.progress),
+      };
+    });
+  };
+
+  const handleAddProject = (e) => {
+    e.preventDefault();
+    if (!newProject.name.trim() || !newProject.pincode.trim() || !newProject.budget) return;
+
+    const budgetNum = Number(newProject.budget) || 0;
+    const utilNum = Number(newProject.utilizedBudget) || 0;
+    const citizensNum = Number(newProject.affectedCitizens) || 0;
+    const foundStatus = statusOptions.find((opt) => opt.value === newProject.status) || statusOptions[0];
+
+    const createdProject = {
+      id: `PRJ-INFRA-0${projectsList.length + 1}`,
+      name: newProject.name,
+      department: newProject.department,
+      pincode: newProject.pincode,
+      startDate: newProject.startDate || "01 Aug 2026",
+      expectedCompletion: newProject.expectedCompletion || "30 Nov 2026",
+      progress: newProject.status === "Completed" ? 100 : 15,
+      budget: budgetNum,
+      utilizedBudget: utilNum,
+      remainingBudget: Math.max(0, budgetNum - utilNum),
+      relatedComplaintsCount: 0,
+      affectedCitizens: citizensNum,
+      status: foundStatus.value,
+      statusBadge: foundStatus.badgeClass,
+      connectedComplaints: [],
+    };
+
+    setProjectsList([createdProject, ...projectsList]);
+    setNewProject({
+      name: "",
+      department: "Engineering & Road Ops",
+      pincode: "",
+      startDate: "",
+      expectedCompletion: "",
+      budget: "",
+      utilizedBudget: "",
+      affectedCitizens: "",
+      status: "In Progress",
+    });
+    setAddSuccessMsg("Project added successfully!");
+    setTimeout(() => setAddSuccessMsg(""), 3500);
+  };
+
+  const handleUtilizedBudgetChange = (newVal) => {
+    const numVal = Number(newVal) || 0;
+    setSelectedProjectModal((prev) => {
+      if (!prev) return prev;
+      const updated = {
+        ...prev,
+        utilizedBudget: numVal,
+        remainingBudget: Math.max(0, prev.budget - numVal),
+      };
+      setProjectsList((list) =>
+        list.map((p) => (p.id === prev.id ? updated : p))
+      );
+      return updated;
+    });
+  };
+
+  const handleExpectedCompletionChange = (newVal) => {
+    setSelectedProjectModal((prev) => {
+      if (!prev) return prev;
+      const updated = {
+        ...prev,
+        expectedCompletion: newVal,
+      };
+      setProjectsList((list) =>
+        list.map((p) => (p.id === prev.id ? updated : p))
+      );
+      return updated;
+    });
+  };
+
+  const handleProgressChange = (newProgress) => {
+    const numVal = Number(newProgress) || 0;
+    setSelectedProjectModal((prev) => {
+      if (!prev) return prev;
+      const isCompleted = numVal === 100;
+      const updatedStatus = isCompleted ? "Completed" : "In Progress";
+      const updatedBadge = isCompleted
+        ? "bg-emerald-50 text-emerald-700 border-emerald-300"
+        : "bg-teal-50 text-[#008D78] border-teal-200";
+
+      const updated = {
+        ...prev,
+        progress: numVal,
+        status: updatedStatus,
+        statusBadge: updatedBadge,
+      };
+      setProjectsList((list) =>
+        list.map((p) => (p.id === prev.id ? updated : p))
+      );
+      return updated;
+    });
+  };
+
+  const filteredProjects = projectsList.filter((p) => {
     if (activeTab === "all") return true;
     return p.status.toLowerCase() === activeTab.toLowerCase();
   });
 
   return (
-    <div className="space-y-6">
-      {/* Header Banner */}
-      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between border-b border-[#D6E6F7] pb-4">
-        <div>
-          <div className="mb-1 flex items-center gap-2">
-            <span className="h-px w-6 bg-[#2D7FF9]" />
-            <span className="text-[11px] font-extrabold tracking-[0.18em] text-[#1E4FA3] uppercase">
-              CAPITAL PROJECTS & COMPLAINT INTEGRATION
-            </span>
+    <div className="space-y-8 text-[#0D1B2A] font-['Inter',sans-serif]">
+      {/* 1. HEADER BANNER MATCHING DASHBOARD DESIGN SYSTEM */}
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#2D7FF9]" />
+        
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="flex items-center gap-2 text-xs font-black tracking-widest text-[#2D7FF9] uppercase mb-2">
+              CAPITAL INFRASTRUCTURE & PROJECTS
+            </p>
+            <h1 className="text-4xl sm:text-5xl font-black text-[#0D1B2A] tracking-tight">
+              Municipal <span className="text-[#2D7FF9]">Projects</span>
+            </h1>
+            <p className="mt-2 text-base font-semibold text-[#59687A]">
+              Track municipal capital works and inspect structural connections to citizen complaint clusters.
+            </p>
           </div>
-          <h1 className="text-2xl font-black tracking-[-0.03em] text-[#0D1B2A]">
-            18. PROJECT INTELLIGENCE
-          </h1>
-          <p className="text-xs font-semibold text-[#4B5563]">
-            Track municipal capital projects and their direct structural connection to citizen inquiry clusters.
-          </p>
-        </div>
 
-        <div>
-          <span className="inline-flex items-center gap-2 rounded-full bg-[#2D7FF9]/10 px-3.5 py-1 text-xs font-extrabold text-[#2D7FF9] border border-[#2D7FF9]/20">
-            <span className="h-2 w-2 rounded-full bg-[#2D7FF9] animate-ping" />
-            4 Tracked Infrastructure Projects
-          </span>
+          <div className="flex items-center gap-3">
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-5 py-3.5 text-base font-semibold">
+              <span className="text-[#657386] block text-xs font-black uppercase tracking-wider">Active Infrastructure</span>
+              <span className="text-[#0D1B2A] font-black text-xl">{projectsList.length} Tracked</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Quote Callout Banner */}
-      <div className="rounded-2xl border border-white/10 bg-[#0D1B2A] p-6 text-white shadow-xl">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="h-2 w-2 rounded-full bg-[#00A68E] animate-pulse" />
-          <span className="text-xs font-black uppercase tracking-[0.16em] text-[#8DBBFF]">
-            CivicMirror Platform Philosophy
-          </span>
+      {/* 2. ADD PROJECT SECTION WITH COMPLETE PARAMETERS */}
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-5">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div>
+            <h2 className="text-sm font-black uppercase tracking-wider text-[#0D1B2A]">
+              REGISTER NEW CAPITAL PROJECT
+            </h2>
+            <p className="text-xs text-[#59687A] font-medium mt-0.5">
+              Input comprehensive infrastructure specifications to correlate incoming citizen inquiries.
+            </p>
+          </div>
+          {addSuccessMsg && (
+            <span className="rounded-lg bg-emerald-50 text-[#008D78] border border-emerald-200 px-3 py-1 text-xs font-black">
+              ✓ {addSuccessMsg}
+            </span>
+          )}
         </div>
 
-        <div className="border-l-4 border-[#2D7FF9] pl-4 py-1">
-          <p className="text-base font-bold text-white italic leading-relaxed">
-            "CivicMirror doesn't merely store complaints — it connects them to municipal reality."
-          </p>
-        </div>
+        <form onSubmit={handleAddProject} className="space-y-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Field 1: Project Name */}
+            <div>
+              <label className="block text-[11px] font-black uppercase text-slate-500 tracking-wider mb-1">
+                Project Name *
+              </label>
+              <input
+                type="text"
+                required
+                value={newProject.name}
+                onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
+                placeholder="e.g. Sector 4 Drainage Upgrade"
+                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-xs font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
+              />
+            </div>
+
+            {/* Field 2: Department */}
+            <div>
+              <label className="block text-[11px] font-black uppercase text-slate-500 tracking-wider mb-1">
+                Department
+              </label>
+              <select
+                value={newProject.department}
+                onChange={(e) => setNewProject({ ...newProject, department: e.target.value })}
+                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-xs font-semibold text-[#0D1B2A] focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all cursor-pointer"
+              >
+                <option value="Engineering & Road Ops">Engineering & Road Ops</option>
+                <option value="Electrical Works">Electrical Works</option>
+                <option value="Water Supply & Sanitation">Water Supply & Sanitation</option>
+                <option value="Stormwater Operations">Stormwater Operations</option>
+                <option value="Public Health & Sanitation">Public Health & Sanitation</option>
+              </select>
+            </div>
+
+            {/* Field 3: Pincode */}
+            <div>
+              <label className="block text-[11px] font-black uppercase text-slate-500 tracking-wider mb-1">
+                Pincode *
+              </label>
+              <input
+                type="text"
+                required
+                value={newProject.pincode}
+                onChange={(e) => setNewProject({ ...newProject, pincode: e.target.value })}
+                placeholder="e.g. 110025"
+                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-xs font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
+              />
+            </div>
+
+            {/* Field 4: Start Date */}
+            <div>
+              <label className="block text-[11px] font-black uppercase text-slate-500 tracking-wider mb-1">
+                Start Date
+              </label>
+              <input
+                type="text"
+                value={newProject.startDate}
+                onChange={(e) => setNewProject({ ...newProject, startDate: e.target.value })}
+                placeholder="e.g. 01 Aug 2026"
+                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-xs font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
+              />
+            </div>
+
+            {/* Field 5: Expected Completion */}
+            <div>
+              <label className="block text-[11px] font-black uppercase text-slate-500 tracking-wider mb-1">
+                Expected Completion
+              </label>
+              <input
+                type="text"
+                value={newProject.expectedCompletion}
+                onChange={(e) => setNewProject({ ...newProject, expectedCompletion: e.target.value })}
+                placeholder="e.g. 30 Nov 2026"
+                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-xs font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
+              />
+            </div>
+
+            {/* Field 6: Total Budget */}
+            <div>
+              <label className="block text-[11px] font-black uppercase text-slate-500 tracking-wider mb-1">
+                Total Budget (₹) *
+              </label>
+              <input
+                type="number"
+                required
+                value={newProject.budget}
+                onChange={(e) => setNewProject({ ...newProject, budget: e.target.value })}
+                placeholder="e.g. 2500000"
+                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-xs font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
+              />
+            </div>
+
+            {/* Field 7: Initial Utilized Budget */}
+            <div>
+              <label className="block text-[11px] font-black uppercase text-slate-500 tracking-wider mb-1">
+                Utilized Budget (₹)
+              </label>
+              <input
+                type="number"
+                value={newProject.utilizedBudget}
+                onChange={(e) => setNewProject({ ...newProject, utilizedBudget: e.target.value })}
+                placeholder="e.g. 500000"
+                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-xs font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
+              />
+            </div>
+
+            {/* Field 8: Affected Citizens */}
+            <div>
+              <label className="block text-[11px] font-black uppercase text-slate-500 tracking-wider mb-1">
+                Impacted Citizens
+              </label>
+              <input
+                type="number"
+                value={newProject.affectedCitizens}
+                onChange={(e) => setNewProject({ ...newProject, affectedCitizens: e.target.value })}
+                placeholder="e.g. 150"
+                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-xs font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
+              />
+            </div>
+          </div>
+
+          {/* Row 3: Status & Action Button */}
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 pt-2 border-t border-slate-100">
+            <div className="w-full sm:w-64">
+              <label className="block text-[11px] font-black uppercase text-slate-500 tracking-wider mb-1">
+                Initial Status
+              </label>
+              <select
+                value={newProject.status}
+                onChange={(e) => setNewProject({ ...newProject, status: e.target.value })}
+                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-xs font-semibold text-[#0D1B2A] focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all cursor-pointer"
+              >
+                {statusOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              className="h-10 rounded-xl bg-[#2D7FF9] px-6 text-xs font-black text-white hover:bg-[#1E4FA3] active:scale-95 transition-all shadow-xs flex items-center justify-center gap-1.5 shrink-0"
+            >
+              + Add Project
+            </button>
+          </div>
+        </form>
       </div>
 
-      {/* Projects Dashboard Controls & Filter Tabs */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-[#D6E6F7] pb-4">
+      {/* 3. DASHBOARD FILTER CONTROLS */}
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-xs font-extrabold tracking-[0.16em] uppercase text-[#1E4FA3]">
-            20. PROJECT STATUS & AUDIT
+          <h2 className="text-sm font-black uppercase tracking-wider text-slate-500">
+            Project Status & Audit
           </h2>
-          <p className="text-xs text-slate-400 font-medium">Select a project to inspect budget utilization and complaint tree.</p>
+          <p className="text-xs text-[#59687A] font-semibold">Filter projects by operational status and inspect detailed infrastructure specifications.</p>
         </div>
 
-        <div className="flex rounded-lg bg-[#FAFAFC] border border-[#D6E6F7] p-1 text-xs font-bold">
-          <button
-            onClick={() => setActiveTab("all")}
-            className={`rounded-md px-3 py-1.5 ${activeTab === "all" ? "bg-[#0D1B2A] text-white" : "text-[#4B5563]"}`}
-          >
-            All ({projectsData.length})
-          </button>
-          <button
-            onClick={() => setActiveTab("active")}
-            className={`rounded-md px-3 py-1.5 ${activeTab === "active" ? "bg-[#00A68E] text-white" : "text-[#4B5563]"}`}
-          >
-            Active
-          </button>
-          <button
-            onClick={() => setActiveTab("delayed")}
-            className={`rounded-md px-3 py-1.5 ${activeTab === "delayed" ? "bg-[#FF5252] text-white" : "text-[#4B5563]"}`}
-          >
-            Delayed
-          </button>
-          <button
-            onClick={() => setActiveTab("planned")}
-            className={`rounded-md px-3 py-1.5 ${activeTab === "planned" ? "bg-amber-600 text-white" : "text-[#4B5563]"}`}
-          >
-            Planned
-          </button>
+        <div className="flex rounded-xl bg-slate-100 p-1.5 text-xs font-black gap-1 flex-wrap">
+          {["all", "in progress", "completed"].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`rounded-lg px-4 py-2 uppercase transition-all ${
+                activeTab === tab
+                  ? "bg-[#0D1B2A] text-white shadow-xs"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              {tab === "all" ? `All (${projectsList.length})` : tab}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Projects Grid Cards */}
+      {/* 4. PROJECTS GRID CARDS */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {filteredProjects.map((project) => (
           <div
             key={project.id}
-            className="group flex flex-col justify-between rounded-2xl border border-[#D6E6F7] bg-white p-6 shadow-sm transition-all hover:border-[#2D7FF9] hover:shadow-md"
+            className="group flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs hover:border-[#2D7FF9] hover:shadow-md transition-all space-y-5"
           >
             <div>
-              <div className="flex items-start justify-between border-b border-[#D6E6F7] pb-4">
+              <div className="flex items-start justify-between border-b border-slate-100 pb-4">
                 <div>
-                  <span className="font-mono text-[10px] font-extrabold tracking-wider text-slate-400 uppercase">
+                  <span className="text-xs font-black tracking-wider text-[#2D7FF9] uppercase block mb-1">
                     {project.id}
                   </span>
-                  <h3 className="text-lg font-black text-[#0D1B2A] group-hover:text-[#2D7FF9] transition-colors">
+                  <h3 className="text-xl font-black text-[#0D1B2A] group-hover:text-[#2D7FF9] transition-colors">
                     {project.name}
                   </h3>
-                  <p className="text-xs font-bold text-slate-500">📍 {project.location} • {project.department}</p>
+                  <p className="text-xs font-bold text-slate-500 mt-1">📍 Pincode: {project.pincode} • {project.department}</p>
                 </div>
 
-                <span className={`rounded-full border px-3 py-1 text-xs font-black uppercase tracking-wider ${project.statusBadge}`}>
-                  {project.status}
-                </span>
+                {/* EDITABLE STATUS DROPDOWN PILL */}
+                <select
+                  value={project.status}
+                  onChange={(e) => handleStatusChange(project.id, e.target.value)}
+                  className={`rounded-md border px-2.5 py-1 text-xs font-black uppercase tracking-wider cursor-pointer focus:outline-none transition-all ${project.statusBadge}`}
+                >
+                  {statusOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value} className="bg-white text-slate-900 font-semibold">
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* Progress Bar */}
-              <div className="mt-4">
-                <div className="flex items-center justify-between text-xs font-bold mb-1">
-                  <span className="text-slate-500">Current Progress</span>
-                  <span className="font-mono text-[#2D7FF9] font-black">{project.progress}%</span>
+              <div className="mt-4 space-y-1.5">
+                <div className="flex items-center justify-between text-xs font-extrabold">
+                  <span className="text-slate-500">Execution Progress</span>
+                  <span className="text-[#2D7FF9] font-black">{project.progress}%</span>
                 </div>
                 <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
                   <div
                     style={{ width: `${project.progress}%` }}
-                    className="h-full bg-[#2D7FF9] transition-all duration-500"
+                    className="h-full bg-[#2D7FF9] rounded-full transition-all duration-500"
                   />
                 </div>
               </div>
 
               {/* Budget & Complaints Summary Grid */}
               <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
-                <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                  <span className="block text-slate-400 font-semibold text-[11px]">Total Budget</span>
-                  <span className="font-mono text-sm font-black text-[#0D1B2A]">{formatINR(project.budget)}</span>
+                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                  <span className="block text-slate-400 font-bold text-xs uppercase mb-1">Total Budget</span>
+                  <span className="text-base font-black text-[#0D1B2A]">{formatINR(project.budget)}</span>
                 </div>
 
-                <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                  <span className="block text-slate-400 font-semibold text-[11px]">Utilized Budget</span>
-                  <span className="font-mono text-sm font-black text-[#00A68E]">{formatINR(project.utilizedBudget)}</span>
+                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                  <span className="block text-slate-400 font-bold text-xs uppercase mb-1">Utilized Budget</span>
+                  <span className="text-base font-black text-[#008D78]">{formatINR(project.utilizedBudget)}</span>
                 </div>
 
-                <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                  <span className="block text-slate-400 font-semibold text-[11px]">Related Complaints</span>
-                  <span className="font-mono text-sm font-black text-[#2D7FF9]">{project.relatedComplaintsCount} complaints</span>
+                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                  <span className="block text-slate-400 font-bold text-xs uppercase mb-1">Connected Complaints</span>
+                  <span className="text-base font-black text-[#2D7FF9]">{project.relatedComplaintsCount} tickets</span>
                 </div>
 
-                <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                  <span className="block text-slate-400 font-semibold text-[11px]">Affected Area</span>
-                  <span className="font-extrabold text-[#0D1B2A]">{project.location}</span>
+                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                  <span className="block text-slate-400 font-bold text-xs uppercase mb-1">Impacted Citizens</span>
+                  <span className="text-base font-black text-[#0D1B2A]">{project.affectedCitizens} residents</span>
                 </div>
               </div>
             </div>
 
             {/* Actions */}
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-[#D6E6F7] pt-4">
-              <button
-                onClick={() => setSelectedTreeModal(project)}
-                className="rounded-lg bg-[#0D1B2A] px-3.5 py-2 text-xs font-black text-white hover:bg-[#1E4FA3] transition-all flex items-center gap-1.5"
-              >
-                <span>🌿 19. Complaint Tree</span>
-              </button>
-
+            <div className="mt-4 flex items-center justify-end gap-3 border-t border-slate-100 pt-4">
               <button
                 onClick={() => setSelectedProjectModal(project)}
-                className="rounded-lg border border-[#D6E6F7] px-3.5 py-2 text-xs font-extrabold text-[#2D7FF9] hover:bg-slate-50 transition-all"
+                className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-black text-[#2D7FF9] hover:bg-slate-50 transition-all"
               >
-                Full Project Specs →
+                Project Specs →
               </button>
             </div>
           </div>
         ))}
       </div>
 
-      {/* 19. PROJECT -> COMPLAINT CONNECTION TREE MODAL */}
-      {selectedTreeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0D1B2A]/80 p-4 backdrop-blur-md">
-          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-white/10 bg-[#0D1B2A] p-6 text-white shadow-2xl">
-            
-            {/* Modal Header */}
-            <div className="flex items-start justify-between border-b border-white/10 pb-4">
-              <div>
-                <span className="text-xs font-extrabold text-[#8DBBFF] uppercase tracking-wider">
-                  19. PROJECT → COMPLAINT CONNECTION
-                </span>
-                <h3 className="text-xl font-black text-white">{selectedTreeModal.name}</h3>
-                <p className="text-xs text-white/70">Location: {selectedTreeModal.location} • Department: {selectedTreeModal.department}</p>
-              </div>
-
-              <button
-                onClick={() => setSelectedTreeModal(null)}
-                className="rounded-full p-1 text-white/60 hover:bg-white/10 hover:text-white"
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* Tree View Structure */}
-            <div className="my-5 rounded-2xl border border-white/10 bg-white/5 p-6 font-mono text-xs text-white">
-              <span className="text-[10px] font-black uppercase text-[#8DBBFF] block mb-3">
-                PROJECT METADATA TREE
-              </span>
-
-              <div className="space-y-1">
-                <div className="font-bold text-white text-sm">
-                  PROJECT: <span className="text-[#2D7FF9]">{selectedTreeModal.name}</span>
-                </div>
-
-                {selectedTreeModal.connectedComplaints.map((ticket, i, arr) => {
-                  const isLast = i === arr.length - 1;
-                  return (
-                    <div key={ticket.id} className="flex items-start gap-2 text-white/90 pl-3">
-                      <span className="text-white/40">{isLast ? "└──" : "├──"}</span>
-                      <div>
-                        <span className="font-semibold text-white/90">{ticket.title}</span>
-                        <span className="ml-2 rounded bg-white/10 px-2 py-0.5 text-[10px] text-emerald-400">
-                          {ticket.status}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-
-                <div className="pl-3 text-white/40 italic mt-2">
-                  └── ... ({selectedTreeModal.relatedComplaintsCount} total aggregated citizen complaints connected)
-                </div>
-              </div>
-            </div>
-
-            <p className="text-xs font-medium text-white/60 italic border-t border-white/10 pt-3">
-              CivicMirror demonstrates structural accountability by linking citizen issues directly to capital projects.
-            </p>
-
-            <div className="mt-6 flex justify-end">
-              <button
-                onClick={() => setSelectedTreeModal(null)}
-                className="rounded-lg bg-[#2D7FF9] px-4 py-2 text-xs font-extrabold text-white hover:bg-[#1E4FA3]"
-              >
-                Close Connection Tree
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 20. PROJECT STATUS & METRICS SPECIFICATION MODAL */}
+      {/* 5. FULL PROJECT SPECIFICATIONS MODAL */}
       {selectedProjectModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0D1B2A]/70 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl border border-[#D6E6F7] bg-white p-6 shadow-2xl text-[#0D1B2A]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-7 shadow-2xl space-y-6 text-[#0D1B2A]">
             
-            <div className="flex items-start justify-between border-b border-[#D6E6F7] pb-4">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-4">
               <div>
-                <span className="text-xs font-extrabold text-[#2D7FF9] uppercase tracking-wider">
-                  20. FULL PROJECT SPECIFICATIONS
+                <span className="text-xs font-black text-[#2D7FF9] uppercase tracking-wider block mb-1">
+                  FULL INFRASTRUCTURE SPECIFICATIONS
                 </span>
-                <h3 className="text-xl font-black text-[#0D1B2A]">{selectedProjectModal.name}</h3>
-                <span className={`mt-1 inline-block rounded-full border px-3 py-0.5 text-xs font-black uppercase ${selectedProjectModal.statusBadge}`}>
-                  {selectedProjectModal.status}
-                </span>
+                <h3 className="text-2xl font-black text-[#0D1B2A]">{selectedProjectModal.name}</h3>
+                
+                {/* EDITABLE STATUS SELECTOR IN MODAL */}
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="text-[11px] font-black text-slate-400 uppercase">Status:</span>
+                  <select
+                    value={selectedProjectModal.status}
+                    onChange={(e) => handleStatusChange(selectedProjectModal.id, e.target.value)}
+                    className={`rounded-md border px-3 py-0.5 text-xs font-black uppercase tracking-wider cursor-pointer focus:outline-none transition-all ${selectedProjectModal.statusBadge}`}
+                  >
+                    {statusOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value} className="bg-white text-slate-900 font-semibold">
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <button
                 onClick={() => setSelectedProjectModal(null)}
-                className="rounded-full p-1 text-slate-400 hover:bg-slate-100"
+                className="rounded-xl border border-slate-200 p-2 text-slate-400 hover:bg-slate-50 hover:text-slate-800 text-lg font-bold"
               >
                 ✕
               </button>
             </div>
 
             {/* Metrics Breakdown Grid */}
-            <div className="my-5 space-y-3 text-xs">
+            <div className="space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                  <span className="text-slate-400 block font-semibold">Handling Department</span>
-                  <span className="font-extrabold text-[#0D1B2A]">{selectedProjectModal.department}</span>
+                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                  <span className="text-slate-400 block font-bold uppercase mb-1">Department</span>
+                  <span className="font-extrabold text-[#0D1B2A] text-sm">{selectedProjectModal.department}</span>
                 </div>
 
-                <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                  <span className="text-slate-400 block font-semibold">Project Location</span>
-                  <span className="font-extrabold text-[#0D1B2A]">📍 {selectedProjectModal.location}</span>
+                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                  <span className="text-slate-400 block font-bold uppercase mb-1">Pincode</span>
+                  <span className="font-extrabold text-[#0D1B2A] text-sm">📍 {selectedProjectModal.pincode}</span>
                 </div>
 
-                <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                  <span className="text-slate-400 block font-semibold">Start Date</span>
-                  <span className="font-bold text-[#0D1B2A]">{selectedProjectModal.startDate}</span>
+                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                  <span className="text-slate-400 block font-bold uppercase mb-1">Start Date</span>
+                  <span className="font-extrabold text-[#0D1B2A] text-sm">{selectedProjectModal.startDate}</span>
                 </div>
 
-                <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                  <span className="text-slate-400 block font-semibold">Expected Completion</span>
-                  <span className="font-bold text-[#0D1B2A]">{selectedProjectModal.expectedCompletion}</span>
+                {/* EDITABLE EXPECTED COMPLETION */}
+                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-200 focus-within:border-[#2D7FF9] focus-within:bg-white transition-all">
+                  <label className="text-slate-400 block font-bold uppercase mb-1 text-[11px] flex items-center justify-between">
+                    <span>Expected Completion</span>
+                    <span className="text-[#2D7FF9] text-[10px] font-black">✏️ EDITABLE</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedProjectModal.expectedCompletion}
+                    onChange={(e) => handleExpectedCompletionChange(e.target.value)}
+                    className="w-full bg-transparent font-extrabold text-[#0D1B2A] text-sm focus:outline-none border-b border-dashed border-slate-300 focus:border-[#2D7FF9] pb-0.5"
+                    placeholder="e.g. 30 August 2026"
+                  />
                 </div>
 
-                <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                  <span className="text-slate-400 block font-semibold">Total Budget</span>
-                  <span className="font-mono text-base font-black text-[#0D1B2A]">{formatINR(selectedProjectModal.budget)}</span>
+                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                  <span className="text-slate-400 block font-bold uppercase mb-1">Total Budget</span>
+                  <span className="text-base font-black text-[#0D1B2A]">{formatINR(selectedProjectModal.budget)}</span>
                 </div>
 
-                <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                  <span className="text-slate-400 block font-semibold">Utilized Budget</span>
-                  <span className="font-mono text-base font-black text-[#00A68E]">{formatINR(selectedProjectModal.utilizedBudget)}</span>
+                {/* EDITABLE UTILIZED BUDGET */}
+                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-200 focus-within:border-[#008D78] focus-within:bg-white transition-all">
+                  <label className="text-slate-400 block font-bold uppercase mb-1 text-[11px] flex items-center justify-between">
+                    <span>Utilized Budget (₹)</span>
+                    <span className="text-[#008D78] text-[10px] font-black">✏️ EDITABLE</span>
+                  </label>
+                  <input
+                    type="number"
+                    value={selectedProjectModal.utilizedBudget}
+                    onChange={(e) => handleUtilizedBudgetChange(e.target.value)}
+                    className="w-full bg-transparent text-base font-black text-[#008D78] focus:outline-none border-b border-dashed border-slate-300 focus:border-[#008D78] pb-0.5"
+                    placeholder="Enter amount in ₹"
+                  />
                 </div>
 
-                <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                  <span className="text-slate-400 block font-semibold">Remaining Budget</span>
-                  <span className="font-mono text-base font-black text-[#2D7FF9]">{formatINR(selectedProjectModal.remainingBudget)}</span>
+                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                  <span className="text-slate-400 block font-bold uppercase mb-1">Remaining Budget</span>
+                  <span className="text-base font-black text-[#2D7FF9]">{formatINR(selectedProjectModal.remainingBudget)}</span>
                 </div>
 
-                <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                  <span className="text-slate-400 block font-semibold">Affected Citizens</span>
-                  <span className="font-mono text-base font-black text-[#0D1B2A]">{selectedProjectModal.affectedCitizens} citizens</span>
+                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                  <span className="text-slate-400 block font-bold uppercase mb-1">Affected Citizens</span>
+                  <span className="text-base font-black text-[#0D1B2A]">{selectedProjectModal.affectedCitizens} citizens</span>
                 </div>
               </div>
 
-              <div className="rounded-xl bg-[#FAFAFC] p-4 border border-[#D6E6F7]">
-                <div className="flex justify-between font-bold text-xs mb-1">
-                  <span>Execution Progress</span>
-                  <span className="text-[#2D7FF9] font-mono font-black">{selectedProjectModal.progress}%</span>
+              {/* EDITABLE EXECUTION PROGRESS */}
+              <div className="rounded-xl bg-slate-50 p-4 border border-slate-200 focus-within:border-[#2D7FF9] transition-all space-y-3">
+                <div className="flex justify-between items-center font-bold text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="text-slate-600 uppercase font-black">Execution Progress</span>
+                    <span className="text-[#2D7FF9] text-[10px] font-black">✏️ EDITABLE</span>
+                  </div>
+                  <span className="text-[#2D7FF9] font-black text-sm">{selectedProjectModal.progress}%</span>
                 </div>
-                <div className="h-3 w-full overflow-hidden rounded-full bg-slate-200">
-                  <div
-                    style={{ width: `${selectedProjectModal.progress}%` }}
-                    className="h-full bg-[#2D7FF9]"
-                  />
+
+                {/* Interactive Slider Track */}
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={selectedProjectModal.progress}
+                  onChange={(e) => handleProgressChange(Number(e.target.value))}
+                  className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#2D7FF9]"
+                />
+
+                {/* Step Preset Buttons: 0%, 25%, 50%, 75%, 100% */}
+                <div className="grid grid-cols-5 gap-2 pt-1 border-t border-slate-100">
+                  {[0, 25, 50, 75, 100].map((step) => (
+                    <button
+                      key={step}
+                      type="button"
+                      onClick={() => handleProgressChange(step)}
+                      className={`py-1.5 rounded-lg text-xs font-black transition-all text-center ${
+                        selectedProjectModal.progress === step
+                          ? "bg-[#2D7FF9] text-white shadow-xs scale-105"
+                          : "bg-white border border-slate-200 text-slate-600 hover:border-[#2D7FF9] hover:text-[#2D7FF9]"
+                      }`}
+                    >
+                      {step}%
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-end border-t border-[#D6E6F7] pt-4">
+            <div className="flex justify-end border-t border-slate-100 pt-3">
               <button
                 onClick={() => setSelectedProjectModal(null)}
-                className="rounded-lg bg-[#0D1B2A] px-4 py-2 text-xs font-extrabold text-white hover:bg-[#1E4FA3]"
+                className="rounded-xl bg-[#0D1B2A] px-5 py-2.5 text-xs font-black text-white hover:bg-[#2D7FF9] transition-all"
               >
-                Close Specifications
+                Save & Close
               </button>
             </div>
           </div>

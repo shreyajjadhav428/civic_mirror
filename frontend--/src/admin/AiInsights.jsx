@@ -1,389 +1,369 @@
 import React, { useState } from "react";
 
 export default function AiInsights() {
-  const [selectedWhyModal, setSelectedWhyModal] = useState(null);
-  const [selectedEvidenceDrawer, setSelectedEvidenceDrawer] = useState(null);
-
-  // Observations Dataset (Section 21)
-  const observationsList = [
+  // Available clusters for Root Cause Analysis dropdown
+  const clustersList = [
     {
-      id: "OBS-01",
-      icon: "✦",
-      text: "23 complaints appear connected to one ongoing project (Electrical Maintenance Phase II).",
-      location: "Shanti Nagar",
+      id: "CLT-01",
+      name: "Streetlight – Shanti Nagar",
+      pincode: "400012",
       department: "Electrical Works",
-      whyReason: "Spatial overlay of 23 complaint coordinates perfectly matches Transformer Node #4 coverage area under Phase II maintenance.",
-      evidenceFiles: [
-        { name: "Electrical Maintenance Work Order", type: "PDF", records: 42, summary: "Work order specifying transformer replacement schedule." },
-        { name: "Engineering Dependency Report", type: "PDF", records: 18, summary: "Circuit line diagrams showing grid connection." }
+      complaintCount: 23,
+      rootCause: "Multiple streetlight complaints appear to be concentrated within Shanti Nagar and may be associated with ongoing municipal infrastructure activity (Electrical Maintenance Phase II).",
+      whyFactors: [
+        "23 complaints aggregated across 0.5 sq km",
+        "High geographic concentration in Ward 4",
+        "Repeated infrastructure issue around Transformer Node #4",
+        "Related municipal information matches Phase II maintenance schedule"
+      ],
+      recommendation: "Prioritize investigation and accelerated completion of the existing municipal infrastructure activity affecting the area.",
+      reasoning: "Addressing a common underlying transformer issue will automatically resolve multiple citizen complaints simultaneously instead of treating each ticket independently.",
+      evidence: [
+        { id: "DOC-101", name: "Work Order (Electrical Maintenance Phase II)", type: "PDF", records: 42, summary: "Official work order specifying transformer replacement schedule for Shanti Nagar." },
+        { id: "DOC-102", name: "Engineering Report (Circuit & Grid Map)", type: "PDF", records: 18, summary: "Circuit line diagrams showing grid connection to 147 households." },
+        { id: "DOC-103", name: "Project Record (Phase II Milestone Log)", type: "XLSX", records: 86, summary: "Contractor milestone verification log showing 82% physical progress." },
+        { id: "DOC-104", name: "Budget Information (Capital Expenditure 2026)", type: "PDF", records: 428, summary: "Line-item budget allocation statement authorized for electrical overhaul." }
       ]
     },
     {
-      id: "OBS-02",
-      icon: "✦",
-      text: "Shanti Nagar has the highest concentration of electrical issues in Ward 4.",
-      location: "Shanti Nagar",
-      department: "Electrical Works",
-      whyReason: "Density calculation indicates 4.2 complaints per square kilometer versus city average of 0.8.",
-      evidenceFiles: [
-        { name: "GIS Density Analysis 2026", type: "CSV", records: 194, summary: "Raw spatial density points across central ward." }
+      id: "CLT-02",
+      name: "Water Pipeline Leak – Ward 3",
+      pincode: "400005",
+      department: "Water Supply & Sewage",
+      complaintCount: 18,
+      rootCause: "Sub-surface pressure fluctuation at Main Feeder Junction B-12 caused minor joint rupture following heavy transit loads.",
+      whyFactors: [
+        "18 low-pressure & water seepage reports within 300 meters",
+        "High geographic concentration around Feeder Junction B-12",
+        "Repeated pressure surge logs registered at 03:00 AM",
+        "Related municipal telemetry confirms 14% flow drop"
+      ],
+      recommendation: "Deploy Emergency Valve Crew to isolate Junction B-12 and execute automated pressure regulation.",
+      reasoning: "Preventative valve stabilization prevents secondary road sub-base erosion and restores normal pressure to 300+ residential connections.",
+      evidence: [
+        { id: "DOC-201", name: "Telemetry Pressure Log (Junction B-12)", type: "CSV", records: 312, summary: "24-hour sensor telemetry recording pressure drop at 03:14 AM." },
+        { id: "DOC-202", name: "Water Network Schematic Ward 3", type: "PDF", records: 24, summary: "Feeder pipe geometry and valve positioning map." },
+        { id: "DOC-203", name: "Emergency Dispatch Ticket #892", type: "PDF", records: 12, summary: "Rapid-response crew dispatch log and equipment checklist." }
       ]
     },
     {
-      id: "OBS-03",
-      icon: "✦",
-      text: "Existing project may address multiple active complaints simultaneously.",
-      location: "Shanti Nagar & Sector 12",
-      department: "Multi-Departmental",
-      whyReason: "Resolving the primary transformer node will automatically restore power to 147 connected residential households.",
-      evidenceFiles: [
-        { name: "Budget Allocation Statement 2026", type: "PDF", records: 428, summary: "Capital expenditure authorization log." }
-      ]
-    },
-    {
-      id: "OBS-04",
-      icon: "✦",
-      text: "Independent repair operations may result in duplicated effort and budget waste.",
-      location: "Shanti Nagar",
-      department: "Audit & Finance",
-      whyReason: "Dispatching ad-hoc repair crews independently of Phase II will incur an unnecessary ₹1,20,000 duplicated labor expense.",
-      evidenceFiles: [
-        { name: "Project Status Report Phase II", type: "XLSX", records: 86, summary: "Contractor milestone payment log." }
+      id: "CLT-03",
+      name: "Road Resurfacing Delay – Sector 12",
+      pincode: "400018",
+      department: "Engineering & Roads",
+      complaintCount: 15,
+      rootCause: "Contractor asphalt mix delivery delayed due to quarry supply bottleneck during monsoon transition.",
+      whyFactors: [
+        "15 pothole & road damage complaints along Sector 12 arterial route",
+        "High concentration on 1.2 km transit corridor",
+        "Repeated vehicle damage claims logged by commuters",
+        "Related municipal contract indicates 45% completion delay"
+      ],
+      recommendation: "Issue formal contractor compliance notice and deploy temporary cold-mix patch crew immediately.",
+      reasoning: "Temporary cold-mix patching mitigates immediate traffic safety hazards while formal contract escalation enforces timeline adherence.",
+      evidence: [
+        { id: "DOC-301", name: "Road Inspection Audit (Sector 12)", type: "PDF", records: 64, summary: "Physical inspection log recording 17 distinct surface deformities." },
+        { id: "DOC-302", name: "Contractor Penalty Notice #410", type: "PDF", records: 8, summary: "Legal notice issued for missing Milestone #3 resurfacing deadline." },
+        { id: "DOC-303", name: "Cold-Mix Material Inventory", type: "XLSX", records: 35, summary: "Municipal depot stock availability for immediate deployment." }
       ]
     }
   ];
 
-  // Recommendations Dataset (Section 22 & 23)
-  const recommendationsList = [
-    {
-      id: "REC-01",
-      title: "Prioritize completion of Electrical Maintenance Phase II.",
-      department: "Electrical Works",
-      reasons: [
-        "23 related complaints aggregated from Shanti Nagar",
-        "147 potentially affected citizens in residential sector",
-        "82% project completion already achieved",
-        "Existing project already covers the affected infrastructure area"
-      ],
-      expectedImpact: "Potentially address 23 active complaints upon project completion.",
-      evidenceDrawer: [
-        { name: "Electrical Maintenance Work Order", type: "PDF", records: 42, summary: "Work order specifying transformer replacement schedule." },
-        { name: "Engineering Dependency Report", type: "PDF", records: 18, summary: "Circuit line diagrams showing grid connection." },
-        { name: "Budget Allocation Statement 2026", type: "PDF", records: 428, summary: "Capital expenditure line-item allocation." },
-        { name: "Project Status Report Phase II", type: "XLSX", records: 86, summary: "Contractor milestone verification log." }
-      ]
-    },
-    {
-      id: "REC-02",
-      title: "Deploy temporary asphalt patch crew to Sector 12 arterial route.",
-      department: "Engineering & Road Maintenance",
-      reasons: [
-        "17 pothole complaints along high-volume transit route",
-        "Critical potholes (#5102, #5119, #5140) exceed 4-inch hazard threshold",
-        "Phase I resurfacing is delayed (45% complete)",
-        "Mitigates immediate traffic safety risks while contractor mobilizes"
-      ],
-      expectedImpact: "Temporarily mitigate 17 road safety complaints prior to major resurfacing.",
-      evidenceDrawer: [
-        { name: "Road Damage Inspection Log", type: "CSV", records: 64, summary: "Field inspection measurements of pothole depth." },
-        { name: "Sector 12 Contractor Delay Notice", type: "PDF", records: 12, summary: "Official explanation for asphalt supply delay." }
-      ]
-    }
-  ];
+  // Active state selection
+  const [selectedClusterId, setSelectedClusterId] = useState(clustersList[0].id);
+  const [activeCluster, setActiveCluster] = useState(clustersList[0]);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analyzedSuccess, setAnalyzedSuccess] = useState(false);
+  const [selectedEvidenceDoc, setSelectedEvidenceDoc] = useState(null);
+
+  // Trigger simulated AI Analysis
+  const handleAnalyze = () => {
+    setIsAnalyzing(true);
+    setAnalyzedSuccess(false);
+
+    setTimeout(() => {
+      const cluster = clustersList.find((c) => c.id === selectedClusterId) || clustersList[0];
+      setActiveCluster(cluster);
+      setIsAnalyzing(false);
+      setAnalyzedSuccess(true);
+      setTimeout(() => setAnalyzedSuccess(false), 3000);
+    }, 600);
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Header Banner */}
-      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between border-b border-[#D6E6F7] pb-4">
-        <div>
-          <div className="mb-1 flex items-center gap-2">
-            <span className="h-px w-6 bg-[#2D7FF9]" />
-            <span className="text-[11px] font-extrabold tracking-[0.18em] text-[#1E4FA3] uppercase">
-              EXPLAINABLE MUNICIPAL INTELLIGENCE
-            </span>
-          </div>
-          <h1 className="text-2xl font-black tracking-[-0.03em] text-[#0D1B2A]">
-            21. CIVICMIRROR AI INSIGHTS
-          </h1>
-          <p className="text-xs font-semibold text-[#4B5563]">
-            Dedicated administrative intelligence portal separating analytical observations from actionable recommendations, backed by transparent evidence drawers.
-          </p>
-        </div>
+    <div className="space-y-8 text-[#0D1B2A] font-['Inter',sans-serif]">
+      {/* 1. HEADER BANNER (100% Identical Layout & Styling to Complaint Clusters) */}
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs relative overflow-hidden">
+        {/* Top Accent bar */}
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#2D7FF9]" />
 
-        <div>
-          <span className="inline-flex items-center gap-2 rounded-full bg-[#2D7FF9]/10 px-3.5 py-1 text-xs font-extrabold text-[#2D7FF9] border border-[#2D7FF9]/20">
-            <span className="h-2 w-2 rounded-full bg-[#2D7FF9] animate-ping" />
-            AI Analytical Engine Active
-          </span>
-        </div>
-      </div>
-
-      {/* 21. AI OBSERVATIONS (INSIGHTS) CARD */}
-      <div className="rounded-2xl border border-white/10 bg-[#0D1B2A] p-6 text-white shadow-xl">
-        <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <span className="text-xs font-black uppercase tracking-[0.16em] text-[#8DBBFF]">
-              21. CIVICMIRROR AI INSIGHTS
-            </span>
-            <h2 className="text-xl font-black text-white">
-              Real-time Analytical Observations
-            </h2>
+            <p className="flex items-center gap-2 text-sm font-black tracking-widest text-[#2D7FF9] uppercase mb-2">
+              <span className="h-[3px] w-6 bg-[#2D7FF9] rounded-full inline-block" />
+              EXPLAINABLE MUNICIPAL INTELLIGENCE
+            </p>
+            <h1 className="text-4xl sm:text-5xl font-black text-[#0D1B2A] tracking-tight flex items-center gap-3">
+              AI <span className="text-[#2D7FF9]">Insights</span>
+              {isAnalyzing && <span className="text-xs font-semibold text-slate-400 animate-pulse">(Running AI correlation...)</span>}
+            </h1>
+            <p className="mt-2 text-lg font-semibold text-[#59687A] max-w-2xl">
+              Transform complaint patterns into <strong>explainable administrative intelligence</strong> and root cause analysis.
+            </p>
           </div>
-          <span className="text-xs font-mono text-[#8DBBFF]">
-            {observationsList.length} Active Insights
-          </span>
-        </div>
 
-        <div className="space-y-3">
-          {observationsList.map((obs) => (
-            <div
-              key={obs.id}
-              className="group relative flex flex-col gap-3 rounded-xl border border-white/10 bg-white/5 p-4 text-xs sm:flex-row sm:items-center sm:justify-between transition-all overflow-hidden"
-            >
-              <svg className="absolute inset-0 h-full w-full pointer-events-none rounded-xl">
-                <rect
-                  x="1"
-                  y="1"
-                  width="calc(100% - 2px)"
-                  height="calc(100% - 2px)"
-                  rx="11"
-                  ry="11"
-                  fill="none"
-                  stroke="#2D7FF9"
-                  strokeWidth="2"
-                  pathLength="100"
-                  className="card-circle-stroke opacity-0"
-                />
-              </svg>
-
-              <div className="flex items-start gap-3 relative z-10">
-                <span className="text-sm text-[#2D7FF9] font-black">{obs.icon}</span>
-                <div>
-                  <p className="font-extrabold text-white text-sm leading-relaxed">{obs.text}</p>
-                  <div className="mt-1 flex items-center gap-2 text-[11px] text-white/50">
-                    <span>Location: <strong className="text-amber-300">{obs.location}</strong></span>
-                    <span>•</span>
-                    <span>Department: <strong className="text-emerald-300">{obs.department}</strong></span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 shrink-0 relative z-10">
-                <button
-                  onClick={() => setSelectedWhyModal(obs)}
-                  className="rounded-lg bg-white/10 px-3 py-1.5 font-bold text-white hover:bg-white/20 transition-all"
-                >
-                  Why? →
-                </button>
-
-                <button
-                  onClick={() => setSelectedEvidenceDrawer({ title: obs.text, files: obs.evidenceFiles })}
-                  className="rounded-lg bg-[#2D7FF9] px-3.5 py-1.5 font-extrabold text-white hover:bg-[#1E4FA3] transition-all"
-                >
-                  View Evidence →
-                </button>
-              </div>
+          {/* Stat Box */}
+          <div className="flex flex-col sm:items-end gap-3 shrink-0">
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-5 py-3 text-base font-semibold">
+              <span className="text-[#657386] block text-xs font-black uppercase tracking-wider">Reasoning Engine</span>
+              <span className="text-[#0D1B2A] font-black text-xl">{clustersList.length} Correlated Clusters</span>
             </div>
-          ))}
+          </div>
         </div>
+
+        {/* 2. CLUSTER SELECTOR & SEARCH/TRIGGER BAR INSIDE BANNER */}
+        <div className="mt-7 pt-6 border-t border-slate-100 flex flex-col gap-3.5 sm:flex-row sm:items-center justify-between">
+          {/* Target Cluster Dropdown */}
+          <div className="flex-1 max-w-xl flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-2.5 text-sm font-bold">
+            <span className="text-slate-500 whitespace-nowrap">Target Cluster:</span>
+            <select
+              value={selectedClusterId}
+              onChange={(e) => setSelectedClusterId(e.target.value)}
+              className="w-full bg-transparent text-[#0D1B2A] font-black outline-none cursor-pointer text-sm"
+            >
+              {clustersList.map((cluster) => (
+                <option key={cluster.id} value={cluster.id}>
+                  {cluster.name} ({cluster.pincode} • {cluster.complaintCount} complaints)
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Analyze Trigger Button */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleAnalyze}
+              disabled={isAnalyzing}
+              className="rounded-xl bg-[#0D1B2A] px-6 py-3 text-xs font-black text-white hover:bg-[#2D7FF9] transition-all shadow-xs disabled:opacity-50 cursor-pointer flex items-center gap-2"
+            >
+              {isAnalyzing ? (
+                <>
+                  <span className="h-3.5 w-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                  <span>ANALYZING WITH AI...</span>
+                </>
+              ) : (
+                <>
+                  <span>✦ ANALYZE WITH CIVICMIRROR AI</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {analyzedSuccess && (
+          <div className="mt-4 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-2.5 text-xs font-black text-[#008D78] flex items-center gap-2">
+            <span>✓</span>
+            <span>AI Root Cause Analysis updated successfully for {activeCluster.name}.</span>
+          </div>
+        )}
       </div>
 
-      {/* 22. AI RECOMMENDATIONS SECTION */}
-      <div className="rounded-2xl border border-[#D6E6F7] bg-white p-6 shadow-sm">
-        <div className="border-b border-[#D6E6F7] pb-4 mb-5">
-          <span className="text-xs font-black uppercase tracking-[0.16em] text-[#2D7FF9]">
-            22. ACTIONABLE AI RECOMMENDATIONS
-          </span>
-          <h2 className="text-xl font-black text-[#0D1B2A]">
-            Administrative Action Recommendations
-          </h2>
-          <p className="text-xs text-slate-400 font-medium">Distinct from analytical observations — provides clear rationale and expected impact.</p>
-        </div>
-
-        <div className="space-y-6">
-          {recommendationsList.map((rec) => (
-            <div
-              key={rec.id}
-              className="group relative rounded-2xl border border-[#D6E6F7] bg-[#FAFAFC] p-6 shadow-sm space-y-4 overflow-hidden"
-            >
-              <svg className="absolute inset-0 h-full w-full pointer-events-none rounded-2xl">
-                <rect
-                  x="1"
-                  y="1"
-                  width="calc(100% - 2px)"
-                  height="calc(100% - 2px)"
-                  rx="15"
-                  ry="15"
-                  fill="none"
-                  stroke="#2D7FF9"
-                  strokeWidth="2.5"
-                  pathLength="100"
-                  className="card-circle-stroke opacity-0"
-                />
-              </svg>
-
-              {/* Recommendation Title */}
-              <div className="relative z-10">
-                <span className="text-[11px] font-black uppercase text-[#2D7FF9] tracking-wider block mb-1">
-                  AI RECOMMENDATION
-                </span>
-                <h3 className="text-lg font-black text-[#0D1B2A]">{rec.title}</h3>
-                <span className="text-xs font-bold text-slate-400">Target Department: {rec.department}</span>
-              </div>
-
-              {/* Rationale Breakdown */}
-              <div className="rounded-xl border border-[#D6E6F7] bg-white p-4 text-xs space-y-2">
-                <span className="text-[11px] font-black uppercase text-[#0D1B2A] tracking-wider block mb-1">
-                  Reason & Supporting Factors:
-                </span>
-                <div className="space-y-1 font-mono">
-                  {rec.reasons.map((r, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <span className="text-[#00A68E] font-black">✓</span>
-                      <span className="text-slate-700 font-semibold">{r}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Expected Impact Box */}
-              <div className="rounded-xl border border-[#00A68E]/30 bg-[#00A68E]/10 p-4 text-xs">
-                <span className="text-[11px] font-black uppercase text-[#00A68E] tracking-wider block mb-0.5">
-                  Expected Impact:
-                </span>
-                <p className="font-extrabold text-[#0D1B2A] text-sm">
-                  {rec.expectedImpact}
-                </p>
-              </div>
-
-              {/* 23. EVIDENCE CONTROLS */}
-              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#D6E6F7] pt-4">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setSelectedWhyModal({ text: rec.title, whyReason: rec.reasons.join(" • ") })}
-                    className="rounded-lg border border-[#D6E6F7] bg-white px-3.5 py-2 text-xs font-extrabold text-[#0D1B2A] hover:bg-slate-100"
-                  >
-                    [ WHY? ]
-                  </button>
-
-                  <button
-                    onClick={() => setSelectedEvidenceDrawer({ title: rec.title, files: rec.evidenceDrawer })}
-                    className="rounded-lg bg-[#0D1B2A] px-4 py-2 text-xs font-black text-white hover:bg-[#1E4FA3] flex items-center gap-1.5"
-                  >
-                    <span>📄 [ VIEW EVIDENCE ]</span>
-                  </button>
-                </div>
-
-                <button
-                  className="rounded-lg bg-[#2D7FF9] px-4 py-2 text-xs font-black text-white hover:bg-[#1E4FA3]"
-                >
-                  Approve & Dispatch Work Order →
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+      {/* SUB-SECTION HEADER LINE (Matching Complaint Clusters layout) */}
+      <div className="flex items-center justify-between pt-1">
+        <span className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400">
+          <span className="h-[2px] w-4 bg-slate-300 rounded-full" />
+          ROOT CAUSE & EVIDENCE CORRELATION
+        </span>
+        <span className="text-xs font-bold text-slate-400">
+          Endpoint: POST /api/admin/insights
+        </span>
       </div>
 
-      {/* WHY? EXPLAINABLE REASONING MODAL */}
-      {selectedWhyModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0D1B2A]/80 p-4 backdrop-blur-md">
-          <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#0D1B2A] p-6 text-white shadow-2xl">
-            <div className="flex items-start justify-between border-b border-white/10 pb-4">
-              <div>
-                <span className="text-xs font-extrabold text-[#8DBBFF] uppercase tracking-wider">
-                  AI INSIGHT REASONING ("WHY?")
-                </span>
-                <h3 className="text-base font-black text-white mt-1">{selectedWhyModal.text}</h3>
-              </div>
-              <button
-                onClick={() => setSelectedWhyModal(null)}
-                className="rounded-full p-1 text-white/60 hover:bg-white/10"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="my-5 rounded-xl border border-[#2D7FF9]/40 bg-[#2D7FF9]/10 p-5 text-xs text-white">
-              <span className="text-[11px] font-black uppercase text-[#8DBBFF] block mb-2">
-                CivicMirror Reasoning Engine Logic:
+      {/* 3. AI ANALYSIS & ROOT CAUSE DISPLAY GRID */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Column: Root Cause & Why Breakdown & Recommendation */}
+        <div className="lg:col-span-7 space-y-6">
+          {/* CIVICMIRROR AI ANALYSIS CARD */}
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-5">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <span className="text-sm font-black uppercase tracking-wider text-[#2D7FF9]">
+                CIVICMIRROR AI ANALYSIS
               </span>
-              <p className="font-bold text-white text-sm leading-relaxed">
-                "{selectedWhyModal.whyReason}"
+              <span className="text-xs font-extrabold text-slate-500">
+                Cluster Ref: {activeCluster.id}
+              </span>
+            </div>
+
+            {/* Root Cause Box */}
+            <div className="rounded-xl bg-slate-50/80 p-4.5 border border-slate-200 space-y-1.5">
+              <span className="text-xs font-black uppercase tracking-wider text-slate-400 block">
+                ROOT CAUSE IDENTIFIED
+              </span>
+              <p className="text-base font-extrabold text-[#0D1B2A] leading-relaxed">
+                "{activeCluster.rootCause}"
               </p>
             </div>
 
-            <div className="flex justify-end">
+            {/* Why Is This Cluster Important? Breakdown */}
+            <div className="space-y-3 pt-1">
+              <span className="text-sm font-black uppercase tracking-wider text-[#0D1B2A] block">
+                WHY IS THIS CLUSTER IMPORTANT?
+              </span>
+
+              <div className="rounded-xl bg-slate-50/80 p-4 border border-slate-200 space-y-2.5 text-sm font-bold">
+                <div className="flex items-center gap-2 text-[#0D1B2A]">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#0D1B2A] text-xs font-black text-white">
+                    #
+                  </span>
+                  <span className="font-extrabold text-base">{activeCluster.complaintCount} Citizen Complaints Aggregated</span>
+                </div>
+
+                {activeCluster.whyFactors.map((factor, idx) => (
+                  <div key={idx} className="flex items-start gap-2.5 text-slate-600 pl-1 pt-2 border-t border-slate-200/60">
+                    <span className="text-[#2D7FF9] font-black text-base leading-none">+</span>
+                    <span className="font-semibold text-slate-700 text-[13px]">{factor}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* AI RECOMMENDATION CARD */}
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4">
+            <div className="border-b border-slate-100 pb-3">
+              <span className="text-xs font-black uppercase tracking-wider text-[#008D78]">
+                AI RECOMMENDATION
+              </span>
+              <h3 className="text-xl font-black text-[#0D1B2A] mt-0.5">
+                {activeCluster.recommendation}
+              </h3>
+            </div>
+
+            {/* Reasoning Box */}
+            <div className="rounded-xl bg-teal-50/60 p-4 border border-teal-200/80 space-y-1">
+              <span className="text-xs font-black uppercase tracking-wider text-[#008D78] block">
+                ADMINISTRATIVE REASONING
+              </span>
+              <p className="text-sm font-bold text-[#0D1B2A] leading-relaxed">
+                "{activeCluster.reasoning}"
+              </p>
+            </div>
+
+            <div className="pt-2 flex justify-end">
               <button
-                onClick={() => setSelectedWhyModal(null)}
-                className="rounded-lg bg-[#2D7FF9] px-4 py-2 text-xs font-extrabold text-white hover:bg-[#1E4FA3]"
+                onClick={() => alert(`Work Order dispatched for ${activeCluster.name}`)}
+                className="rounded-xl bg-[#008D78] px-5 py-2.5 text-sm font-black text-white hover:bg-[#0D1B2A] transition-all shadow-xs cursor-pointer"
               >
-                Understood
+                Approve & Dispatch Work Order →
               </button>
             </div>
           </div>
         </div>
-      )}
 
-      {/* 23. EVIDENCE DRAWER MODAL */}
-      {selectedEvidenceDrawer && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0D1B2A]/80 p-4 backdrop-blur-md">
-          <div className="w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl border border-[#D6E6F7] bg-white p-6 shadow-2xl text-[#0D1B2A]">
-            <div className="flex items-start justify-between border-b border-[#D6E6F7] pb-4">
+        {/* Right Column: SUPPORTING EVIDENCE WITH AI INSIGHTS */}
+        <div className="lg:col-span-5">
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-4 sticky top-6">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
-                <span className="text-xs font-extrabold text-[#2D7FF9] uppercase tracking-wider">
-                  23. EVIDENCE FOR ADMIN AI
-                </span>
-                <h3 className="text-lg font-black text-[#0D1B2A]">Evidence Document Inspection Drawer</h3>
-                <p className="text-xs text-slate-400 font-medium">{selectedEvidenceDrawer.title}</p>
+                <h3 className="text-sm font-black uppercase tracking-wider text-[#0D1B2A]">
+                  SUPPORTING EVIDENCE
+                </h3>
+                <p className="text-xs font-semibold text-slate-500">
+                  Click any document to inspect vector-indexed source records.
+                </p>
               </div>
-              <button
-                onClick={() => setSelectedEvidenceDrawer(null)}
-                className="rounded-full p-1 text-slate-400 hover:bg-slate-100"
-              >
-                ✕
-              </button>
+              <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-black text-slate-700">
+                {activeCluster.evidence.length} Files
+              </span>
             </div>
 
-            {/* Evidence File Cards List */}
-            <div className="my-5 space-y-3">
-              <span className="text-[11px] font-black uppercase text-slate-500 tracking-wider block">
-                Supporting Municipal Evidence ({selectedEvidenceDrawer.files.length} Documents):
-              </span>
-
-              {selectedEvidenceDrawer.files.map((file, idx) => (
-                <div
-                  key={idx}
-                  className="rounded-xl border border-[#D6E6F7] bg-[#FAFAFC] p-4 text-xs space-y-2 transition-all hover:border-[#2D7FF9]"
+            {/* Clickable Evidence List */}
+            <div className="space-y-2.5">
+              {activeCluster.evidence.map((doc) => (
+                <button
+                  key={doc.id}
+                  onClick={() => setSelectedEvidenceDoc(doc)}
+                  className="w-full text-left rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 hover:border-[#2D7FF9] hover:bg-white transition-all group cursor-pointer space-y-1.5 shadow-2xs"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-base">📄</span>
-                      <h4 className="font-extrabold text-[#0D1B2A]">{file.name}</h4>
+                      <span className="text-sm font-black text-[#0D1B2A] group-hover:text-[#2D7FF9] transition-colors">
+                        {doc.name}
+                      </span>
                     </div>
-                    <span className="rounded bg-[#0D1B2A] px-2 py-0.5 font-mono text-[10px] text-white font-bold">
-                      {file.type}
+                    <span className="rounded-md bg-white border border-slate-200 px-2 py-0.5 text-xs font-black text-slate-600">
+                      {doc.type}
                     </span>
                   </div>
-
-                  <p className="text-slate-600 font-medium">"{file.summary}"</p>
-
-                  <div className="flex items-center justify-between text-[11px] text-slate-400 font-semibold border-t border-[#D6E6F7] pt-2">
-                    <span>Extracted Records: <strong className="text-[#2D7FF9]">{file.records}</strong></span>
-                    <span className="text-[#2D7FF9] font-bold">
-                      Source Vector Verified ✓
-                    </span>
+                  <p className="text-xs font-medium text-slate-500 line-clamp-2 pl-6">
+                    {doc.summary}
+                  </p>
+                  <div className="pl-6 pt-1 flex items-center justify-between text-[11px] font-bold text-slate-400 border-t border-slate-100">
+                    <span>{doc.records} Extracted Records</span>
+                    <span className="text-[#2D7FF9] group-hover:underline">Inspect Document →</span>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
+          </div>
+        </div>
+      </div>
 
-            <div className="flex justify-end border-t border-[#D6E6F7] pt-4">
+      {/* 4. EVIDENCE DOCUMENT INSPECTION MODAL */}
+      {selectedEvidenceDoc && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 p-4 backdrop-blur-sm">
+          <div className="modal-popup-container w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl space-y-5">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <span className="text-3xl">📄</span>
+                <div>
+                  <span className="text-xs font-black text-[#2D7FF9] uppercase tracking-wider block mb-0.5">
+                    SUPPORTING EVIDENCE INSPECTION ({selectedEvidenceDoc.id})
+                  </span>
+                  <h3 className="text-lg font-black text-[#0D1B2A]">{selectedEvidenceDoc.name}</h3>
+                </div>
+              </div>
               <button
-                onClick={() => setSelectedEvidenceDrawer(null)}
-                className="rounded-lg bg-[#0D1B2A] px-4 py-2 text-xs font-extrabold text-white hover:bg-[#1E4FA3]"
+                onClick={() => setSelectedEvidenceDoc(null)}
+                className="rounded-xl border border-slate-200 p-2 text-slate-400 hover:bg-slate-50 hover:text-slate-800 text-lg font-bold"
               >
-                Close Evidence Drawer
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="rounded-xl bg-slate-50 p-4 border border-slate-100 space-y-1">
+                <span className="text-[11px] font-black text-slate-400 uppercase block">Document Summary</span>
+                <p className="font-bold text-[#0D1B2A] leading-relaxed">
+                  "{selectedEvidenceDoc.summary}"
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                  <span className="text-slate-400 block font-bold uppercase text-[10px] mb-0.5">File Format</span>
+                  <span className="text-sm font-black text-[#0D1B2A]">{selectedEvidenceDoc.type}</span>
+                </div>
+
+                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                  <span className="text-slate-400 block font-bold uppercase text-[10px] mb-0.5">Extracted Vector Records</span>
+                  <span className="text-sm font-black text-[#2D7FF9]">{selectedEvidenceDoc.records} records</span>
+                </div>
+              </div>
+
+              <div className="rounded-xl bg-teal-50 border border-teal-200 p-3.5 text-xs font-black text-[#008D78] flex items-center justify-between">
+                <span>Knowledge Graph Status</span>
+                <span>Verified Source ✓</span>
+              </div>
+            </div>
+
+            <div className="flex justify-end border-t border-slate-100 pt-4">
+              <button
+                onClick={() => setSelectedEvidenceDoc(null)}
+                className="rounded-xl bg-[#0D1B2A] px-5 py-2.5 text-xs font-black text-white hover:bg-[#2D7FF9] transition-all cursor-pointer"
+              >
+                Close Inspection Drawer
               </button>
             </div>
           </div>

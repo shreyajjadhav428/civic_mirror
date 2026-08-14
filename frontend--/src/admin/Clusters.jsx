@@ -94,7 +94,7 @@ export default function Clusters({ onNavigate }) {
           <div className="flex flex-col sm:items-end gap-3 shrink-0">
             <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-5 py-3 text-base font-semibold">
               <span className="text-[#657386] block text-xs font-black uppercase tracking-wider">Active Clusters</span>
-              <span className="text-[#0D1B2A] font-black font-mono text-xl">{filteredClusters.length} Clustered Groups</span>
+              <span className="text-[#0D1B2A] font-black text-xl">{filteredClusters.length} Clustered Groups</span>
             </div>
           </div>
         </div>
@@ -136,7 +136,7 @@ export default function Clusters({ onNavigate }) {
               <select
                 value={selectedPincode}
                 onChange={(e) => setSelectedPincode(e.target.value)}
-                className="bg-transparent text-[#0D1B2A] font-black outline-none cursor-pointer font-mono"
+                className="bg-transparent text-[#0D1B2A] font-black outline-none cursor-pointer"
               >
                 {availablePincodes.map((pin) => (
                   <option key={pin} value={pin}>
@@ -183,7 +183,7 @@ export default function Clusters({ onNavigate }) {
                   {/* Header Row */}
                   <div className="flex items-start justify-between mb-4 pt-1">
                     <div>
-                      <span className="font-mono text-xs font-black tracking-wider text-slate-400 uppercase block mb-0.5">
+                      <span className="text-xs font-black tracking-wider text-slate-400 uppercase block mb-0.5">
                         {cluster.id}
                       </span>
                       <h3 className={`text-xl font-black text-[#0D1B2A] ${cluster.titleHover} transition-colors leading-tight`}>
@@ -200,7 +200,7 @@ export default function Clusters({ onNavigate }) {
                   <div className="rounded-xl bg-slate-50/70 p-4 border border-slate-100 space-y-3">
                     <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
                       <span className="text-sm font-bold text-slate-500">Aggregated Complaints</span>
-                      <span className="font-mono font-black text-[#0D1B2A] text-lg">
+                      <span className="font-black text-[#0D1B2A] text-lg">
                         {cluster.complaintCount} complaints
                       </span>
                     </div>
@@ -208,7 +208,7 @@ export default function Clusters({ onNavigate }) {
                     <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
                       <span className="text-sm font-bold text-slate-500">Geographic Location</span>
                       <span className="font-black text-[#0D1B2A] text-base">
-                        {cluster.location} <span className="font-mono text-slate-400 font-medium">({cluster.pincode})</span>
+                        {cluster.location} <span className="text-slate-400 font-medium">({cluster.pincode})</span>
                       </span>
                     </div>
 
@@ -275,7 +275,7 @@ export default function Clusters({ onNavigate }) {
               <div className="grid grid-cols-2 gap-3 text-base">
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
                   <span className="text-xs font-black text-slate-400 uppercase block mb-1">Complaint Count</span>
-                  <span className="font-mono font-black text-[#0D1B2A] text-lg">{selectedCluster.complaintCount}</span>
+                  <span className="font-black text-[#0D1B2A] text-lg">{selectedCluster.complaintCount}</span>
                 </div>
 
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
@@ -285,7 +285,7 @@ export default function Clusters({ onNavigate }) {
 
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
                   <span className="text-xs font-black text-slate-400 uppercase block mb-1">Pincode</span>
-                  <span className="font-mono font-black text-[#0D1B2A]">{selectedCluster.pincode}</span>
+                  <span className="font-black text-[#0D1B2A]">{selectedCluster.pincode}</span>
                 </div>
 
                 <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
@@ -309,7 +309,7 @@ export default function Clusters({ onNavigate }) {
               </h4>
 
               <div className="rounded-xl bg-slate-50 p-4 border border-slate-200/80 space-y-2">
-                <span className="text-xs font-black uppercase tracking-wider text-slate-400 font-mono block mb-2">
+                <span className="text-xs font-black uppercase tracking-wider text-slate-400 block mb-2">
                   AGGREGATED INCOMING TICKETS ({selectedCluster.relatedComplaints?.length || 0})
                 </span>
                 <ul className="space-y-2 text-sm font-semibold text-slate-700">
