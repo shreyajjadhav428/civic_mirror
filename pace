@@ -1,0 +1,11 @@
+ frontend--/src/citizen/CitizenDashboard.jsx        |   12 [32m+[m[31m-[m
+ frontend--/src/citizen/Overview.jsx                |  552 [32m+++++++++[m[31m--[m
+ frontend--/src/citizen/ProfilePage.jsx             |  385 [32m+++++[m[31m---[m
+ frontend--/src/citizen/Request.jsx                 |  685 [32m+++++++++++[m[31m--[m
+ frontend--/src/citizen/Requests.jsx                |  318 [32m+++++[m[31m-[m
+ frontend--/src/citizen/SettingsPage.jsx            |  295 [32m++++[m[31m--[m
+ frontend--/src/citizen/TrackRepairs.jsx            | 1008 [32m++++++++++++++++++[m[31m--[m
+ frontend--/src/citizen/Updates.jsx                 |  411 [32m+++++++[m[31m-[m
+ .../src/citizen/components/CitizenSidebar.jsx      |  333 [32m++++[m[31m---[m
+ .../src/citizen/components/CitizenTopBar.jsx       |  312 [32m+++[m[31m---[m
+ 10 files changed, 3552 insertions(+), 759 deletions(-)

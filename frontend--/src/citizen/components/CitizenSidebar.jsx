@@ -1,4 +1,4 @@
-
+import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 
 const primaryNavigation = [
@@ -67,147 +67,250 @@ function SidebarIcon({ name }) {
 
 export default function CitizenSidebar({ onLogout }) {
   const navigate = useNavigate();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const toggleSidebar = () => {
+      setMobileOpen((open) => !open);
+    };
+
+    const closeSidebar = () => {
+      setMobileOpen(false);
+    };
+
+    window.addEventListener("citizen:toggle-sidebar", toggleSidebar);
+    window.addEventListener("citizen:close-sidebar", closeSidebar);
+
+    return () => {
+      window.removeEventListener("citizen:toggle-sidebar", toggleSidebar);
+      window.removeEventListener("citizen:close-sidebar", closeSidebar);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!mobileOpen) {
+      document.body.style.overflow = "";
+      return;
+    }
+
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
+  const closeMobileSidebar = () => {
+    setMobileOpen(false);
+  };
+
+  const handleNavigation = () => {
+    closeMobileSidebar();
+  };
 
   const navigationClassName = ({ isActive }) =>
     [
-      "group relative flex min-h-[42px] w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-[14px] font-medium",
+      "group relative flex min-h-[44px] w-full items-center gap-3 rounded-[9px] px-3 py-2.5 text-left text-[14px] font-medium",
       "transition-all duration-200 ease-out",
       "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]",
 
       isActive
         ? [
-            "bg-[#183B60]",
+            "bg-[#234D78]",
             "text-white",
-            "shadow-[0_4px_14px_rgba(5,18,33,0.10)]",
+            "shadow-[0_3px_12px_rgba(5,18,33,0.16)]",
+            "ring-1 ring-inset ring-white/[0.06]",
             "before:absolute before:left-0 before:top-1/2 before:h-5 before:w-[3px]",
             "before:-translate-y-1/2 before:rounded-r-full",
-            "before:bg-[#4E95FB]",
+            "before:bg-[#69A8FF]",
           ].join(" ")
         : [
             "text-[#B9CBDE]",
-            "hover:bg-white/[0.045]",
+            "hover:bg-white/[0.055]",
             "hover:text-white",
+            "hover:translate-x-[1px]",
           ].join(" "),
     ].join(" ");
 
   return (
-    <aside
-      className="fixed inset-y-0 left-0 z-30 flex w-[248px] flex-col justify-between overflow-y-auto bg-[#102B47] px-4 pb-[18px] pt-6 font-['Inter',sans-serif] text-[#DCE8F5] shadow-[1px_0_0_rgba(255,255,255,0.06),8px_0_24px_rgba(5,18,33,0.12)] max-[860px]:static max-[860px]:w-full max-[860px]:overflow-visible max-[860px]:p-3"
-      aria-label="Citizen dashboard navigation"
-    >
-      <div className="max-[860px]:flex max-[860px]:items-center max-[860px]:gap-[18px]">
+    <>
+      {/* Mobile backdrop */}
+      <div
+        className={[
+          "fixed inset-0 z-40 bg-[#071727]/45 backdrop-blur-[2px] transition-opacity duration-300 min-[861px]:hidden",
+          mobileOpen
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0",
+        ].join(" ")}
+        onClick={closeMobileSidebar}
+        aria-hidden="true"
+      />
 
-        {/* Logo */}
-        <button
-          type="button"
-          onClick={() => navigate("/citizen")}
-          className="flex items-center gap-3 px-2 py-[5px] text-left text-white outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
-          aria-label="CivicMirror home"
-        >
-          <span
-            className="grid h-[34px] w-[34px] place-items-center rounded-lg border border-[#A0C6ED]/30 bg-[#173B61] text-[11px] font-extrabold tracking-[-0.04em] text-[#9DC6FF]"
-            aria-hidden="true"
-          >
-            CM
-          </span>
-
-          <span>
-            <strong className="block text-[15px] font-bold tracking-[-0.02em]">
-              Civic<span className="text-[#69A8FF]">Mirror</span>
-            </strong>
-
-            <small className="mt-0.5 block text-[11px] font-medium text-[#A8BDD2] max-[560px]:hidden">
-              Citizen portal
-            </small>
-          </span>
-        </button>
-
-        {/* Divider */}
-        <div className="mx-2 my-[22px] h-px bg-white/[0.07] max-[860px]:hidden" />
-
-        {/* Main navigation */}
-        <nav
-          className="grid gap-1 max-[860px]:flex max-[860px]:flex-1 max-[860px]:gap-1 max-[860px]:overflow-x-auto"
-          aria-label="Primary navigation"
-        >
-          <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.1em] text-[#809BB7] max-[860px]:hidden">
-            Workspace
-          </p>
-
-          {primaryNavigation.map((item) => (
-            <NavLink
-              key={item.label}
-              to={item.to}
-              end={item.end}
-              className={`${navigationClassName} max-[860px]:w-auto max-[860px]:flex-none max-[860px]:px-2.5 max-[860px]:py-2 max-[560px]:px-2`}
+      {/* Sidebar */}
+      <aside
+        className={[
+          "fixed inset-y-0 left-0 z-50 flex w-[248px] flex-col justify-between overflow-y-auto bg-[#102B47] px-4 pb-[18px] pt-6 font-['Inter',sans-serif] text-[#DCE8F5]",
+          "shadow-[1px_0_0_rgba(255,255,255,0.06),8px_0_24px_rgba(5,18,33,0.18)]",
+          "transition-transform duration-300 ease-out",
+          "min-[861px]:translate-x-0",
+          mobileOpen ? "translate-x-0" : "-translate-x-full",
+          "min-[861px]:z-30",
+        ].join(" ")}
+        aria-label="Citizen dashboard navigation"
+      >
+        <div>
+          {/* Logo */}
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => {
+                navigate("/citizen");
+                handleNavigation();
+              }}
+              className="flex items-center gap-3 px-2 py-[5px] text-left text-white outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
+              aria-label="CivicMirror home"
             >
-              <SidebarIcon name={item.icon} />
-
-              <span className="leading-none max-[560px]:hidden">
-                {item.label}
+              <span
+                className="grid h-[34px] w-[34px] place-items-center rounded-lg border border-[#A0C6ED]/30 bg-[#173B61] text-[11px] font-extrabold tracking-[-0.04em] text-[#9DC6FF]"
+                aria-hidden="true"
+              >
+                CM
               </span>
-            </NavLink>
-          ))}
-        </nav>
-      </div>
 
-      {/* Account section */}
-      <div className="max-[860px]:hidden">
-        <div className="mx-2 my-[22px] h-px bg-white/[0.07]" />
+              <span>
+                <strong className="block text-[15px] font-bold tracking-[-0.02em]">
+                  Civic<span className="text-[#69A8FF]">Mirror</span>
+                </strong>
 
-        <div className="flex items-center gap-2.5 px-2.5 pb-[15px]">
-          <span
-            className="grid h-[31px] w-[31px] shrink-0 place-items-center rounded-full border border-[#A0C6ED]/25 bg-[#1A3D61] text-xs font-bold text-[#CCE2FF]"
-            aria-hidden="true"
+                <small className="mt-0.5 block text-[11px] font-medium text-[#A8BDD2]">
+                  Citizen portal
+                </small>
+              </span>
+            </button>
+
+            {/* Mobile close button */}
+            <button
+              type="button"
+              onClick={closeMobileSidebar}
+              className="grid h-9 w-9 place-items-center rounded-lg text-[#9FB5CA] transition-colors hover:bg-white/[0.06] hover:text-white min-[861px]:hidden"
+              aria-label="Close navigation menu"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              >
+                <path d="M6 6l12 12M18 6 6 18" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Divider */}
+          <div className="mx-2 my-[22px] h-px bg-white/[0.07]" />
+
+          {/* Main navigation */}
+          <nav
+            className="grid gap-1"
+            aria-label="Primary navigation"
           >
-            C
-          </span>
+            <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.1em] text-[#809BB7]">
+              Workspace
+            </p>
 
-          <span>
-            <strong className="block text-xs font-semibold text-[#F0F6FC]">
-              Citizen account
-            </strong>
+            {primaryNavigation.map((item) => (
+              <NavLink
+                key={item.label}
+                to={item.to}
+                end={item.end}
+                onClick={handleNavigation}
+                className={navigationClassName}
+              >
+                {({ isActive }) => (
+                  <>
+                    <SidebarIcon name={item.icon} />
 
-            <small className="mt-0.5 block text-[10px] text-[#93ACC4]">
-              Manage your profile
-            </small>
-          </span>
+                    <span
+                      className={[
+                        "leading-none",
+                        isActive
+                          ? "font-semibold text-white"
+                          : "font-medium",
+                      ].join(" ")}
+                    >
+                      {item.label}
+                    </span>
+                  </>
+                )}
+              </NavLink>
+            ))}
+          </nav>
         </div>
 
-        <div className="grid gap-0.5">
+        {/* Account section */}
+        <div>
+          <div className="mx-2 my-[22px] h-px bg-white/[0.07]" />
 
-          {/* Profile */}
-          <button
-            type="button"
-            onClick={() => navigate("/citizen/profile")}
-            className="flex min-h-[36px] w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#B8CADB] transition-all duration-150 hover:bg-white/[0.045] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
-          >
-            <SidebarIcon name="profile" />
-            <span>Profile</span>
-          </button>
+          <div className="flex items-center gap-2.5 px-2.5 pb-[15px]">
+            <span
+              className="grid h-[31px] w-[31px] shrink-0 place-items-center rounded-full border border-[#A0C6ED]/25 bg-[#1A3D61] text-xs font-bold text-[#CCE2FF]"
+              aria-hidden="true"
+            >
+              C
+            </span>
 
-          {/* Settings */}
-          <button
-            type="button"
-            onClick={() => navigate("/citizen/settings")}
-            className="flex min-h-[36px] w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#B8CADB] transition-all duration-150 hover:bg-white/[0.045] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
-          >
-            <SidebarIcon name="settings" />
-            <span>Settings</span>
-          </button>
+            <span>
+              <strong className="block text-xs font-semibold text-[#F0F6FC]">
+                Citizen account
+              </strong>
 
-          {/* Logout */}
-          <button
-            type="button"
-            onClick={onLogout}
-            className="mt-1 flex min-h-[36px] w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#B8CADB] transition-all duration-150 hover:bg-white/[0.045] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
-          >
-            <SidebarIcon name="logout" />
-            <span>Log out</span>
-          </button>
+              <small className="mt-0.5 block text-[10px] text-[#93ACC4]">
+                Manage your profile
+              </small>
+            </span>
+          </div>
 
+          <div className="grid gap-0.5">
+            {/* Profile */}
+            <button
+              type="button"
+              onClick={() => {
+                navigate("/citizen/profile");
+                handleNavigation();
+              }}
+              className="flex min-h-[36px] w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#B8CADB] transition-all duration-150 hover:bg-white/[0.045] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
+            >
+              <SidebarIcon name="profile" />
+              <span>Profile</span>
+            </button>
+
+            {/* Settings */}
+            <button
+              type="button"
+              onClick={() => {
+                navigate("/citizen/settings");
+                handleNavigation();
+              }}
+              className="flex min-h-[36px] w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#B8CADB] transition-all duration-150 hover:bg-white/[0.045] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
+            >
+              <SidebarIcon name="settings" />
+              <span>Settings</span>
+            </button>
+
+            {/* Logout */}
+            <button
+              type="button"
+              onClick={onLogout}
+              className="mt-1 flex min-h-[36px] w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#B8CADB] transition-all duration-150 hover:bg-white/[0.045] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
+            >
+              <SidebarIcon name="logout" />
+              <span>Log out</span>
+            </button>
+          </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </>
   );
 }
