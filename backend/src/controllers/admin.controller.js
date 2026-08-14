@@ -48,7 +48,7 @@ export const getComplaintClusters = async (req, res) => {
   try {
     const { data: complaints, error } = await supabase
       .from('complaints')
-      .select('id, category, pincode, status, admin_flagged, description, created_at');
+      .select('id, complaint_code, category, pincode, status, admin_flagged, description, created_at');
 
     if (error) throw error;
 
@@ -58,21 +58,66 @@ export const getComplaintClusters = async (req, res) => {
     (complaints || []).forEach(c => {
       const key = `${c.pincode}_${c.category}`;
       if (!clustersMap[key]) {
+        const catSlug = (c.category || 'general').replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 6);
         clustersMap[key] = {
-          clusterId: `cluster-${key.toLowerCase()}`,
+          clusterId: `CLS-${catSlug}-${c.pincode}`,
+          id: `CLS-${catSlug}-${c.pincode}`,
+          title: `${(c.category || 'MUNICIPAL').toUpperCase()} CLUSTER`,
+          category: c.category || 'General',
+          categoryFull: `${c.category} issues & citizen reports`,
+          location: `Pincode ${c.pincode}`,
           pincode: c.pincode,
-          category: c.category,
           complaintCount: 0,
+          department: c.category || 'Municipal Services',
           unmatchedCount: 0,
-          complaints: []
+          complaints: [],
+          relatedComplaints: [],
         };
       }
+
       clustersMap[key].complaintCount += 1;
       if (c.admin_flagged) clustersMap[key].unmatchedCount += 1;
       clustersMap[key].complaints.push(c);
+      clustersMap[key].relatedComplaints.push(c.description);
     });
 
-    const clusters = Object.values(clustersMap);
+    const clusters = Object.values(clustersMap).map((cl) => {
+      const isHighPriority = cl.unmatchedCount > 1 || cl.complaintCount >= 5;
+      const catLower = cl.category.toLowerCase();
+
+      let topAccent = "bg-[#2D7FF9]";
+      let deptColor = "text-[#2D7FF9]";
+
+      if (catLower.includes('road')) {
+        topAccent = "bg-[#FFC107]";
+        deptColor = "text-[#D97706]";
+      } else if (catLower.includes('water')) {
+        topAccent = "bg-[#00A68E]";
+        deptColor = "text-[#00A68E]";
+      } else if (catLower.includes('sanitation') || catLower.includes('drain')) {
+        topAccent = "bg-[#6366F1]";
+        deptColor = "text-[#6366F1]";
+      }
+
+      return {
+        ...cl,
+        priority: isHighPriority ? 'High' : 'Medium',
+        priorityStyle: isHighPriority ? 'bg-red-50 text-red-600 border-red-200' : 'bg-amber-50 text-amber-700 border-amber-200',
+        topAccent,
+        barColor: topAccent,
+        cardHoverBorder: 'hover:border-[#2D7FF9]',
+        btnHover: 'hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white',
+        titleHover: 'group-hover:text-[#2D7FF9]',
+        deptColor,
+        flowChain: [
+          `${cl.complaintCount} COMPLAINTS`,
+          cl.category.toUpperCase(),
+          `PINCODE ${cl.pincode}`,
+          cl.department.toUpperCase(),
+          'RELATED MUNICIPAL CONTEXT'
+        ]
+      };
+    }).sort((a, b) => b.complaintCount - a.complaintCount);
 
     return res.status(200).json({
       status: 'success',

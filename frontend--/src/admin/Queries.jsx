@@ -80,17 +80,33 @@ export default function Queries({ onNavigate }) {
     return matchesSearch;
   });
 
+  // Compute category distribution dynamically from live backend inquiries
+  const categoryCounts = {};
+  inquiries.forEach((item) => {
+    const dept = item.department || "General Administration";
+    categoryCounts[dept] = (categoryCounts[dept] || 0) + 1;
+  });
+
+  const totalInquiriesCount = inquiries.length || 1;
+  const barColors = [
+    "bg-[#2D7FF9]",
+    "bg-[#00A68E]",
+    "bg-[#FFC107]",
+    "bg-[#FF5252]",
+    "bg-[#8E24AA]",
+    "bg-[#00ACC1]",
+  ];
+
+  const categoryDistribution = Object.entries(categoryCounts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, count], idx) => ({
+      name,
+      count,
+      percentage: Math.round((count / totalInquiriesCount) * 100),
+      barColor: barColors[idx % barColors.length],
+    }));
+
   return (
-<<<<<<< HEAD
-    <div className="space-y-6">
-      {/* Section Header */}
-      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between border-b border-[#D6E6F7] pb-4">
-        <div>
-          <h1 className="text-2xl font-black tracking-[-0.03em] text-[#0D1B2A] flex items-center gap-3">
-            Citizen Queries & Inquiries Logs
-            {loading && <span className="text-xs font-semibold text-slate-400 animate-pulse">(Fetching live data...)</span>}
-          </h1>
-=======
     <div className="space-y-8 text-[#0D1B2A] font-['Inter',sans-serif]">
       {/* 1. TOP HEADER BANNER MATCHING CITIZEN PORTAL WELCOME SECTION */}
       <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs relative overflow-hidden">
@@ -126,7 +142,6 @@ export default function Queries({ onNavigate }) {
               <span className="text-[#0D1B2A] font-black font-mono text-xl">220 Logged</span>
             </div>
           </div>
->>>>>>> 995d6d0469b500f838d4adad657b81fc0ef7e544
         </div>
       </div>
 
@@ -143,105 +158,8 @@ export default function Queries({ onNavigate }) {
             </h3>
           </div>
         </div>
-<<<<<<< HEAD
-
-        <div className="my-4 border-l-4 border-[#2D7FF9] pl-4 py-1">
-          <p className="text-lg font-bold text-white leading-relaxed">
-            {aiInsight.summaryText}
-          </p>
-        </div>
-
-        <div className="mt-5 border-t border-white/10 pt-4">
-          <span className="text-[12px] font-extrabold uppercase tracking-[0.14em] text-white/50">
-            Supporting Information:
-          </span>
-
-          <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 font-mono text-xs">
-            <div className="rounded-xl bg-white/5 p-4 border border-white/10">
-              <span className="block text-2xl font-semibold text-[#2D7FF9]">
-                {aiInsight.totalRelatedQueries}
-              </span>
-              <span className="text-white/70 font-sans text-md">total logged inquiries</span>
-            </div>
-
-            <div className="rounded-xl bg-white/5 p-4 border border-white/10">
-              <span className="block text-2xl font-semibold text-[#00A68E]">
-                {aiInsight.projectRelationPercent}%
-              </span>
-              <span className="text-white/70 font-sans text-md">related to active projects</span>
-            </div>
-
-            <div className="rounded-xl bg-white/5 p-4 border border-white/10">
-              <span className="block text-md font-black uppercase tracking-wider text-[#FFC107] mb-1 font-sans">
-                Most Affected:
-              </span>
-              <ul className="space-y-0.5 font-sans text-md font-semibold text-white/80">
-                {aiInsight.mostAffectedLocations.length > 0 ? (
-                  aiInsight.mostAffectedLocations.map((loc, i) => <li key={i}>• {loc}</li>)
-                ) : (
-                  <li>• None</li>
-                )}
-              </ul>
-            </div>
-
-            <div className="rounded-xl bg-white/5 p-4 border border-white/10">
-              <span className="block text-md font-black uppercase tracking-wider text-[#8DBBFF] mb-1 font-sans">
-                Primary Departments:
-              </span>
-              <ul className="space-y-0.5 font-sans text-md font-semibold text-white/80">
-                {aiInsight.primaryDepartments.length > 0 ? (
-                  aiInsight.primaryDepartments.map((dept, i) => <li key={i}>• {dept}</li>)
-                ) : (
-                  <li>• None</li>
-                )}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* MOST COMMON CITIZEN QUERIES CARD */}
-      <div className="rounded-2xl border border-[#D6E6F7] bg-white p-6 shadow-sm">
-        <div className="border-b border-[#D6E6F7] pb-4">
-          <span className="text-xs font-black uppercase tracking-[0.16em] text-[#2D7FF9]">
-            MOST COMMON CITIZEN QUERIES
-          </span>
-          <p className="mt-1 text-sm font-bold text-[#0D1B2A]">
-            What are citizens repeatedly asking?
-          </p>
-        </div>
-
-        <div className="mt-5 space-y-3">
-          {loading && commonQueries.length === 0 ? (
-            <div className="py-8 text-center text-xs font-semibold text-slate-400 animate-pulse">
-              Loading citizen query trends from database...
-            </div>
-          ) : commonQueries.length === 0 ? (
-            <div className="py-8 text-center text-xs font-semibold text-slate-400">
-              No repeated citizen queries logged yet.
-            </div>
-          ) : (
-            commonQueries.map((query) => (
-              <button
-                key={query.id}
-                onClick={() => setSelectedCommonQuery(query)}
-                className="flex w-full items-center justify-between rounded-xl border border-[#D6E6F7] bg-[#FAFAFC] p-4 text-left transition-all hover:bg-slate-100 hover:border-[#2D7FF9]"
-              >
-                <div>
-                  <p className="font-extrabold text-[#0D1B2A] text-sm">{query.question}</p>
-                  <p className="text-xs font-semibold text-[#2D7FF9]">{query.requestCount} requests</p>
-                </div>
-                <span className="text-xs font-bold text-slate-400 hover:text-[#0D1B2A]">Inspect →</span>
-              </button>
-            ))
-          )}
-        </div>
-        <p className="mt-4 text-xs font-medium text-slate-400">
-          Click any query to inspect related requests, locations, departments, associated projects, and similar clustered queries.
-=======
         <p className="text-base text-slate-500 font-medium italic">
           If the backend returns enough aggregated information:
->>>>>>> 995d6d0469b500f838d4adad657b81fc0ef7e544
         </p>
 
         <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs relative overflow-hidden">
@@ -381,63 +299,6 @@ export default function Queries({ onNavigate }) {
           </div>
         </div>
 
-<<<<<<< HEAD
-        <div className="my-5">
-          <input
-            type="text"
-            placeholder="Search by topic, ID, or department..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-11 w-full max-w-md rounded-xl border border-[#D6E6F7] bg-[#FAFAFC] px-4 text-sm text-[#0D1B2A] outline-none focus:border-[#2D7FF9]"
-          />
-        </div>
-
-        <div className="overflow-x-auto">
-          {loading && inquiries.length === 0 ? (
-            <div className="py-12 text-center text-xs font-semibold text-slate-400 animate-pulse">
-              Loading public inquiries from database...
-            </div>
-          ) : filteredInquiries.length === 0 ? (
-            <div className="py-12 text-center text-xs font-semibold text-slate-400">
-              No inquiries match your current filter or search criteria.
-            </div>
-          ) : (
-            <table className="w-full text-left text-sm text-[#0D1B2A]">
-              <thead className="bg-[#FAFAFC] text-xs font-black uppercase text-[#4B5563]">
-                <tr>
-                  <th className="px-4 py-3">Inquiry ID</th>
-                  <th className="px-4 py-3">Topic / Citizen</th>
-                  <th className="px-4 py-3">Department</th>
-                  <th className="px-4 py-3">AI Verification</th>
-                  <th className="px-4 py-3 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#D6E6F7]/60">
-                {filteredInquiries.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-50">
-                    <td className="px-4 py-4 font-mono text-xs font-extrabold text-[#2D7FF9]">{item.id}</td>
-                    <td className="px-4 py-4 font-bold max-w-md line-clamp-1">{item.topic}</td>
-                    <td className="px-4 py-4 text-xs">{item.department}</td>
-                    <td className="px-4 py-4 text-xs font-bold">
-                      <span
-                        className={`inline-block px-2.5 py-1 rounded-full ${
-                          item.aiStatus === "Verified"
-                            ? "bg-emerald-100 text-emerald-800"
-                            : item.aiStatus === "Flagged"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-amber-100 text-amber-800"
-                        }`}
-                      >
-                        {item.aiStatus} ({item.confidence})
-                      </span>
-                    </td>
-                    <td className="px-4 py-4 text-right">
-                      <button
-                        onClick={() => setSelectedInquiry(item)}
-                        className="rounded-lg border border-[#D6E6F7] px-3 py-1.5 text-xs font-bold text-[#2D7FF9] hover:bg-slate-100"
-                      >
-                        Inspect
-=======
         <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs space-y-5">
           {/* Search */}
           <div className="max-w-md">
@@ -495,18 +356,13 @@ export default function Queries({ onNavigate }) {
                         className="rounded-xl border border-slate-200 px-4 py-2 text-xs font-black text-[#0D1B2A] hover:bg-[#2D7FF9] hover:text-white hover:border-[#2D7FF9] transition shadow-2xs"
                       >
                         Inspect →
->>>>>>> 995d6d0469b500f838d4adad657b81fc0ef7e544
                       </button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-<<<<<<< HEAD
-          )}
-=======
           </div>
->>>>>>> 995d6d0469b500f838d4adad657b81fc0ef7e544
         </div>
       </div>
 
@@ -567,46 +423,18 @@ export default function Queries({ onNavigate }) {
                 </ul>
               </div>
 
-<<<<<<< HEAD
-              <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                <span className="font-extrabold text-[#1E4FA3] uppercase block mb-1">Affected Locations</span>
-                <div className="flex flex-wrap gap-1.5">
-                  {selectedCommonQuery.locations?.map((loc, i) => (
-                    <span key={i} className="rounded bg-slate-200 px-2 py-0.5 font-bold text-[#0D1B2A]">{loc}</span>
-=======
               <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
                 <span className="font-black text-[#0D1B2A] block mb-1">Affected Locations</span>
                 <div className="flex flex-wrap gap-2">
                   {selectedCommonQuery.locations.map((loc, i) => (
                     <span key={i} className="rounded-lg bg-white px-3 py-1 font-extrabold text-slate-700 border border-slate-200 text-sm">{loc}</span>
->>>>>>> 995d6d0469b500f838d4adad657b81fc0ef7e544
                   ))}
                 </div>
               </div>
 
-<<<<<<< HEAD
-              <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                <span className="font-extrabold text-[#1E4FA3] uppercase block mb-1">Handling Departments</span>
-                <p className="font-bold text-slate-700">{selectedCommonQuery.departments?.join(", ")}</p>
-              </div>
-
-              <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                <span className="font-extrabold text-[#1E4FA3] uppercase block mb-1">Associated Capital Projects</span>
-                <p className="font-bold text-slate-700">{selectedCommonQuery.projects?.join(", ")}</p>
-              </div>
-
-              <div className="rounded-xl bg-[#FAFAFC] p-3 border border-[#D6E6F7]">
-                <span className="font-extrabold text-[#1E4FA3] uppercase block mb-1">Similar Clustered Queries</span>
-                <ul className="list-disc pl-4 space-y-1 font-medium text-slate-600">
-                  {selectedCommonQuery.similarQueries?.map((sim, i) => (
-                    <li key={i}>{sim}</li>
-                  ))}
-                </ul>
-=======
               <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
                 <span className="font-black text-[#0D1B2A] block mb-1">Handling Departments</span>
                 <p className="font-extrabold text-slate-700">{selectedCommonQuery.departments.join(", ")}</p>
->>>>>>> 995d6d0469b500f838d4adad657b81fc0ef7e544
               </div>
             </div>
 
@@ -628,47 +456,12 @@ export default function Queries({ onNavigate }) {
           <div className="modal-popup-container w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-7 shadow-2xl">
             <div className="flex items-start justify-between border-b border-slate-100 pb-4">
               <div>
-<<<<<<< HEAD
-                <span className="font-mono text-xs font-extrabold text-[#2D7FF9]">{selectedInquiry.id}</span>
-                <h3 className="text-xl font-black text-[#0D1B2A]">Inquiry Audit Trail</h3>
-                <span className="text-xs font-semibold text-slate-500">Citizen Pincode: {selectedInquiry.pincode}</span>
-=======
                 <span className="font-mono text-xs font-black text-[#2D7FF9]">{selectedInquiry.id}</span>
                 <h3 className="text-2xl font-black text-[#0D1B2A] mt-0.5">{selectedInquiry.topic}</h3>
->>>>>>> 995d6d0469b500f838d4adad657b81fc0ef7e544
               </div>
               <button onClick={() => setSelectedInquiry(null)} className="text-slate-400 hover:text-slate-700 text-xl font-bold">✕</button>
             </div>
 
-<<<<<<< HEAD
-            <div className="my-5 space-y-4 text-xs text-slate-700">
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                <span className="font-extrabold text-[#0D1B2A] block mb-1">Citizen Inquiry Topic / Description:</span>
-                <p className="font-medium text-slate-800 leading-relaxed">{selectedInquiry.topic}</p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                  <span className="font-bold text-slate-500 block">Department:</span>
-                  <span className="font-extrabold text-[#0D1B2A]">{selectedInquiry.department}</span>
-                </div>
-                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                  <span className="font-bold text-slate-500 block">AI Verification Status:</span>
-                  <span className="font-extrabold text-[#00A68E]">{selectedInquiry.aiStatus} ({selectedInquiry.confidence})</span>
-                </div>
-              </div>
-
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                <span className="font-extrabold text-[#0D1B2A] block mb-1">AI Explanation & Summary:</span>
-                <p className="font-medium text-slate-800 leading-relaxed">{selectedInquiry.summary}</p>
-              </div>
-            </div>
-
-            <div className="flex justify-end border-t border-[#D6E6F7] pt-4">
-              <button onClick={() => setSelectedInquiry(null)} className="rounded-lg border border-[#D6E6F7] px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100">
-                Close
-              </button>
-=======
             <div className="my-5 space-y-4">
               <div className="bg-slate-50 p-5 rounded-xl border border-slate-100 text-base">
                 <span className="font-black text-slate-500 block mb-1">Summary</span>
@@ -678,7 +471,6 @@ export default function Queries({ onNavigate }) {
 
             <div className="flex justify-end pt-4 border-t border-slate-100">
               <button onClick={() => setSelectedInquiry(null)} className="rounded-xl border border-slate-200 px-5 py-2.5 text-xs font-black text-slate-600 hover:bg-slate-50">Close</button>
->>>>>>> 995d6d0469b500f838d4adad657b81fc0ef7e544
             </div>
           </div>
         </div>

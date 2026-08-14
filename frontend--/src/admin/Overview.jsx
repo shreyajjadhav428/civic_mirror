@@ -194,11 +194,7 @@ export default function Overview() {
       {/* Welcome Header Bar with Functional Filters */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-<<<<<<< HEAD
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
-=======
           <h2 className="text-xl font-extrabold text-slate-900">
->>>>>>> 995d6d0469b500f838d4adad657b81fc0ef7e544
             Welcome back, Admin
             {loading && <span className="text-xs font-semibold text-slate-400 animate-pulse">(Fetching live data...)</span>}
           </h2>
@@ -387,42 +383,6 @@ export default function Overview() {
             </div>
 
             <div className="mt-4 space-y-3.5">
-<<<<<<< HEAD
-              {loading && commonQueries.length === 0 ? (
-                <div className="py-8 text-center text-xs font-semibold text-slate-400 animate-pulse">
-                  Loading common queries from backend...
-                </div>
-              ) : commonQueries.length === 0 ? (
-                <div className="py-8 text-center text-xs font-semibold text-slate-400">
-                  No citizen queries recorded yet.
-                </div>
-              ) : (
-                commonQueries.slice(0, 5).map((query, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between text-sm text-slate-800 p-2 rounded-xl hover:bg-slate-50 relative z-10 transition border border-transparent hover:border-slate-200"
-                  >
-                    <div className="flex items-center gap-3">
-                      <svg
-                        className="h-4.5 w-4.5 text-[#2D7FF9] shrink-0"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                      <span className="font-extrabold text-slate-700 hover:text-[#2D7FF9] transition line-clamp-1">
-                        {query.text}
-                      </span>
-                    </div>
-                    <span className="font-black font-mono text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg text-sm shrink-0 ml-2">
-                      {query.count}
-=======
               {commonQueries.map((query, idx) => (
                 <div
                   key={idx}
@@ -445,11 +405,13 @@ export default function Overview() {
                     </svg>
                     <span className="font-extrabold text-slate-700 hover:text-[#2D7FF9] transition">
                       {query.text}
->>>>>>> 995d6d0469b500f838d4adad657b81fc0ef7e544
                     </span>
                   </div>
-                ))
-              )}
+                  <span className="font-black font-mono text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg text-sm shrink-0 ml-2">
+                    {query.count}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -528,11 +490,7 @@ export default function Overview() {
                   onClick={() => handleAssignCrew(selectedPriorityIssue.id)}
                   className="rounded-xl bg-[#2D7FF9] px-4 py-2.5 text-sm font-extrabold text-white shadow-md hover:bg-[#1E4FA3] transition"
                 >
-<<<<<<< HEAD
-                  👷 Dispatch Crew
-=======
                   🚀 Assign Repair Crew
->>>>>>> 995d6d0469b500f838d4adad657b81fc0ef7e544
                 </button>
                 <button
                   onClick={() => handleResolveIssue(selectedPriorityIssue.id)}
