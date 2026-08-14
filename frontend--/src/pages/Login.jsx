@@ -1,16 +1,18 @@
+
 import React, { useState, useEffect } from "react";
-import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const navigate = useNavigate();
+
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
   const [userRole, setUserRole] = useState("user");
   const [mounted, setMounted] = useState(false);
-  const { login, register } = useAuth();
+
+  const { login } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -26,35 +28,47 @@ export default function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     try {
-      if (isSignUp && register) {
-        await register(identifier, password, userRole === "admin" ? "admin" : "citizen");
-      }
-      
-      const res = await login(identifier, password);
-      
-      const role = userRole === "admin" ? "admin" : (res?.role || "citizen");
-      if (role === 'admin') {
-        navigate('/admin');
+      const selectedRole =
+        userRole === "admin" ? "admin" : "citizen";
+
+      // Login and pass the selected role.
+      // The backend response role will be used for navigation.
+      const res = await login(
+        identifier,
+        password,
+        selectedRole
+      );
+
+      const role = res?.role || "citizen";
+
+      if (role === "admin") {
+        navigate("/admin");
       } else {
-        navigate('/citizen');
+        navigate("/citizen");
       }
     } catch (err) {
-      alert(err.message || 'Invalid credentials');
+      alert(err.message || "Invalid credentials");
     }
   };
 
   return (
     <main className="h-screen overflow-hidden bg-[#FAFAFC] px-4 py-4 font-['Inter',sans-serif] text-[#0D1B2A] sm:px-6 sm:py-6 lg:px-10 lg:py-8">
-      <div className={`relative mx-auto grid h-full w-full max-w-[1480px] overflow-hidden border border-[#D6E6F7] bg-white shadow-[0_30px_100px_rgba(13,27,42,0.14)] lg:grid-cols-[1.08fr_0.92fr] transition-all duration-700 ease-out ${
-        mounted ? "translate-y-0 opacity-100 scale-100" : "translate-y-4 opacity-0 scale-[0.985]"
-      }`}>
-        
+      <div
+        className={`relative mx-auto grid h-full w-full max-w-[1480px] overflow-hidden border border-[#D6E6F7] bg-white shadow-[0_30px_100px_rgba(13,27,42,0.14)] lg:grid-cols-[1.08fr_0.92fr] transition-all duration-700 ease-out ${
+          mounted
+            ? "translate-y-0 opacity-100 scale-100"
+            : "translate-y-4 opacity-0 scale-[0.985]"
+        }`}
+      >
         {/* Cancel Button */}
         <button
           onClick={handleClose}
           className={`absolute top-5 right-5 sm:top-7 sm:right-7 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition-all duration-500 hover:rotate-90 hover:scale-105 hover:bg-slate-50 hover:text-slate-800 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#2D7FF9]/40 ${
-            mounted ? "translate-y-0 opacity-100 scale-100" : "-translate-y-3 opacity-0 scale-95"
+            mounted
+              ? "translate-y-0 opacity-100 scale-100"
+              : "-translate-y-3 opacity-0 scale-95"
           }`}
           aria-label="Close login page"
         >
@@ -137,7 +151,10 @@ export default function Login() {
               }}
               className="inline-flex items-center text-xl font-black tracking-[0.08em] outline-none transition-opacity hover:opacity-80 focus-visible:ring-4 focus-visible:ring-[#2D7FF9]/30"
             >
-              <span className="text-white">CIVIC</span><span className="relative inline-block text-[#2D7FF9] after:absolute after:bottom-[-2.5px] after:left-0 after:h-[2px] after:w-full after:origin-center after:scale-x-0 after:bg-white after:transition-transform after:duration-300 after:ease-out hover:after:scale-x-100">MIRROR</span>
+              <span className="text-white">CIVIC</span>
+              <span className="relative inline-block text-[#2D7FF9] after:absolute after:bottom-[-2.5px] after:left-0 after:h-[2px] after:w-full after:origin-center after:scale-x-0 after:bg-white after:transition-transform after:duration-300 after:ease-out hover:after:scale-x-100">
+                MIRROR
+              </span>
             </a>
           </div>
 
@@ -242,30 +259,22 @@ export default function Login() {
               </div>
 
               <h2 className="text-3xl font-black tracking-[-0.035em] text-[#0D1B2A] sm:text-4xl">
-                {isSignUp ? (
-                  <>
-                    Sign in to <span className="text-black">CIVIC</span>
-                    <span className="text-[#2D7FF9]">MIRROR</span>
-                  </>
-                ) : (
-                  "Welcome back"
-                )}
+                Welcome back
               </h2>
 
               <p className="mt-3 text-sm leading-6 text-[#4B5563]">
-                {isSignUp
-                  ? "Create your account to access CivicMirror."
-                  : "Sign in to access your CivicMirror workspace."}
+                Sign in to access your CivicMirror workspace.
               </p>
 
             </div>
 
             {/* User / Admin Toggle Control */}
             <div className="mb-6 flex rounded-lg bg-slate-100 p-1">
+
               <button
                 type="button"
                 onClick={() => setUserRole("user")}
-                className={`flex-1 py-2 text-center text-xs font-black tracking-wider uppercase rounded-md transition-all duration-200 ${
+                className={`flex-1 rounded-md py-2 text-center text-xs font-black tracking-wider uppercase transition-all duration-200 ${
                   userRole === "user"
                     ? "bg-white text-[#0D1B2A] shadow-sm"
                     : "text-slate-500 hover:text-slate-800"
@@ -273,10 +282,11 @@ export default function Login() {
               >
                 Resident / User
               </button>
+
               <button
                 type="button"
                 onClick={() => setUserRole("admin")}
-                className={`flex-1 py-2 text-center text-xs font-black tracking-wider uppercase rounded-md transition-all duration-200 ${
+                className={`flex-1 rounded-md py-2 text-center text-xs font-black tracking-wider uppercase transition-all duration-200 ${
                   userRole === "admin"
                     ? "bg-white text-[#0D1B2A] shadow-sm"
                     : "text-slate-500 hover:text-slate-800"
@@ -284,6 +294,7 @@ export default function Login() {
               >
                 Government / Admin
               </button>
+
             </div>
 
             {/* Login form */}
@@ -304,7 +315,9 @@ export default function Login() {
                   type="text"
                   autoComplete="username"
                   value={identifier}
-                  onChange={(event) => setIdentifier(event.target.value)}
+                  onChange={(event) =>
+                    setIdentifier(event.target.value)
+                  }
                   placeholder="Enter your email or username"
                   className="h-14 w-full rounded-lg border border-[#D6E6F7] bg-white px-4 text-base text-[#0D1B2A] outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-[#B9D2EE] focus:border-[#2D7FF9] focus:ring-4 focus:ring-[#2D7FF9]/10"
                 />
@@ -326,7 +339,9 @@ export default function Login() {
                     type={showPassword ? "text" : "password"}
                     autoComplete="current-password"
                     value={password}
-                    onChange={(event) => setPassword(event.target.value)}
+                    onChange={(event) =>
+                      setPassword(event.target.value)
+                    }
                     placeholder="Enter your password"
                     className="h-14 w-full rounded-lg border border-[#D6E6F7] bg-white px-4 pr-20 text-base text-[#0D1B2A] outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-[#B9D2EE] focus:border-[#2D7FF9] focus:ring-4 focus:ring-[#2D7FF9]/10"
                   />
@@ -354,7 +369,7 @@ export default function Login() {
                 className="group relative flex h-14 w-full items-center justify-center overflow-hidden rounded-lg bg-[#0D1B2A] px-6 text-sm font-black tracking-[0.14em] text-white shadow-[0_10px_24px_rgba(13,27,42,0.14)] outline-none transition-all duration-200 hover:bg-[#162B42] hover:shadow-[0_12px_26px_rgba(13,27,42,0.18)] focus-visible:ring-4 focus-visible:ring-[#2D7FF9]/20 active:scale-[0.995]"
               >
                 <span className="relative z-10">
-                  {isSignUp ? "SIGN IN" : "LOGIN"}
+                  LOGIN
                 </span>
 
                 <span
@@ -363,44 +378,17 @@ export default function Login() {
                 />
               </button>
 
-              {isSignUp ? (
-                <div className="pt-1 text-center">
-                  <p className="text-sm text-[#4B5563]">
-                    Already have an account?{" "}
-                    <button
-                      type="button"
-                      onClick={() => setIsSignUp(false)}
-                      className="font-semibold text-[#2D7FF9] outline-none transition-colors hover:text-[#1E4FA3] focus-visible:ring-2 focus-visible:ring-[#2D7FF9]/40"
-                    >
-                      Sign in
-                    </button>
-                  </p>
-                </div>
-              ) : (
-                <div className="pt-1 text-center">
-                  <a
-                    href="#forgot-password"
-                    className="text-sm font-semibold text-[#4B5563] underline decoration-[#D6E6F7] underline-offset-4 outline-none transition-colors hover:text-[#2D7FF9] hover:decoration-[#2D7FF9] focus-visible:ring-2 focus-visible:ring-[#2D7FF9]/40"
-                  >
-                    Forgot password?
-                  </a>
-
-                  <p className="mt-3 text-sm text-[#4B5563]">
-                    New user?{" "}
-                    <button
-                      type="button"
-                      onClick={() => setIsSignUp(true)}
-                      className="font-semibold text-[#2D7FF9] outline-none transition-colors hover:text-[#1E4FA3] focus-visible:ring-2 focus-visible:ring-[#2D7FF9]/40"
-                    >
-                      Create an account
-                    </button>
-                  </p>
-                </div>
-              )}
+              {/* Forgot Password */}
+              <div className="pt-1 text-center">
+                <a
+                  href="#forgot-password"
+                  className="text-sm font-semibold text-[#4B5563] underline decoration-[#D6E6F7] underline-offset-4 outline-none transition-colors hover:text-[#2D7FF9] hover:decoration-[#2D7FF9] focus-visible:ring-2 focus-visible:ring-[#2D7FF9]/40"
+                >
+                  Forgot password?
+                </a>
+              </div>
 
             </form>
-
-
 
           </div>
         </section>
@@ -409,3 +397,4 @@ export default function Login() {
     </main>
   );
 }
+

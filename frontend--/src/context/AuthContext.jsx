@@ -4,10 +4,13 @@ import {
   useState,
 } from "react";
 
-import { loginUser, registerUser } from "../api/auth.api";
+import { loginUser } from "../api/auth.api";
 
-// ── DEVELOPMENT AUTH BYPASS TOGGLE ───────────────────────────────────
-// Set to false when ready for production authentication
+// ─────────────────────────────────────────────────────────────────────
+// DEVELOPMENT AUTH BYPASS
+// Set to false when backend authentication is ready.
+// ─────────────────────────────────────────────────────────────────────
+
 export const DEV_BYPASS_AUTH = true;
 
 const AuthContext = createContext(null);
@@ -15,9 +18,15 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     if (DEV_BYPASS_AUTH) {
-      return { id: "dev_user_1", email: "dev@civicmirror.local", role: "admin" };
+      return {
+        id: "dev_user_1",
+        email: "dev@civicmirror.local",
+        role: "citizen",
+      };
     }
+
     const storedUser = localStorage.getItem("civicmirror_user");
+
     return storedUser ? JSON.parse(storedUser) : null;
   });
 
@@ -25,31 +34,55 @@ export function AuthProvider({ children }) {
     if (DEV_BYPASS_AUTH) {
       return "dev_mock_token_123";
     }
+
     return localStorage.getItem("civicmirror_token");
   });
 
-  const login = async (email, password) => {
+  // ─────────────────────────────────────────────────────────────────────
+  // LOGIN
+  // ─────────────────────────────────────────────────────────────────────
+
+  const login = async (
+    email,
+    password,
+    selectedRole = "citizen"
+  ) => {
+    // ────────────────────────────────────────────────────────────────
+    // DEVELOPMENT MODE
+    // The Resident/Admin toggle determines the mock role.
+    // ────────────────────────────────────────────────────────────────
+
     if (DEV_BYPASS_AUTH) {
       const mockUser = {
         id: "dev_user_1",
         email: email || "dev@civicmirror.local",
-        role: "admin",
+        role: selectedRole,
       };
+
       const mockResponse = {
         authenticated: true,
         token: "dev_mock_token_123",
-        role: "admin",
+        role: selectedRole,
         user: mockUser,
       };
+
       setToken(mockResponse.token);
       setUser(mockUser);
+
       return mockResponse;
     }
+
+    // ────────────────────────────────────────────────────────────────
+    // REAL BACKEND AUTHENTICATION
+    // Backend decides whether the user is citizen or admin.
+    // ────────────────────────────────────────────────────────────────
 
     const response = await loginUser(email, password);
 
     if (!response.authenticated || !response.token) {
-      throw new Error(response.message || "Authentication failed.");
+      throw new Error(
+        response.message || "Authentication failed."
+      );
     }
 
     const userData = {
@@ -58,8 +91,15 @@ export function AuthProvider({ children }) {
       role: response.role || "citizen",
     };
 
-    localStorage.setItem("civicmirror_token", response.token);
-    localStorage.setItem("civicmirror_user", JSON.stringify(userData));
+    localStorage.setItem(
+      "civicmirror_token",
+      response.token
+    );
+
+    localStorage.setItem(
+      "civicmirror_user",
+      JSON.stringify(userData)
+    );
 
     setToken(response.token);
     setUser(userData);
@@ -67,12 +107,9 @@ export function AuthProvider({ children }) {
     return response;
   };
 
-  const register = async (email, password, role = "citizen") => {
-    if (DEV_BYPASS_AUTH) {
-      return { success: true, message: "Bypassed registration in development mode" };
-    }
-    return await registerUser(email, password, role);
-  };
+  // ─────────────────────────────────────────────────────────────────────
+  // LOGOUT
+  // ─────────────────────────────────────────────────────────────────────
 
   const logout = () => {
     localStorage.removeItem("civicmirror_token");
@@ -82,15 +119,20 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  // ─────────────────────────────────────────────────────────────────────
+  // CONTEXT
+  // ─────────────────────────────────────────────────────────────────────
+
   return (
     <AuthContext.Provider
       value={{
         user,
         token,
-        isAuthenticated: DEV_BYPASS_AUTH ? true : Boolean(token),
+        isAuthenticated: DEV_BYPASS_AUTH
+          ? true
+          : Boolean(token),
         DEV_BYPASS_AUTH,
         login,
-        register,
         logout,
       }}
     >
@@ -99,11 +141,17 @@ export function AuthProvider({ children }) {
   );
 }
 
+// ─────────────────────────────────────────────────────────────────────
+// useAuth Hook
+// ─────────────────────────────────────────────────────────────────────
+
 export function useAuth() {
   const context = useContext(AuthContext);
 
   if (!context) {
-    throw new Error("useAuth must be used inside AuthProvider");
+    throw new Error(
+      "useAuth must be used inside AuthProvider"
+    );
   }
 
   return context;
