@@ -240,7 +240,7 @@ export default function Overview() {
           hoverBorder: "hover:shadow-[#2E7D32]/15",
         },
         {
-          title: "ACTIVE CLUSTERS",
+          title: "FLAGGED",
           value: "52",
           trend: "↑ 12 from last month",
           titleColor: "text-[#1E3A8A]",
@@ -339,9 +339,10 @@ export default function Overview() {
       {/* 2. Welcome Header Bar with Functional Filters */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight">
+          <h2 className="text-xl font-extrabold text-slate-900">
             Welcome back, Admin
           </h2>
+          
         </div>
 
         <div className="flex items-center gap-3">
@@ -519,7 +520,8 @@ export default function Overview() {
               {commonQueries.map((query, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between text-sm text-slate-800 p-2 rounded-xl hover:bg-slate-50 relative z-10 transition border border-transparent hover:border-slate-200"
+                  onClick={() => alert(`Query detail: "${query.text}" (${query.count} citizen requests)`)}
+                  className="flex items-center justify-between text-sm text-slate-800 cursor-pointer p-2 rounded-xl hover:bg-slate-50 relative z-10 transition border border-transparent hover:border-slate-200"
                 >
                   <div className="flex items-center gap-3">
                     <svg
@@ -618,6 +620,12 @@ export default function Overview() {
             {/* Action Buttons inside Priority Modal */}
             <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-5">
               <div className="flex gap-2">
+                <button
+                  onClick={() => handleAssignCrew(selectedPriorityIssue.id)}
+                  className="rounded-xl bg-[#2D7FF9] px-4 py-2.5 text-sm font-extrabold text-white shadow-md hover:bg-[#1E4FA3] transition"
+                >
+                  🚀 Assign Repair Crew
+                </button>
                 <button
                   onClick={() => handleResolveIssue(selectedPriorityIssue.id)}
                   className="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-extrabold text-white shadow-md hover:bg-emerald-700 transition"
