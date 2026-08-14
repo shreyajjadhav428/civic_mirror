@@ -16,7 +16,7 @@ export default function Overview() {
   const [actionSuccessMsg, setActionSuccessMsg] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // Dynamic Backend State (Zeroed initially - populated exclusively by Backend API)
+  // Dynamic Backend State
   const [overviewMetrics, setOverviewMetrics] = useState({
     totalRequests: 0,
     pending: 0,
@@ -25,16 +25,9 @@ export default function Overview() {
     flaggedForReview: 0,
   });
 
-  // Priority Issues Data (Empty initially - populated exclusively by Backend API)
   const [priorityIssues, setPriorityIssues] = useState([]);
-
-  // Priority Issue Search & Filter State inside modal
   const [prioritySearch, setPrioritySearch] = useState("");
-
-  // Common Queries Search State inside modal
   const [querySearch, setQuerySearch] = useState("");
-
-  // Most Common Queries Data (Empty initially - populated exclusively by Backend API)
   const [commonQueries, setCommonQueries] = useState([]);
 
   // -------------------------------------------------------------------
@@ -45,7 +38,6 @@ export default function Overview() {
     async function loadDashboardData() {
       setLoading(true);
       try {
-        // 1. Fetch Overview Stats
         const overviewRes = await getAdminOverview(dateFilter);
         if (isMounted && overviewRes?.data) {
           setOverviewMetrics(overviewRes.data);
@@ -55,7 +47,6 @@ export default function Overview() {
       }
 
       try {
-        // 2. Fetch Complaint Clusters
         const clustersRes = await getComplaintClusters();
         if (isMounted && clustersRes?.data) {
           const mappedClusters = clustersRes.data.map((c, idx) => ({
@@ -77,7 +68,6 @@ export default function Overview() {
       }
 
       try {
-        // 3. Fetch Common Queries
         const queriesRes = await getUniqueQueries();
         if (isMounted && queriesRes?.data) {
           const mappedQueries = queriesRes.data.map((q) => ({
@@ -98,7 +88,6 @@ export default function Overview() {
     return () => { isMounted = false; };
   }, [dateFilter]);
 
-  // Compute Stat Cards dynamically from overviewMetrics
   const currentStats = {
     dateLabel: dateFilter,
     stats: [
@@ -141,7 +130,6 @@ export default function Overview() {
     ],
   };
 
-  // Handlers for modal actions with Backend Integration
   const handleAssignCrew = async (issueId) => {
     try {
       const issue = priorityIssues.find((i) => i.id === issueId);
@@ -172,7 +160,6 @@ export default function Overview() {
     setPriorityIssues((prev) =>
       prev.map((iss) => (iss.id === issueId ? { ...iss, count: Math.max(0, iss.count - 1), status: "Resolved & Closed" } : iss))
     );
-    // Update overview metrics locally
     setOverviewMetrics((prev) => ({
       ...prev,
       pending: Math.max(0, prev.pending - 1),
@@ -191,18 +178,13 @@ export default function Overview() {
         </div>
       )}
 
-      {/* Welcome Header Bar with Functional Filters */}
+      {/* Welcome Header Bar */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-<<<<<<< HEAD
           <h2 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
-=======
-          <h2 className="text-xl font-extrabold text-slate-900">
->>>>>>> 995d6d0469b500f838d4adad657b81fc0ef7e544
             Welcome back, Admin
             {loading && <span className="text-xs font-semibold text-slate-400 animate-pulse">(Fetching live data...)</span>}
           </h2>
-          
         </div>
 
         <div className="flex items-center gap-3">
@@ -250,7 +232,6 @@ export default function Overview() {
             key={idx}
             className={`group relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 ${stat.hoverBorder} hover:shadow-md cursor-pointer overflow-hidden`}
           >
-            {/* Animated Circular Border Trace */}
             <svg className="absolute inset-0 h-full w-full pointer-events-none rounded-xl">
               <rect
                 x="1"
@@ -280,26 +261,10 @@ export default function Overview() {
         ))}
       </div>
 
-      {/* Priority Issues (Left Column) & Most Common Queries (Right Column) */}
+      {/* Priority Issues & Most Common Queries */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Priority Issues Card */}
         <div className="group relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-[#FF5722]/10 hover:shadow-md lg:col-span-6 flex flex-col justify-between overflow-hidden">
-          <svg className="absolute inset-0 h-full w-full pointer-events-none rounded-xl">
-            <rect
-              x="1"
-              y="1"
-              width="calc(100% - 2px)"
-              height="calc(100% - 2px)"
-              rx="11"
-              ry="11"
-              fill="none"
-              stroke="#FF5722"
-              strokeWidth="2.5"
-              pathLength="100"
-              className="card-circle-stroke opacity-0"
-            />
-          </svg>
-
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <h3 className="text-lg font-extrabold uppercase tracking-wider text-[#1E3A8A]">
@@ -357,22 +322,6 @@ export default function Overview() {
 
         {/* Most Common Queries Card */}
         <div className="group relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-[#2D7FF9]/10 hover:shadow-md lg:col-span-6 flex flex-col justify-between overflow-hidden">
-          <svg className="absolute inset-0 h-full w-full pointer-events-none rounded-xl">
-            <rect
-              x="1"
-              y="1"
-              width="calc(100% - 2px)"
-              height="calc(100% - 2px)"
-              rx="11"
-              ry="11"
-              fill="none"
-              stroke="#2D7FF9"
-              strokeWidth="2.5"
-              pathLength="100"
-              className="card-circle-stroke opacity-0"
-            />
-          </svg>
-
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <h3 className="text-lg font-extrabold uppercase tracking-wider text-[#1E3A8A]">
@@ -387,7 +336,6 @@ export default function Overview() {
             </div>
 
             <div className="mt-4 space-y-3.5">
-<<<<<<< HEAD
               {loading && commonQueries.length === 0 ? (
                 <div className="py-8 text-center text-xs font-semibold text-slate-400 animate-pulse">
                   Loading common queries from backend...
@@ -422,30 +370,6 @@ export default function Overview() {
                     </div>
                     <span className="font-black font-mono text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg text-sm shrink-0 ml-2">
                       {query.count}
-=======
-              {commonQueries.map((query, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => alert(`Query detail: "${query.text}" (${query.count} citizen requests)`)}
-                  className="flex items-center justify-between text-sm text-slate-800 cursor-pointer p-2 rounded-xl hover:bg-slate-50 relative z-10 transition border border-transparent hover:border-slate-200"
-                >
-                  <div className="flex items-center gap-3">
-                    <svg
-                      className="h-4.5 w-4.5 text-[#2D7FF9] shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <span className="font-extrabold text-slate-700 hover:text-[#2D7FF9] transition">
-                      {query.text}
->>>>>>> 995d6d0469b500f838d4adad657b81fc0ef7e544
                     </span>
                   </div>
                 ))
@@ -455,11 +379,7 @@ export default function Overview() {
         </div>
       </div>
 
-      {/* ========================================================================= */}
-      {/* MODALS */}
-      {/* ========================================================================= */}
-
-      {/* 1. PRIORITY ISSUE DETAIL MODAL */}
+      {/* PRIORITY ISSUE DETAIL MODAL */}
       {selectedPriorityIssue && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-6 backdrop-blur-sm animate-fadeIn">
           <div className="modal-popup-container w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-8 shadow-2xl transition-all">
@@ -521,18 +441,13 @@ export default function Overview() {
               </div>
             </div>
 
-            {/* Action Buttons inside Priority Modal */}
             <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-5">
               <div className="flex gap-2">
                 <button
                   onClick={() => handleAssignCrew(selectedPriorityIssue.id)}
                   className="rounded-xl bg-[#2D7FF9] px-4 py-2.5 text-sm font-extrabold text-white shadow-md hover:bg-[#1E4FA3] transition"
                 >
-<<<<<<< HEAD
                   👷 Dispatch Crew
-=======
-                  🚀 Assign Repair Crew
->>>>>>> 995d6d0469b500f838d4adad657b81fc0ef7e544
                 </button>
                 <button
                   onClick={() => handleResolveIssue(selectedPriorityIssue.id)}
@@ -553,7 +468,7 @@ export default function Overview() {
         </div>
       )}
 
-      {/* 2. VIEW ALL PRIORITY ISSUES MODAL */}
+      {/* VIEW ALL PRIORITY ISSUES MODAL */}
       {showAllPriorityModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-6 backdrop-blur-sm animate-fadeIn">
           <div className="modal-popup-container w-full max-w-3xl max-h-[85vh] flex flex-col rounded-2xl border border-slate-200 bg-white p-8 shadow-2xl">
@@ -572,7 +487,6 @@ export default function Overview() {
               </button>
             </div>
 
-            {/* Modal Controls: Search & Filter */}
             <div className="my-4 flex flex-col sm:flex-row gap-3">
               <input
                 type="text"
@@ -633,7 +547,7 @@ export default function Overview() {
         </div>
       )}
 
-      {/* 3. VIEW ALL CITIZEN QUERIES MODAL */}
+      {/* VIEW ALL CITIZEN QUERIES MODAL */}
       {showAllQueriesModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-6 backdrop-blur-sm animate-fadeIn">
           <div className="modal-popup-container w-full max-w-3xl max-h-[85vh] flex flex-col rounded-2xl border border-slate-200 bg-white p-8 shadow-2xl">
