@@ -24,135 +24,8 @@ export default function Data() {
     { label: "Vector indexing into CivicMirror Knowledge Graph", done: false },
   ]);
 
-  // Municipal Data Library items
-  const [filesLibrary, setFilesLibrary] = useState([
-    {
-      id: "DOC-01",
-      filename: "Budget_2026.pdf",
-      updatedDate: "12 Aug 2026",
-      extractedRecords: 428,
-      departments: ["Engineering", "Electrical", "Water"],
-      relatedProjects: 17,
-      size: "4.2 MB",
-      fileType: "PDF",
-      icon: "📄",
-      topAccent: "bg-[#2D7FF9]",
-      btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
-      contributionSummary: "Provides capital budget cap limits and line-item allocations for municipal infrastructure projects across all city wards."
-    },
-    {
-      id: "DOC-02",
-      filename: "RoadProjects.csv",
-      updatedDate: "12 Aug 2026",
-      extractedRecords: 194,
-      departments: ["Engineering & Road Ops"],
-      relatedProjects: 8,
-      size: "1.1 MB",
-      fileType: "CSV",
-      icon: "📊",
-      topAccent: "bg-[#00A68E]",
-      btnHover: "hover:bg-[#00A68E] hover:border-[#00A68E] hover:text-white",
-      contributionSummary: "Contains geospatial coordinates and contractor work schedules for Sector 12 and Shanti Nagar resurfacing campaigns."
-    },
-    {
-      id: "DOC-03",
-      filename: "WorkOrders.xlsx",
-      updatedDate: "11 Aug 2026",
-      extractedRecords: 312,
-      departments: ["Electrical Works", "Water Supply"],
-      relatedProjects: 12,
-      size: "2.8 MB",
-      fileType: "XLSX",
-      icon: "📋",
-      topAccent: "bg-[#FFC107]",
-      btnHover: "hover:bg-[#FFC107] hover:border-[#FFC107] hover:text-[#0D1B2A]",
-      contributionSummary: "Aggregates historical streetlight maintenance tickets and transformer component inventory logs."
-    },
-    {
-      id: "DOC-04",
-      filename: "Zoning_Ordinance_2026.pdf",
-      updatedDate: "10 Aug 2026",
-      extractedRecords: 156,
-      departments: ["Urban Planning", "Zoning Compliance"],
-      relatedProjects: 6,
-      size: "6.4 MB",
-      fileType: "PDF",
-      icon: "📄",
-      topAccent: "bg-[#2D7FF9]",
-      btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
-      contributionSummary: "Municipal building codes, setbacks, and commercial zoning boundaries for ward development."
-    },
-    {
-      id: "DOC-05",
-      filename: "Infrastructure_Grants.csv",
-      updatedDate: "08 Aug 2026",
-      extractedRecords: 89,
-      departments: ["Finance", "Public Works"],
-      relatedProjects: 4,
-      size: "890 KB",
-      fileType: "CSV",
-      icon: "📊",
-      topAccent: "bg-[#00A68E]",
-      btnHover: "hover:bg-[#00A68E] hover:border-[#00A68E] hover:text-white",
-      contributionSummary: "State and federal civic development grant disbursals allocated to stormwater drain upgrades."
-    },
-    {
-      id: "DOC-06",
-      filename: "Environmental_Report_Q2.xlsx",
-      updatedDate: "05 Aug 2026",
-      extractedRecords: 74,
-      departments: ["Environmental Protection"],
-      relatedProjects: 3,
-      size: "3.5 MB",
-      fileType: "XLSX",
-      icon: "📋",
-      topAccent: "bg-[#6366F1]",
-      btnHover: "hover:bg-[#6366F1] hover:border-[#6366F1] hover:text-white",
-      contributionSummary: "Quarterly groundwater quality, noise density, and air index metrics currently undergoing vector embedding."
-    },
-    {
-      id: "DOC-07",
-      filename: "Traffic_Flow_Audit.pdf",
-      updatedDate: "03 Aug 2026",
-      extractedRecords: 215,
-      departments: ["Traffic Operations", "Urban Mobility"],
-      relatedProjects: 5,
-      size: "5.1 MB",
-      fileType: "PDF",
-      icon: "📄",
-      topAccent: "bg-[#2D7FF9]",
-      btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
-      contributionSummary: "Automated vehicle counts and bottleneck congestion index logs across major municipal intersections."
-    },
-    {
-      id: "DOC-08",
-      filename: "Public_Health_Sanitation.csv",
-      updatedDate: "01 Aug 2026",
-      extractedRecords: 142,
-      departments: ["Public Health", "Sanitation"],
-      relatedProjects: 7,
-      size: "1.4 MB",
-      fileType: "CSV",
-      icon: "📊",
-      topAccent: "bg-[#00A68E]",
-      btnHover: "hover:bg-[#00A68E] hover:border-[#00A68E] hover:text-white",
-      contributionSummary: "Inspection schedules and commercial waste disposal compliance logs for market areas."
-    },
-    {
-      id: "DOC-09",
-      filename: "Smart_Grid_Telecom_Logs.xlsx",
-      updatedDate: "28 Jul 2026",
-      extractedRecords: 380,
-      departments: ["Electrical Works", "Smart City Tech"],
-      relatedProjects: 11,
-      size: "4.8 MB",
-      fileType: "XLSX",
-      icon: "📋",
-      topAccent: "bg-[#FFC107]",
-      btnHover: "hover:bg-[#FFC107] hover:border-[#FFC107] hover:text-[#0D1B2A]",
-      contributionSummary: "IoT sensor uptime telemetry and fiber optic connectivity logs for municipal smart poles."
-    }
-  ]);
+  // Municipal Data Library items (Empty initially - populated strictly by Backend API)
+  const [filesLibrary, setFilesLibrary] = useState([]);
 
   // -------------------------------------------------------------------
   // FETCH BACKEND RAG DOCUMENTS ON MOUNT
@@ -164,7 +37,7 @@ export default function Data() {
       setLoading(true);
       try {
         const res = await getMunicipalFiles();
-        if (isMounted && res?.data && Array.isArray(res.data) && res.data.length > 0) {
+        if (isMounted && res?.data) {
           setFilesLibrary(res.data);
         }
       } catch (err) {

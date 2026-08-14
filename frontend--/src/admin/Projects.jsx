@@ -1,102 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getAdminProjects, createAdminProject, updateAdminProject } from "../api/admin.api";
 
 export default function Projects() {
-  const initialProjectsData = [
-    {
-      id: "PRJ-ELEC-01",
-      name: "Electrical Maintenance Phase II",
-      department: "Electrical Works",
-      pincode: "110025",
-      startDate: "01 June 2026",
-      expectedCompletion: "30 August 2026",
-      progress: 82,
-      budget: 2200000,
-      utilizedBudget: 1840000,
-      remainingBudget: 360000,
-      relatedComplaintsCount: 23,
-      affectedCitizens: 147,
-      status: "In Progress",
-      statusBadge: "bg-teal-50 text-[#008D78] border-teal-200",
-      connectedComplaints: [
-        { id: "#4921", title: "Streetlight complaint #4921 (Main St Pole #409)", citizen: "Amit Sharma", status: "In Progress" },
-        { id: "#4932", title: "Streetlight complaint #4932 (Block C Crossway)", citizen: "Pooja Verma", status: "Pending" },
-        { id: "#4951", title: "Streetlight complaint #4951 (Shanti Nagar Park Rd)", citizen: "Rohan Patel", status: "Resolved" },
-        { id: "#4967", title: "Streetlight complaint #4967 (Sector 4 Junction)", citizen: "Meera Das", status: "In Progress" },
-        { id: "#4988", title: "Streetlight complaint #4988 (Lane 2 Transformer)", citizen: "Kavita Rao", status: "In Progress" },
-      ]
-    },
-    {
-      id: "PRJ-ROAD-02",
-      name: "Sector 12 Resurfacing Phase I",
-      department: "Engineering & Road Ops",
-      pincode: "110025",
-      startDate: "15 May 2026",
-      expectedCompletion: "15 September 2026",
-      progress: 45,
-      budget: 4500000,
-      utilizedBudget: 2400000,
-      remainingBudget: 2100000,
-      relatedComplaintsCount: 17,
-      affectedCitizens: 89,
-      status: "In Progress",
-      statusBadge: "bg-teal-50 text-[#008D78] border-teal-200",
-      connectedComplaints: [
-        { id: "#5102", title: "Pothole complaint #5102 (Sector 12 Main Ave)", citizen: "Rajesh Iyer", status: "In Progress" },
-        { id: "#5119", title: "Asphalt Cracking #5119 (Bypass Junction)", citizen: "Tina Singh", status: "Pending" },
-        { id: "#5140", title: "Road Surface Subsidence #5140 (Block D)", citizen: "Farhan Qureshi", status: "Resolved" },
-      ]
-    },
-    {
-      id: "PRJ-WATER-03",
-      name: "Green Park Water Pipe Upgrade",
-      department: "Water Supply & Sanitation",
-      pincode: "110026",
-      startDate: "10 July 2026",
-      expectedCompletion: "01 October 2026",
-      progress: 60,
-      budget: 3800000,
-      utilizedBudget: 2280000,
-      remainingBudget: 1520000,
-      relatedComplaintsCount: 21,
-      affectedCitizens: 210,
-      status: "In Progress",
-      statusBadge: "bg-teal-50 text-[#008D78] border-teal-200",
-      connectedComplaints: [
-        { id: "#6012", title: "Water Seepage #6012 (Market Gate #2)", citizen: "Sanjay Gupta", status: "In Progress" },
-        { id: "#6034", title: "Mainline Pressure Drop #6034 (Block F)", citizen: "Neha Reddy", status: "In Progress" },
-      ]
-    },
-    {
-      id: "PRJ-DRAIN-04",
-      name: "Flood Mitigation Dredging Phase III",
-      department: "Stormwater Operations",
-      pincode: "400012",
-      startDate: "20 August 2026",
-      expectedCompletion: "15 November 2026",
-      progress: 100,
-      budget: 1800000,
-      utilizedBudget: 1800000,
-      remainingBudget: 0,
-      relatedComplaintsCount: 18,
-      affectedCitizens: 115,
-      status: "Completed",
-      statusBadge: "bg-emerald-50 text-emerald-700 border-emerald-300",
-      connectedComplaints: [
-        { id: "#7101", title: "Storm Drain Blockage #7101 (Lowland Culvert)", citizen: "Farhan Akhtar", status: "Resolved" }
-      ]
-    }
-  ];
-
   const statusOptions = [
+    { value: "Pending", label: "Pending", badgeClass: "bg-amber-50 text-amber-700 border-amber-200" },
     { value: "In Progress", label: "In Progress", badgeClass: "bg-teal-50 text-[#008D78] border-teal-200" },
     { value: "Completed", label: "Completed", badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-300" },
   ];
 
-  const [projectsList, setProjectsList] = useState(initialProjectsData);
+  // Dynamic Backend Project Data (Empty by default - populated strictly by Backend API)
+  const [projectsList, setProjectsList] = useState([]);
   const [selectedProjectModal, setSelectedProjectModal] = useState(null);
   const [activeTab, setActiveTab] = useState("all");
+  const [loading, setLoading] = useState(true);
 
-  // New Project Form State with all necessary parameters
+  // New Project Form State
   const [newProject, setNewProject] = useState({
     name: "",
     department: "Engineering & Road Ops",
@@ -110,16 +28,44 @@ export default function Projects() {
   });
   const [addSuccessMsg, setAddSuccessMsg] = useState("");
 
+  // -------------------------------------------------------------------
+  // FETCH BACKEND PROJECTS ON MOUNT
+  // -------------------------------------------------------------------
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadProjectsData() {
+      setLoading(true);
+      try {
+        const res = await getAdminProjects();
+        if (isMounted && res?.data) {
+          setProjectsList(res.data);
+        }
+      } catch (err) {
+        console.error("Error fetching projects from backend:", err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    loadProjectsData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const formatINR = (val) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency: "INR",
       maximumFractionDigits: 0,
-    }).format(val);
+    }).format(val || 0);
   };
 
-  const handleStatusChange = (projectId, newStatus) => {
+  const handleStatusChange = async (projectId, newStatus) => {
     const found = statusOptions.find((opt) => opt.value === newStatus) || statusOptions[0];
+
+    const newProg = found.value === "Completed" ? 100 : 50;
 
     setProjectsList((list) =>
       list.map((p) => {
@@ -128,7 +74,7 @@ export default function Projects() {
             ...p,
             status: found.value,
             statusBadge: found.badgeClass,
-            progress: found.value === "Completed" ? 100 : (p.progress === 100 ? 50 : p.progress),
+            progress: newProg,
           };
         }
         return p;
@@ -141,12 +87,18 @@ export default function Projects() {
         ...prev,
         status: found.value,
         statusBadge: found.badgeClass,
-        progress: found.value === "Completed" ? 100 : (prev.progress === 100 ? 50 : prev.progress),
+        progress: newProg,
       };
     });
+
+    try {
+      await updateAdminProject(projectId, { status: found.value, progress: newProg });
+    } catch (err) {
+      console.error("Error updating project status in backend:", err);
+    }
   };
 
-  const handleAddProject = (e) => {
+  const handleAddProject = async (e) => {
     e.preventDefault();
     if (!newProject.name.trim() || !newProject.pincode.trim() || !newProject.budget) return;
 
@@ -155,8 +107,8 @@ export default function Projects() {
     const citizensNum = Number(newProject.affectedCitizens) || 0;
     const foundStatus = statusOptions.find((opt) => opt.value === newProject.status) || statusOptions[0];
 
-    const createdProject = {
-      id: `PRJ-INFRA-0${projectsList.length + 1}`,
+    const tempProject = {
+      id: `PRJ-${Date.now()}`,
       name: newProject.name,
       department: newProject.department,
       pincode: newProject.pincode,
@@ -173,7 +125,19 @@ export default function Projects() {
       connectedComplaints: [],
     };
 
-    setProjectsList([createdProject, ...projectsList]);
+    setProjectsList((prev) => [tempProject, ...prev]);
+
+    try {
+      const res = await createAdminProject(newProject);
+      if (res?.data) {
+        setProjectsList((prev) =>
+          prev.map((p) => (p.id === tempProject.id ? { ...p, ...res.data } : p))
+        );
+      }
+    } catch (err) {
+      console.warn("Backend project creation warning, project created locally:", err);
+    }
+
     setNewProject({
       name: "",
       department: "Engineering & Road Ops",
@@ -189,20 +153,26 @@ export default function Projects() {
     setTimeout(() => setAddSuccessMsg(""), 3500);
   };
 
-  const handleUtilizedBudgetChange = (newVal) => {
+  const handleUtilizedBudgetChange = async (newVal) => {
     const numVal = Number(newVal) || 0;
-    setSelectedProjectModal((prev) => {
-      if (!prev) return prev;
-      const updated = {
-        ...prev,
-        utilizedBudget: numVal,
-        remainingBudget: Math.max(0, prev.budget - numVal),
-      };
-      setProjectsList((list) =>
-        list.map((p) => (p.id === prev.id ? updated : p))
-      );
-      return updated;
-    });
+    if (!selectedProjectModal) return;
+
+    const updated = {
+      ...selectedProjectModal,
+      utilizedBudget: numVal,
+      remainingBudget: Math.max(0, selectedProjectModal.budget - numVal),
+    };
+
+    setSelectedProjectModal(updated);
+    setProjectsList((list) =>
+      list.map((p) => (p.id === selectedProjectModal.id ? updated : p))
+    );
+
+    try {
+      await updateAdminProject(selectedProjectModal.id, { utilizedBudget: numVal });
+    } catch (err) {
+      console.error("Error updating project budget in backend:", err);
+    }
   };
 
   const handleExpectedCompletionChange = (newVal) => {
@@ -454,7 +424,7 @@ export default function Projects() {
         </div>
 
         <div className="flex rounded-xl bg-slate-100 p-1.5 text-sm font-black gap-1 flex-wrap">
-          {["all", "in progress", "completed"].map((tab) => (
+          {["all", "pending", "in progress", "completed"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}

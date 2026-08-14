@@ -119,6 +119,27 @@ export const getComplaintClusters = async (req, res) => {
       };
     }).sort((a, b) => b.complaintCount - a.complaintCount);
 
+    // Sync clusters to Supabase clusters table asynchronously
+    try {
+      const dbClusters = clusters.map(c => ({
+        id: c.id,
+        name: c.title,
+        pincode: c.pincode,
+        category: c.category,
+        department: c.department,
+        status: 'Active',
+        priority: c.priority,
+        complaint_count: c.complaintCount,
+        updated_at: new Date().toISOString()
+      }));
+
+      if (dbClusters.length > 0) {
+        await supabase.from('clusters').upsert(dbClusters, { onConflict: 'id' });
+      }
+    } catch (dbErr) {
+      console.warn('Syncing clusters table warning:', dbErr?.message);
+    }
+
     return res.status(200).json({
       status: 'success',
       count: clusters.length,
@@ -162,6 +183,23 @@ export const getClusterInsights = async (req, res) => {
     };
 
     const insights = await generateAdminClusterInsights(clusterPayload);
+
+    // Persist insights into Supabase clusters table
+    try {
+      const catSlug = (category || 'general').replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 6);
+      const clusterId = `CLS-${catSlug}-${pincode}`;
+      await supabase
+        .from('clusters')
+        .update({
+          root_cause: insights.root_cause,
+          recommendation: insights.recommendation,
+          reasoning: insights.reasoning,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', clusterId);
+    } catch (dbErr) {
+      console.warn('Persisting cluster insights to database warning:', dbErr?.message);
+    }
 
     return res.status(200).json({
       status: 'success',
@@ -209,6 +247,124 @@ export const getPincodeIntelligence = async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching pincode intelligence:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+/**
+ * GET /api/admin/projects
+ * Retrieves all municipal projects from Supabase.
+ */
+export const getAdminProjects = async (req, res) => {
+  try {
+    const { data: dbProjects, error } = await supabase
+      .from('projects')
+      .select('*, complaints(id, complaint_code, description, status)')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    const formattedProjects = (dbProjects || []).map((p, idx) => {
+      const budgetNum = Number(p.budget) || (2200000 + (idx * 500000));
+      const utilNum = Number(p.utilized_budget) || Math.round(budgetNum * ((p.progress || 50) / 100));
+      const remNum = Math.max(0, budgetNum - utilNum);
+      const isCompleted = p.status === 'Completed' || p.progress === 100;
+
+      const connected = (p.complaints || []).map((c) => ({
+        id: c.complaint_code || c.id,
+        title: c.description || 'Citizen issue',
+        citizen: 'Citizen User',
+        status: c.status || 'In Progress'
+      }));
+
+      return {
+        id: p.id || `PRJ-0${idx + 1}`,
+        project_code: p.project_code || `PRJ-0${idx + 1}`,
+        name: p.title || 'Municipal Infrastructure Project',
+        department: p.category || 'Engineering & Road Ops',
+        pincode: p.pincode || '110025',
+        startDate: p.start_date || '01 June 2026',
+        expectedCompletion: p.expected_completion ? new Date(p.expected_completion).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) : '30 Nov 2026',
+        progress: p.progress ?? 50,
+        budget: budgetNum,
+        utilizedBudget: utilNum,
+        remainingBudget: remNum,
+        relatedComplaintsCount: connected.length || Math.floor(Math.random() * 10) + 5,
+        affectedCitizens: Math.floor(Math.random() * 150) + 50,
+        status: isCompleted ? 'Completed' : 'In Progress',
+        statusBadge: isCompleted ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-teal-50 text-[#008D78] border-teal-200',
+        connectedComplaints: connected
+      };
+    });
+
+    return res.status(200).json({ status: 'success', data: formattedProjects });
+  } catch (error) {
+    console.error('Error fetching admin projects:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+/**
+ * POST /api/admin/projects
+ * Creates a new municipal project in Supabase.
+ */
+export const createAdminProject = async (req, res) => {
+  try {
+    const { name, department, pincode, startDate, expectedCompletion, budget, utilizedBudget, affectedCitizens, status } = req.body;
+
+    const newProjectData = {
+      id: `proj-${Date.now()}`,
+      project_code: `PRJ-${Math.floor(100 + Math.random() * 900)}`,
+      title: name || 'New Infrastructure Project',
+      category: department || 'Municipal Works',
+      pincode: pincode || '110025',
+      status: status || 'In Progress',
+      budget: Number(budget) || 1000000,
+      utilized_budget: Number(utilizedBudget) || 0,
+      expected_completion: expectedCompletion || '2026-11-30',
+      progress: status === 'Completed' ? 100 : 15
+    };
+
+    const { data, error } = await supabase
+      .from('projects')
+      .insert([newProjectData])
+      .select('*');
+
+    if (error) throw error;
+
+    return res.status(201).json({ status: 'success', data: data?.[0] || newProjectData });
+  } catch (error) {
+    console.error('Error creating admin project:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+/**
+ * PATCH /api/admin/projects/:id
+ * Updates an existing municipal project in Supabase.
+ */
+export const updateAdminProject = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, progress, utilizedBudget, expectedCompletion } = req.body;
+
+    const updates = {};
+    if (status !== undefined) updates.status = status;
+    if (progress !== undefined) updates.progress = progress;
+    if (utilizedBudget !== undefined) updates.utilized_budget = utilizedBudget;
+    if (expectedCompletion !== undefined) updates.expected_completion = expectedCompletion;
+
+    const { data, error } = await supabase
+      .from('projects')
+      .update(updates)
+      .eq('id', id)
+      .select('*');
+
+    if (error) throw error;
+
+    return res.status(200).json({ status: 'success', data: data?.[0] || null });
+  } catch (error) {
+    console.error('Error updating admin project:', error);
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
@@ -422,7 +578,7 @@ export const getMunicipalFiles = async (req, res) => {
 
 /**
  * PATCH /api/admin/complaints/:id/status
- * Updates status of a complaint (e.g. 'Resolved', 'Crew Dispatched').
+ * Updates status of a complaint (e.g. 'Resolved', 'In Progress').
  */
 export const updateComplaintStatus = async (req, res) => {
   try {
@@ -444,6 +600,57 @@ export const updateComplaintStatus = async (req, res) => {
     return res.status(200).json({ status: 'success', data: data?.[0] || null });
   } catch (error) {
     console.error('Error updating complaint status:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+/**
+ * POST /api/admin/clusters/dispatch
+ * Bulk updates all complaints in a cluster (matching pincode + category) to 'In Progress' status.
+ */
+export const dispatchClusterWorkOrder = async (req, res) => {
+  try {
+    const { pincode, category, status } = req.body;
+    const targetStatus = status || 'In Progress';
+
+    if (!pincode) {
+      return res.status(400).json({ error: 'BadRequest', message: 'pincode is required.' });
+    }
+
+    let query = supabase
+      .from('complaints')
+      .update({ status: targetStatus })
+      .eq('pincode', pincode);
+
+    if (category && category !== 'All' && category !== 'General') {
+      query = query.ilike('category', `%${category}%`);
+    }
+
+    const { data, error } = await query.select('id, complaint_code, status, pincode, category');
+
+    if (error) throw error;
+
+    // Update status in clusters table as well
+    try {
+      const catSlug = (category || 'general').replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 6);
+      const clusterId = `CLS-${catSlug}-${pincode}`;
+      await supabase
+        .from('clusters')
+        .update({ status: targetStatus, updated_at: new Date().toISOString() })
+        .eq('id', clusterId);
+    } catch (dbErr) {
+      console.warn('Updating cluster status in database warning:', dbErr?.message);
+    }
+
+    return res.status(200).json({
+      status: 'success',
+      message: `Successfully dispatched work order. Updated ${data?.length || 0} complaints to '${targetStatus}'.`,
+      updatedCount: data?.length || 0,
+      data: data || []
+    });
+
+  } catch (error) {
+    console.error('Error dispatching cluster work order:', error);
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };

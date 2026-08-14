@@ -73,3 +73,35 @@ export const updateComplaintStatus = async (id, statusData) => {
   const response = await api.patch(`/admin/complaints/${id}/status`, statusData);
   return response.data;
 };
+
+/**
+ * Fetch all municipal projects.
+ */
+export const getAdminProjects = async () => {
+  const response = await api.get("/admin/projects");
+  return response.data;
+};
+
+/**
+ * Create a new municipal project.
+ */
+export const createAdminProject = async (projectData) => {
+  const response = await api.post("/admin/projects", projectData);
+  return response.data;
+};
+
+/**
+ * Update an existing municipal project.
+ */
+export const updateAdminProject = async (id, projectData) => {
+  const response = await api.patch(`/admin/projects/${id}`, projectData);
+  return response.data;
+};
+
+/**
+ * Bulk dispatch work order for a cluster of complaints.
+ */
+export const dispatchClusterWorkOrder = async (dispatchData) => {
+  const response = await api.post("/admin/clusters/dispatch", dispatchData);
+  return response.data;
+};
