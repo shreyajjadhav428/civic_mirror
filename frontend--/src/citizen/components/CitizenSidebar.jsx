@@ -36,13 +36,6 @@ function SidebarIcon({ name }) {
       <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
     ),
 
-    settings: (
-      <>
-        <circle cx="12" cy="12" r="3" />
-        <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.2 2.2-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1 1.56V20.4h-3.1v-.1a1.7 1.7 0 0 0-1-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06-2.2-2.2.06-.06A1.7 1.7 0 0 0 6.86 15a1.7 1.7 0 0 0-1.56-1H5.2v-3.1h.1a1.7 1.7 0 0 0 1.56-1 1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.2-2.2.06.06a1.7 1.7 0 0 0 1.88.34 1.7 1.7 0 0 0 1-1.56V4.5h3.1v.1a1.7 1.7 0 0 0 1 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.2 2.2-.06.06a1.7 1.7 0 0 0-.34 1.88 1.7 1.7 0 0 0 1.56 1h.1V14h-.1a1.7 1.7 0 0 0-1.56 1Z" />
-      </>
-    ),
-
     profile: (
       <>
         <circle cx="12" cy="8" r="3.5" />
@@ -237,25 +230,6 @@ export default function CitizenSidebar({ onLogout }) {
         <div>
           <div className="mx-2 my-[22px] h-px bg-white/[0.07]" />
 
-          <div className="flex items-center gap-2.5 px-2.5 pb-[15px]">
-            <span
-              className="grid h-[31px] w-[31px] shrink-0 place-items-center rounded-full border border-[#A0C6ED]/25 bg-[#1A3D61] text-xs font-bold text-[#CCE2FF]"
-              aria-hidden="true"
-            >
-              C
-            </span>
-
-            <span>
-              <strong className="block text-xs font-semibold text-[#F0F6FC]">
-                Citizen account
-              </strong>
-
-              <small className="mt-0.5 block text-[10px] text-[#93ACC4]">
-                Manage your profile
-              </small>
-            </span>
-          </div>
-
           <div className="grid gap-0.5">
             {/* Profile */}
             <button
@@ -268,19 +242,6 @@ export default function CitizenSidebar({ onLogout }) {
             >
               <SidebarIcon name="profile" />
               <span>Profile</span>
-            </button>
-
-            {/* Settings */}
-            <button
-              type="button"
-              onClick={() => {
-                navigate("/citizen/settings");
-                handleNavigation();
-              }}
-              className="flex min-h-[36px] w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#B8CADB] transition-all duration-150 hover:bg-white/[0.045] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
-            >
-              <SidebarIcon name="settings" />
-              <span>Settings</span>
             </button>
 
             {/* Logout */}

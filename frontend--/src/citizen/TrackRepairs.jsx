@@ -7,7 +7,7 @@ const repairs = [
     location: "Shanti Nagar, 110025",
     submittedDate: "14 August 2026",
     status: "In progress",
-    currentStep: 2,
+    currentStep: 1,
     category: "Street lighting",
 
     update: "An electrical maintenance team has been assigned.",
@@ -26,13 +26,6 @@ const repairs = [
         date: "14 August 2026",
         description:
           "Your civic request was submitted successfully with the reported location.",
-        status: "completed",
-      },
-      {
-        title: "Request assigned",
-        date: "14 August 2026",
-        description:
-          "The issue was assigned to the Electrical Works Department for review.",
         status: "completed",
       },
       {
@@ -63,12 +56,12 @@ const repairs = [
     title: "Water leakage reported near Community Centre",
     location: "Shanti Nagar, 110025",
     submittedDate: "11 August 2026",
-    status: "Assigned",
-    currentStep: 1,
+    status: "Reported",
+    currentStep: 0,
     category: "Water supply",
 
     update:
-      "The issue has been assigned to the local water services team.",
+      "The issue has been reported and routed to the local water services team.",
 
     department: "Water Services",
     relatedProject: "Shanti Nagar Water Network Maintenance",
@@ -84,13 +77,6 @@ const repairs = [
         date: "11 August 2026",
         description:
           "Your water supply issue was submitted successfully.",
-        status: "completed",
-      },
-      {
-        title: "Request assigned",
-        date: "12 August 2026",
-        description:
-          "The issue was assigned to the local Water Services team.",
         status: "current",
       },
       {
@@ -122,7 +108,7 @@ const repairs = [
     location: "Market Road, 110025",
     submittedDate: "04 August 2026",
     status: "Resolved",
-    currentStep: 3,
+    currentStep: 2,
     category: "Road maintenance",
 
     update:
@@ -142,13 +128,6 @@ const repairs = [
         date: "04 August 2026",
         description:
           "The road maintenance issue was submitted successfully.",
-        status: "completed",
-      },
-      {
-        title: "Request assigned",
-        date: "05 August 2026",
-        description:
-          "The request was assigned to the Road Maintenance team.",
         status: "completed",
       },
       {
@@ -175,7 +154,7 @@ const repairs = [
   },
 ];
 
-const steps = ["Reported", "Assigned", "In progress", "Resolved"];
+const steps = ["Reported", "In progress", "Resolved"];
 
 function statusStyles(status) {
   if (status === "Resolved") {
@@ -184,10 +163,6 @@ function statusStyles(status) {
 
   if (status === "In progress") {
     return "border-[#C9DFFF] bg-[#EEF5FF] text-[#2864A8]";
-  }
-
-  if (status === "Assigned") {
-    return "border-[#F1D58B] bg-[#FFF5DC] text-[#936600]";
   }
 
   return "border-[#D9E5F0] bg-[#F3F7FA] text-[#5F7489]";
@@ -209,13 +184,6 @@ function getStepColor(step, index, currentStep) {
       };
     }
 
-    if (step === "Assigned") {
-      return {
-        circle: "border-[#E5B932] bg-[#FFF5DC] text-[#936600]",
-        line: "bg-[#DCE6EF]",
-      };
-    }
-
     return {
       circle: "border-[#2D7FF9] bg-[#EEF5FF] text-[#2D7FF9]",
       line: "bg-[#DCE6EF]",
@@ -233,10 +201,10 @@ function TimelineIcon({ status }) {
     return (
       <svg
         viewBox="0 0 24 24"
-        className="h-4 w-4"
+        className="h-[18px] w-[18px]"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       >
@@ -247,12 +215,12 @@ function TimelineIcon({ status }) {
 
   if (status === "current") {
     return (
-      <span className="h-2.5 w-2.5 rounded-full bg-[#2D7FF9]" />
+      <span className="h-3 w-3 rounded-full bg-[#2D7FF9]" />
     );
   }
 
   return (
-    <span className="h-2.5 w-2.5 rounded-full border-2 border-[#B9C7D4]" />
+    <span className="h-3 w-3 rounded-full border-[2.5px] border-[#B9C7D4]" />
   );
 }
 
@@ -321,32 +289,32 @@ export default function TrackRepairs({ onNavigate }) {
   ];
 
   return (
-    <div className="space-y-8 text-[#0D1B2A] font-['Inter',sans-serif]">
+    <div className="space-y-10 text-[#0D1B2A] font-['Inter',sans-serif]">
       {/* =========================================================
-          HEADER BANNER (Matching Admin Portal & Overview UI)
+          HEADER BANNER
       ========================================================= */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs relative overflow-hidden">
+      <div className="rounded-2xl border border-slate-200/80 bg-gradient-to-br from-white to-slate-50 p-8 shadow-sm relative overflow-hidden">
         {/* Top Accent bar */}
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#2D7FF9]" />
 
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="flex items-center gap-2 text-xs font-black tracking-widest text-[#2D7FF9] uppercase mb-2">
-              <span className="h-[2.5px] w-5 bg-[#2D7FF9] rounded-full inline-block" />
+              <span className="h-[2px] w-5 bg-[#2D7FF9] rounded-full inline-block" />
               CITIZEN WORKSPACE
             </p>
             <h1 className="text-3xl sm:text-4xl font-black text-[#0D1B2A] tracking-tight flex items-center gap-3">
               Track <span className="text-[#2D7FF9]">Repairs</span>
             </h1>
-            <p className="mt-2 text-base font-semibold text-[#59687A] max-w-2xl">
+            <p className="mt-2 text-base font-medium text-[#59687A] max-w-2xl">
               Follow reported civic issues from review and assignment through to completion.
             </p>
           </div>
 
           {/* Stat Box */}
           <div className="flex flex-col sm:items-end gap-3 shrink-0">
-            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4.5 py-2.5 text-sm font-semibold">
-              <span className="text-[#657386] block text-[11px] font-black uppercase tracking-wider">Active Monitoring</span>
+            <div className="rounded-2xl border border-slate-200 bg-white/80 px-5 py-3 shadow-sm text-sm font-semibold">
+              <span className="text-[#657386] block text-[11px] font-black uppercase tracking-wider mb-1">Active Monitoring</span>
               <span className="text-[#0D1B2A] font-black text-lg">{summary.active} Active Issues</span>
             </div>
           </div>
@@ -366,16 +334,16 @@ export default function TrackRepairs({ onNavigate }) {
 
       {/* SUMMARY */}
       <section
-        className="mt-8 grid gap-4 sm:grid-cols-3"
+        className="mt-6 grid gap-5 sm:grid-cols-3"
         aria-label="Repair summary"
       >
         {summaryCards.map((card) => (
           <article
             key={card.label}
-            className="group relative overflow-hidden rounded-2xl border border-[#DCE7F1] bg-white p-5 shadow-[0_8px_24px_rgba(13,27,42,0.045)] transition-all duration-200 hover:-translate-y-[2px] hover:shadow-[0_12px_30px_rgba(13,27,42,0.07)]"
+            className="group relative overflow-hidden rounded-2xl border border-[#DCE7F1] bg-white p-5 shadow-[0_8px_24px_rgba(13,27,42,0.045)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_32px_rgba(13,27,42,0.07)]"
           >
             <div
-              className={`absolute inset-x-0 top-0 h-[3px] ${
+              className={`absolute inset-x-0 top-0 h-[4px] ${
                 card.tone === "blue"
                   ? "bg-[#2D7FF9]"
                   : card.tone === "yellow"
@@ -386,11 +354,11 @@ export default function TrackRepairs({ onNavigate }) {
 
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#70859A]">
+                <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#70859A]">
                   {card.label}
                 </p>
 
-                <p className="mt-2 text-[30px] font-extrabold tracking-[-0.04em] text-[#18324C]">
+                <p className="mt-1.5 text-3xl font-extrabold tracking-[-0.04em] text-[#18324C]">
                   {String(card.value).padStart(2, "0")}
                 </p>
 
@@ -400,7 +368,7 @@ export default function TrackRepairs({ onNavigate }) {
               </div>
 
               <span
-                className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl ${
+                className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${
                   card.tone === "blue"
                     ? "bg-[#EEF5FF] text-[#2D7FF9]"
                     : card.tone === "yellow"
@@ -463,15 +431,15 @@ export default function TrackRepairs({ onNavigate }) {
       </section>
 
       {/* SEARCH + FILTER */}
-      <section className="mt-8 rounded-2xl border border-[#DCE7F1] bg-white p-3 shadow-[0_8px_24px_rgba(13,27,42,0.04)]">
+      <section className="mt-8 rounded-2xl border border-[#DCE7F1] bg-white p-3.5 shadow-sm">
         <div className="flex flex-col gap-3 sm:flex-row">
           <div className="relative min-w-0 flex-1">
             <svg
               viewBox="0 0 24 24"
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8193A5]"
+              className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8193A5]"
               fill="none"
               stroke="currentColor"
-              strokeWidth="1.8"
+              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
@@ -484,14 +452,14 @@ export default function TrackRepairs({ onNavigate }) {
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
               placeholder="Search repairs..."
-              className="h-11 w-full rounded-xl border border-[#DCE7F1] bg-[#FBFCFE] pl-9 pr-3 text-sm font-medium text-[#18324C] outline-none transition-colors placeholder:text-[#91A0AF] focus:border-[#9BC5FF] focus:bg-white"
+              className="h-12 w-full rounded-xl border border-[#DCE7F1] bg-[#FBFCFE] pl-11 pr-4 text-base font-medium text-[#18324C] outline-none transition-colors placeholder:text-[#91A0AF] focus:border-[#9BC5FF] focus:bg-white"
             />
           </div>
 
           <select
             value={status}
             onChange={(event) => setStatus(event.target.value)}
-            className="h-11 rounded-xl border border-[#DCE7F1] bg-[#FBFCFE] px-3 text-sm font-semibold text-[#486278] outline-none focus:border-[#9BC5FF] sm:w-[180px]"
+            className="h-12 rounded-xl border border-[#DCE7F1] bg-[#FBFCFE] px-4 text-base font-semibold text-[#486278] outline-none transition-colors focus:border-[#9BC5FF] sm:w-[200px]"
           >
             {["All", ...steps].map((item) => (
               <option key={item}>{item}</option>
@@ -501,68 +469,68 @@ export default function TrackRepairs({ onNavigate }) {
       </section>
 
       {/* REPAIR CARDS */}
-      <section className="mt-6 space-y-4" aria-label="Repairs">
+      <section className="mt-6 space-y-5" aria-label="Repairs">
         {filteredRepairs.map((repair) => (
           <article
             key={repair.id}
-            className="overflow-hidden rounded-2xl border border-[#DCE7F1] bg-white shadow-[0_8px_24px_rgba(13,27,42,0.045)] transition-all duration-200 hover:-translate-y-[1px] hover:border-[#C7D9E9] hover:shadow-[0_12px_30px_rgba(13,27,42,0.065)]"
+            className="overflow-hidden rounded-2xl border border-[#DCE7F1] bg-white shadow-[0_8px_24px_rgba(13,27,42,0.045)] transition-all duration-200 hover:-translate-y-1 hover:border-[#C7D9E9] hover:shadow-[0_12px_30px_rgba(13,27,42,0.065)]"
           >
-            <div className="p-5 sm:p-6">
+            <div className="p-6 sm:p-7">
               <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                 <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2.5">
                     <span
-                      className={`rounded-full border px-2.5 py-1 text-[10px] font-bold ${statusStyles(
+                      className={`rounded-full border px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wide ${statusStyles(
                         repair.status,
                       )}`}
                     >
                       {repair.status}
                     </span>
 
-                    <span className="text-[11px] font-semibold text-[#8A9AAA]">
+                    <span className="text-xs font-bold text-[#8A9AAA]">
                       {repair.id}
                     </span>
 
-                    <span className="hidden text-[11px] text-[#B0BBC5] sm:inline">
+                    <span className="hidden text-xs text-[#B0BBC5] sm:inline">
                       ·
                     </span>
 
-                    <span className="text-[11px] font-medium text-[#8192A2]">
+                    <span className="text-xs font-semibold text-[#8192A2]">
                       {repair.category}
                     </span>
                   </div>
 
-                  <h2 className="mt-3 text-[16px] font-bold tracking-[-0.015em] text-[#18324C] sm:text-[17px]">
+                  <h2 className="mt-3.5 text-lg font-bold tracking-[-0.015em] text-[#18324C] sm:text-xl">
                     {repair.title}
                   </h2>
 
-                  <p className="mt-1.5 text-[13px] leading-5 text-[#63768A]">
+                  <p className="mt-1.5 text-[15px] leading-6 text-[#63768A]">
                     {repair.location}
-                    <span className="mx-1.5 text-[#B3BEC8]">·</span>
+                    <span className="mx-2 text-[#B3BEC8]">·</span>
                     Submitted {repair.submittedDate}
                   </p>
                 </div>
 
-                {/* VIEW DETAILS → MY REQUESTS */}
+                {/* VIEW DETAILS BUTTON */}
                 <button
                   type="button"
                   onClick={() => onNavigate?.("requests")}
-                  className="w-fit shrink-0 rounded-lg border border-[#C9D8E6] px-4 py-2.5 text-xs font-bold text-[#31516E] transition-all duration-150 hover:border-[#9BC5FF] hover:bg-[#EEF5FF] hover:text-[#2D7FF9]"
+                  className="w-fit shrink-0 rounded-lg border border-[#C9D8E6] px-5 py-2.5 text-sm font-bold text-[#31516E] transition-all duration-150 hover:border-[#9BC5FF] hover:bg-[#EEF5FF] hover:text-[#2D7FF9]"
                 >
                   View details
-                  <span className="ml-1">→</span>
+                  <span className="ml-1.5">→</span>
                 </button>
               </div>
 
               {/* LATEST UPDATE */}
-              <div className="mt-5 flex gap-3 rounded-xl border border-[#E4EBF2] bg-[#F7F9FC] px-4 py-3.5">
-                <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-white text-[#2D7FF9] shadow-sm">
+              <div className="mt-6 flex gap-3.5 rounded-xl border border-[#E4EBF2] bg-[#F7F9FC] px-5 py-4">
+                <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white text-[#2D7FF9] shadow-sm">
                   <svg
                     viewBox="0 0 24 24"
-                    className="h-3.5 w-3.5"
+                    className="h-4 w-4"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="1.8"
+                    strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
@@ -572,18 +540,18 @@ export default function TrackRepairs({ onNavigate }) {
                 </span>
 
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#8293A3]">
+                  <p className="text-xs font-bold uppercase tracking-[0.08em] text-[#8293A3]">
                     Latest update
                   </p>
 
-                  <p className="mt-0.5 text-xs font-medium leading-5 text-[#536B80]">
+                  <p className="mt-1 text-[15px] font-medium leading-6 text-[#536B80]">
                     {repair.update}
                   </p>
                 </div>
               </div>
 
               {/* PROGRESS */}
-              <div className="mt-6">
+              <div className="mt-7">
                 <div className="flex items-center">
                   {steps.map((step, index) => {
                     const colors = getStepColor(
@@ -602,7 +570,7 @@ export default function TrackRepairs({ onNavigate }) {
                         key={step}
                       >
                         <span
-                          className={`grid h-6 w-6 shrink-0 place-items-center rounded-full border text-[10px] font-bold ${colors.circle}`}
+                          className={`grid h-7 w-7 shrink-0 place-items-center rounded-full border text-xs font-bold ${colors.circle}`}
                         >
                           {index < repair.currentStep
                             ? "✓"
@@ -611,7 +579,7 @@ export default function TrackRepairs({ onNavigate }) {
 
                         {index < steps.length - 1 && (
                           <span
-                            className={`mx-1.5 h-[2px] min-w-2 flex-1 rounded-full ${colors.line}`}
+                            className={`mx-2 h-[2.5px] min-w-2 flex-1 rounded-full ${colors.line}`}
                           />
                         )}
                       </div>
@@ -619,10 +587,10 @@ export default function TrackRepairs({ onNavigate }) {
                   })}
                 </div>
 
-                <div className="mt-2 grid grid-cols-4">
+                <div className="mt-2.5 grid grid-cols-3">
                   {steps.map((step, index) => (
                     <span
-                      className={`text-[10px] font-semibold ${
+                      className={`text-[11px] font-bold uppercase tracking-wide ${
                         index <= repair.currentStep
                           ? "text-[#526A7F]"
                           : "text-[#9AAAB9]"
@@ -642,8 +610,8 @@ export default function TrackRepairs({ onNavigate }) {
               </div>
 
               {/* FOOTER */}
-              <div className="mt-5 flex flex-col gap-2 border-t border-[#E7EEF4] pt-4 sm:flex-row sm:items-center sm:justify-between">
-                <span className="text-[11px] font-medium text-[#718398]">
+              <div className="mt-6 flex flex-col gap-3 border-t border-[#E7EEF4] pt-5 sm:flex-row sm:items-center sm:justify-between">
+                <span className="text-[13px] font-medium text-[#718398]">
                   Latest status:{" "}
                   <strong className="font-bold text-[#49647D]">
                     {repair.status}
@@ -654,10 +622,10 @@ export default function TrackRepairs({ onNavigate }) {
                 <button
                   type="button"
                   onClick={() => setSelectedRepair(repair)}
-                  className="w-fit text-xs font-bold text-[#2D7FF9] transition-colors hover:text-[#155FC5]"
+                  className="w-fit text-[13px] font-bold text-[#2D7FF9] transition-colors hover:text-[#155FC5]"
                 >
                   View repair details
-                  <span className="ml-1">→</span>
+                  <span className="ml-1.5">→</span>
                 </button>
               </div>
             </div>
@@ -665,14 +633,14 @@ export default function TrackRepairs({ onNavigate }) {
         ))}
 
         {!filteredRepairs.length && (
-          <section className="rounded-2xl border border-dashed border-[#C8D8E6] bg-white/60 px-6 py-14 text-center">
-            <span className="mx-auto grid h-11 w-11 place-items-center rounded-xl bg-[#EEF5FF] text-[#2D7FF9]">
+          <section className="rounded-2xl border border-dashed border-[#C8D8E6] bg-white/60 px-8 py-16 text-center">
+            <span className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-[#EEF5FF] text-[#2D7FF9]">
               <svg
                 viewBox="0 0 24 24"
-                className="h-5 w-5"
+                className="h-6 w-6"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.8"
+                strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
@@ -681,11 +649,11 @@ export default function TrackRepairs({ onNavigate }) {
               </svg>
             </span>
 
-            <h2 className="mt-4 text-base font-bold text-[#18324C]">
+            <h2 className="mt-5 text-lg font-bold text-[#18324C]">
               No repairs found
             </h2>
 
-            <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-[#6C7F92]">
+            <p className="mx-auto mt-2 max-w-sm text-base leading-6 text-[#6C7F92]">
               Adjust the search or status filter to view another repair
               request.
             </p>
@@ -696,12 +664,12 @@ export default function TrackRepairs({ onNavigate }) {
       {/* REPAIR DETAILS MODAL */}
       {selectedRepair && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[#07111D]/50 p-4 backdrop-blur-[4px] sm:p-6"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#07111D]/60 p-4 backdrop-blur-[6px] sm:p-6"
           onMouseDown={() => setSelectedRepair(null)}
           role="presentation"
         >
           <section
-            className="max-h-[92vh] w-full max-w-2xl overflow-hidden rounded-2xl border border-[#DCE7F1] bg-white shadow-[0_28px_80px_rgba(5,18,33,0.24)]"
+            className="max-h-[92vh] w-full max-w-2xl overflow-hidden rounded-2xl border border-[#DCE7F1] bg-white shadow-[0_28px_80px_rgba(5,18,33,0.3)] transition-all"
             onMouseDown={(event) => event.stopPropagation()}
             role="dialog"
             aria-modal="true"
@@ -709,7 +677,7 @@ export default function TrackRepairs({ onNavigate }) {
           >
             {/* ACCENT */}
             <div
-              className={`h-1.5 ${
+              className={`h-2 ${
                 selectedRepair.status === "Resolved"
                   ? "bg-[#00A68E]"
                   : selectedRepair.status === "In progress"
@@ -718,39 +686,39 @@ export default function TrackRepairs({ onNavigate }) {
               }`}
             />
 
-            <div className="max-h-[calc(92vh-6px)] overflow-y-auto">
-              <div className="p-5 sm:p-7">
+            <div className="max-h-[calc(92vh-8px)] overflow-y-auto">
+              <div className="p-6 sm:p-8">
                 {/* MODAL HEADER */}
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start justify-between gap-5">
                   <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2.5">
                       <span
-                        className={`rounded-full border px-2.5 py-1 text-[10px] font-bold ${statusStyles(
+                        className={`rounded-full border px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wide ${statusStyles(
                           selectedRepair.status,
                         )}`}
                       >
                         {selectedRepair.status}
                       </span>
 
-                      <span className="text-[11px] font-bold tracking-[0.05em] text-[#8A9AAA]">
+                      <span className="text-xs font-bold tracking-[0.05em] text-[#8A9AAA]">
                         {selectedRepair.id}
                       </span>
 
                       <span className="text-[#B6C1CA]">·</span>
 
-                      <span className="text-[11px] font-semibold text-[#8192A2]">
+                      <span className="text-xs font-semibold text-[#8192A2]">
                         {selectedRepair.category}
                       </span>
                     </div>
 
                     <h2
                       id="repair-details-title"
-                      className="mt-3 text-[21px] font-extrabold tracking-[-0.03em] text-[#0D1B2A]"
+                      className="mt-4 text-2xl font-black tracking-[-0.02em] text-[#0D1B2A]"
                     >
                       {selectedRepair.title}
                     </h2>
 
-                    <p className="mt-1.5 text-[13px] font-medium text-[#718398]">
+                    <p className="mt-2 text-[15px] font-medium text-[#718398]">
                       {selectedRepair.location}
                     </p>
                   </div>
@@ -758,15 +726,15 @@ export default function TrackRepairs({ onNavigate }) {
                   <button
                     type="button"
                     onClick={() => setSelectedRepair(null)}
-                    className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-[#70859A] transition-colors hover:bg-[#F3F6F9] hover:text-[#0D1B2A]"
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-[#70859A] transition-colors hover:bg-[#F3F6F9] hover:text-[#0D1B2A]"
                     aria-label="Close repair details"
                   >
                     <svg
                       viewBox="0 0 24 24"
-                      className="h-4 w-4"
+                      className="h-5 w-5"
                       fill="none"
                       stroke="currentColor"
-                      strokeWidth="1.8"
+                      strokeWidth="2"
                       strokeLinecap="round"
                     >
                       <path d="M6 6l12 12M18 6L6 18" />
@@ -775,107 +743,92 @@ export default function TrackRepairs({ onNavigate }) {
                 </div>
 
                 {/* CURRENT STATUS */}
-                <div className="mt-6 rounded-2xl border border-[#DCE7F1] bg-[#F8FAFC] p-4">
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="mt-7 rounded-2xl border border-[#DCE7F1] bg-[#F8FAFC] p-5">
+                  <div className="flex flex-col gap-4">
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.11em] text-[#8293A3]">
+                      <p className="text-xs font-bold uppercase tracking-[0.11em] text-[#8293A3]">
                         Current status
                       </p>
-
-                      <p className="mt-1 text-[17px] font-extrabold text-[#18324C]">
+                      <p className="mt-1.5 text-xl font-extrabold text-[#18324C]">
                         {selectedRepair.status}
-                      </p>
-                    </div>
-
-                    <div className="sm:text-right">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.11em] text-[#8293A3]">
-                        Expected resolution
-                      </p>
-
-                      <p className="mt-1 text-sm font-bold text-[#2D7FF9]">
-                        {selectedRepair.expectedResolution}
                       </p>
                     </div>
                   </div>
                 </div>
 
                 {/* REPORTED ISSUE */}
-                <section className="mt-5">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.11em] text-[#8293A3]">
+                <section className="mt-6">
+                  <p className="text-xs font-bold uppercase tracking-[0.11em] text-[#8293A3]">
                     Reported issue
                   </p>
 
-                  <div className="mt-2 rounded-xl border border-[#E1EAF2] bg-white p-4">
-                    <p className="text-[14px] font-medium leading-6 text-[#263D52]">
+                  <div className="mt-2.5 rounded-xl border border-[#E1EAF2] bg-white p-5 shadow-sm">
+                    <p className="text-base font-medium leading-7 text-[#263D52]">
                       {selectedRepair.description}
                     </p>
                   </div>
                 </section>
 
                 {/* INFORMATION GRID */}
-                <section className="mt-5 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-xl border border-[#E1EAF2] bg-white p-4">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#8293A3]">
+                <section className="mt-6 grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-xl border border-[#E1EAF2] bg-white p-5 shadow-sm">
+                    <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#8293A3]">
                       Location
                     </p>
-
-                    <p className="mt-1.5 text-sm font-bold text-[#18324C]">
+                    <p className="mt-1.5 text-base font-bold text-[#18324C]">
                       {selectedRepair.location}
                     </p>
                   </div>
 
-                  <div className="rounded-xl border border-[#E1EAF2] bg-white p-4">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#8293A3]">
+                  <div className="rounded-xl border border-[#E1EAF2] bg-white p-5 shadow-sm">
+                    <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#8293A3]">
                       Submitted
                     </p>
-
-                    <p className="mt-1.5 text-sm font-bold text-[#18324C]">
+                    <p className="mt-1.5 text-base font-bold text-[#18324C]">
                       {selectedRepair.submittedDate}
                     </p>
                   </div>
 
-                  <div className="rounded-xl border border-[#E1EAF2] bg-white p-4">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#8293A3]">
+                  <div className="rounded-xl border border-[#E1EAF2] bg-white p-5 shadow-sm">
+                    <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#8293A3]">
                       Department
                     </p>
-
-                    <p className="mt-1.5 text-sm font-bold text-[#18324C]">
+                    <p className="mt-1.5 text-base font-bold text-[#18324C]">
                       {selectedRepair.department}
                     </p>
                   </div>
 
-                  <div className="rounded-xl border border-[#E1EAF2] bg-white p-4">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#8293A3]">
+                  <div className="rounded-xl border border-[#E1EAF2] bg-white p-5 shadow-sm">
+                    <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#8293A3]">
                       Related project
                     </p>
-
-                    <p className="mt-1.5 text-sm font-bold text-[#18324C]">
+                    <p className="mt-1.5 text-base font-bold text-[#18324C]">
                       {selectedRepair.relatedProject}
                     </p>
                   </div>
                 </section>
 
                 {/* PROJECT PROGRESS */}
-                <section className="mt-6 rounded-2xl border border-[#DCE7F1] bg-[#FAFCFE] p-4">
-                  <div className="flex items-center justify-between gap-4">
+                <section className="mt-7 rounded-2xl border border-[#DCE7F1] bg-[#FAFCFE] p-5 shadow-sm">
+                  <div className="flex items-center justify-between gap-5">
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.11em] text-[#8293A3]">
+                      <p className="text-xs font-bold uppercase tracking-[0.11em] text-[#8293A3]">
                         Related project progress
                       </p>
 
-                      <p className="mt-1 text-sm font-bold text-[#18324C]">
+                      <p className="mt-1.5 text-base font-bold text-[#18324C]">
                         {selectedRepair.relatedProject}
                       </p>
                     </div>
 
-                    <span className="text-lg font-extrabold text-[#2D7FF9]">
+                    <span className="text-xl font-extrabold text-[#2D7FF9]">
                       {selectedRepair.projectProgress}%
                     </span>
                   </div>
 
-                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#E6EDF4]">
+                  <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-[#E6EDF4]">
                     <div
-                      className="h-full rounded-full bg-[#2D7FF9] transition-all"
+                      className="h-full rounded-full bg-[#2D7FF9] transition-all duration-500 ease-out"
                       style={{
                         width: `${selectedRepair.projectProgress}%`,
                       }}
@@ -884,18 +837,18 @@ export default function TrackRepairs({ onNavigate }) {
                 </section>
 
                 {/* TIMELINE */}
-                <section className="mt-7">
+                <section className="mt-8">
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.11em] text-[#2D7FF9]">
+                    <p className="text-xs font-bold uppercase tracking-[0.11em] text-[#2D7FF9]">
                       Request timeline
                     </p>
 
-                    <h3 className="mt-1 text-[17px] font-extrabold text-[#18324C]">
+                    <h3 className="mt-1.5 text-lg font-extrabold text-[#18324C]">
                       What has happened so far
                     </h3>
                   </div>
 
-                  <div className="mt-5">
+                  <div className="mt-6 pl-1">
                     {selectedRepair.timeline.map(
                       (item, index) => {
                         const isLast =
@@ -905,11 +858,11 @@ export default function TrackRepairs({ onNavigate }) {
                         return (
                           <div
                             key={`${item.title}-${index}`}
-                            className="relative flex gap-4"
+                            className="relative flex gap-5"
                           >
                             {!isLast && (
                               <span
-                                className={`absolute left-[11px] top-6 h-[calc(100%-8px)] w-px ${
+                                className={`absolute left-[13px] top-7 h-[calc(100%-10px)] w-[2px] rounded-full ${
                                   item.status === "completed"
                                     ? "bg-[#00A68E]"
                                     : "bg-[#DCE6EF]"
@@ -918,7 +871,7 @@ export default function TrackRepairs({ onNavigate }) {
                             )}
 
                             <span
-                              className={`relative z-10 grid h-6 w-6 shrink-0 place-items-center rounded-full border ${
+                              className={`relative z-10 grid h-7 w-7 shrink-0 place-items-center rounded-full border ${
                                 item.status === "completed"
                                   ? "border-[#00A68E] bg-[#00A68E] text-white"
                                   : item.status === "current"
@@ -929,18 +882,18 @@ export default function TrackRepairs({ onNavigate }) {
                               <TimelineIcon status={item.status} />
                             </span>
 
-                            <div className="min-w-0 pb-6">
-                              <div className="flex flex-wrap items-center gap-2">
-                                <h4 className="text-sm font-bold text-[#18324C]">
+                            <div className="min-w-0 pb-7">
+                              <div className="flex flex-wrap items-center gap-2.5">
+                                <h4 className="text-[15px] font-bold text-[#18324C]">
                                   {item.title}
                                 </h4>
 
-                                <span className="text-[10px] font-semibold text-[#8A9AAA]">
+                                <span className="text-xs font-semibold text-[#8A9AAA]">
                                   {item.date}
                                 </span>
                               </div>
 
-                              <p className="mt-1 text-[12px] leading-5 text-[#63768A]">
+                              <p className="mt-1.5 text-sm leading-6 text-[#63768A]">
                                 {item.description}
                               </p>
                             </div>
@@ -952,15 +905,15 @@ export default function TrackRepairs({ onNavigate }) {
                 </section>
 
                 {/* LATEST UPDATE */}
-                <section className="mt-2 rounded-2xl border border-[#CFE1FF] bg-[#F5F9FF] p-4">
-                  <div className="flex gap-3">
-                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white text-[#2D7FF9] shadow-sm">
+                <section className="mt-2 rounded-2xl border border-[#CFE1FF] bg-[#F5F9FF] p-5">
+                  <div className="flex gap-4">
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-[#2D7FF9] shadow-sm">
                       <svg
                         viewBox="0 0 24 24"
-                        className="h-4 w-4"
+                        className="h-5 w-5"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="1.8"
+                        strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       >
@@ -970,11 +923,11 @@ export default function TrackRepairs({ onNavigate }) {
                     </span>
 
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#2D7FF9]">
+                      <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#2D7FF9]">
                         Latest update
                       </p>
 
-                      <p className="mt-1 text-sm font-semibold leading-6 text-[#31516E]">
+                      <p className="mt-1.5 text-base font-semibold leading-7 text-[#31516E]">
                         {selectedRepair.update}
                       </p>
                     </div>
@@ -982,15 +935,15 @@ export default function TrackRepairs({ onNavigate }) {
                 </section>
 
                 {/* WHAT'S NEXT */}
-                <section className="mt-6">
-                  <div className="flex items-center gap-3">
-                    <span className="grid h-9 w-9 place-items-center rounded-xl border border-[#D8E7F9] bg-[#EEF5FF] text-[#2D7FF9]">
+                <section className="mt-7">
+                  <div className="flex items-center gap-3.5">
+                    <span className="grid h-10 w-10 place-items-center rounded-xl border border-[#D8E7F9] bg-[#EEF5FF] text-[#2D7FF9]">
                       <svg
                         viewBox="0 0 24 24"
-                        className="h-4 w-4"
+                        className="h-5 w-5"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="1.8"
+                        strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       >
@@ -1000,24 +953,24 @@ export default function TrackRepairs({ onNavigate }) {
                     </span>
 
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.11em] text-[#2D7FF9]">
+                      <p className="text-xs font-bold uppercase tracking-[0.11em] text-[#2D7FF9]">
                         What&apos;s next?
                       </p>
 
-                      <h3 className="mt-0.5 text-[16px] font-extrabold text-[#18324C]">
+                      <h3 className="mt-1 text-lg font-extrabold text-[#18324C]">
                         Next steps for this request
                       </h3>
                     </div>
                   </div>
 
-                  <ol className="mt-4 space-y-3">
+                  <ol className="mt-5 space-y-4">
                     {selectedRepair.nextSteps.map(
                       (nextStep, index) => (
                         <li
                           key={nextStep}
-                          className="flex gap-3 text-[13px] font-medium leading-6 text-[#536B80]"
+                          className="flex gap-3.5 text-[15px] font-medium leading-7 text-[#536B80]"
                         >
-                          <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#EEF5FF] text-[10px] font-bold text-[#2D7FF9]">
+                          <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#EEF5FF] text-[11px] font-bold text-[#2D7FF9]">
                             {index + 1}
                           </span>
 
@@ -1029,11 +982,11 @@ export default function TrackRepairs({ onNavigate }) {
                 </section>
 
                 {/* FOOTER */}
-                <div className="mt-7 flex justify-end border-t border-[#E7EEF4] pt-5">
+                <div className="mt-8 flex justify-end border-t border-[#E7EEF4] pt-6">
                   <button
                     type="button"
                     onClick={() => setSelectedRepair(null)}
-                    className="rounded-xl bg-[#0D1B2A] px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#18324C]"
+                    className="rounded-xl bg-[#0D1B2A] px-6 py-3 text-[15px] font-bold text-white transition-all hover:bg-[#18324C] hover:shadow-md"
                   >
                     Close details
                   </button>
