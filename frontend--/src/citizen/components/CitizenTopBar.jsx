@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 const notifications = [
   {
     title: "Repair request updated",
@@ -110,6 +110,7 @@ function LogoutIcon() {
 }
 
 export default function CitizenTopBar() {
+  const navigate = useNavigate();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [isRinging, setIsRinging] = useState(false);
@@ -299,6 +300,10 @@ export default function CitizenTopBar() {
               <button
                 className="flex w-full items-center gap-2 px-2.5 py-1.5 text-left text-[10px] font-medium leading-4 text-[#49647D] transition-colors duration-150 hover:bg-[#F5F8FB] hover:text-[#0D1B2A]"
                 type="button"
+                onClick={() => {
+                  setProfileOpen(false);
+                  navigate("/citizen/profile");
+                }}
               >
                 <span className="grid h-5 w-5 shrink-0 place-items-center rounded-md bg-[#EEF5FC] text-[#2D7FF9]">
                   <UserIcon />
@@ -311,6 +316,10 @@ export default function CitizenTopBar() {
               <button
                 className="flex w-full items-center gap-2 px-2.5 py-1.5 text-left text-[10px] font-medium leading-4 text-[#49647D] transition-colors duration-150 hover:bg-[#F5F8FB] hover:text-[#0D1B2A]"
                 type="button"
+                onClick={() => {
+                  setProfileOpen(false);
+                  navigate("/citizen/settings");
+                }}
               >
                 <span className="grid h-5 w-5 shrink-0 place-items-center rounded-md bg-[#F1F4F7] text-[#60748A]">
                   <SettingsIcon />

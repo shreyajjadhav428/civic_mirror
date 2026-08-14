@@ -1,5 +1,5 @@
 
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const primaryNavigation = [
   { label: "Overview", to: "/citizen", icon: "overview", end: true },
@@ -70,6 +70,7 @@ export default function CitizenSidebar({
   onProfile,
   onLogout,
 }) {
+  const navigate = useNavigate();
   const navigationClassName = ({ isActive }) =>
     [
       // Base navigation item
@@ -187,7 +188,7 @@ export default function CitizenSidebar({
           <button
             className="flex min-h-[36px] w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#B8CADB] transition-all duration-150 hover:bg-white/[0.045] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
             type="button"
-            onClick={onProfile}
+            onClick={() => navigate("/citizen/profile")}
           >
             <SidebarIcon name="profile" />
             <span>Profile</span>
@@ -196,7 +197,7 @@ export default function CitizenSidebar({
           <button
             className="flex min-h-[36px] w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#B8CADB] transition-all duration-150 hover:bg-white/[0.045] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
             type="button"
-            onClick={onSettings}
+            onClick={() => navigate("/citizen/settings")}
           >
             <SidebarIcon name="settings" />
             <span>Settings</span>
