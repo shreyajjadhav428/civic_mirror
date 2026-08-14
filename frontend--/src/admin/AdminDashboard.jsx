@@ -11,15 +11,16 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState("overview");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const navItems = [
-    { id: "overview", label: "Overview" },
-    { id: "requests", label: "Requests" },
-    { id: "queries", label: "Queries" },
-    { id: "clusters", label: "Clusters" },
-    { id: "data", label: "Data" },
-    { id: "projects", label: "Projects" },
-    { id: "ai_insights", label: "AI Insights" }
+    { id: "overview", label: "Overview", icon: "📊" },
+    { id: "requests", label: "Requests", icon: "📑" },
+    { id: "queries", label: "Queries", icon: "💬" },
+    { id: "clusters", label: "Clusters", icon: "🧩" },
+    { id: "data", label: "Data", icon: "📁" },
+    { id: "projects", label: "Projects", icon: "🏗️" },
+    { id: "ai_insights", label: "AI Insights", icon: "⚡" }
   ];
 
   const handleNavClick = (id) => {
@@ -40,23 +41,29 @@ export default function AdminDashboard() {
 
       {/* Persistent Sidebar Shell */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col justify-between border-r border-white/10 bg-[#0D1B2A] text-white transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-68 flex-col justify-between border-r border-white/10 bg-[#0B1727] text-white transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${
           isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div>
-          <div className="flex items-center justify-between border-b border-white/10 px-6 py-6">
-            <a
-              href="/"
-              onClick={(e) => {
-                e.preventDefault();
-                navigate("/");
-              }}
-              className="inline-flex items-center text-lg font-black tracking-[0.08em] outline-none transition-opacity hover:opacity-85"
-            >
-              <span className="text-white">CIVIC</span>
-              <span className="relative inline-block text-[#2D7FF9]">MIRROR</span>
-            </a>
+          {/* Logo & Header */}
+          <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
+            <div className="flex items-center gap-3">
+              <a
+                href="/"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/");
+                }}
+                className="group inline-flex items-center text-2xl font-black tracking-tight outline-none"
+              >
+                <span className="text-white">C</span>
+                <span className="relative text-[#2D7FF9] after:absolute after:-bottom-1 after:left-0 after:h-[2.5px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 group-hover:after:scale-x-100">
+                  M
+                </span>
+              </a>
+              <span className="text-xs font-semibold text-slate-400">Admin portal</span>
+            </div>
             <button
               onClick={() => setIsMobileSidebarOpen(false)}
               className="rounded-lg p-1 text-white/60 hover:bg-white/10 hover:text-white md:hidden"
@@ -65,93 +72,140 @@ export default function AdminDashboard() {
             </button>
           </div>
 
-          <div className="px-6 pt-4 pb-2">
-            <span className="inline-block rounded bg-[#2D7FF9]/20 px-2.5 py-1 text-[12px] font-extrabold tracking-[0.16em] text-[#8DBBFF] uppercase">
-              Gov Admin Portal
-            </span>
-          </div>
+          {/* Navigation Items */}
+          <nav className="mt-5 px-3 space-y-1">
+            <div className="px-3 py-1.5 text-xs font-extrabold uppercase tracking-widest text-slate-400">
+              WORKSPACE
+            </div>
 
-          <nav className="mt-3 px-3 space-y-1">
             {navItems.map((item) => {
               const isActive = activeNav === item.id;
               return (
                 <button
                   key={item.id}
                   onClick={() => handleNavClick(item.id)}
-                  className={`flex w-full items-center gap-3.5 rounded-lg px-4 py-3 text-sm font-bold tracking-[0.06em] uppercase transition-all ${
+                  className={`flex w-full items-center gap-3.5 rounded-xl px-4 py-2.5 text-sm font-extrabold tracking-wide transition-all ${
                     isActive
-                      ? "bg-[#2D7FF9] text-white shadow-lg shadow-[#2D7FF9]/25 font-black"
-                      : "text-white/70 hover:bg-white/10 hover:text-white"
+                      ? "bg-[#1E293B] text-white shadow-sm border border-slate-700/50"
+                      : "text-slate-300 hover:bg-white/5 hover:text-white"
                   }`}
                 >
-                  <span>● {item.label}</span>
+                  <span className={`text-lg font-black ${isActive ? "text-[#2D7FF9]" : "text-slate-500"}`}>•</span>
+                  <span className="text-lg">{item.label}</span>
                 </button>
               );
             })}
-
-            <div className="my-4 border-t border-white/10" />
-
-            <button
-              onClick={() => handleNavClick("settings")}
-              className={`flex w-full items-center gap-3.5 rounded-lg px-4 py-3 text-sm font-bold tracking-[0.06em] uppercase transition-all ${
-                activeNav === "settings"
-                  ? "bg-[#2D7FF9] text-white shadow-lg shadow-[#2D7FF9]/25 font-black"
-                  : "text-white/70 hover:bg-white/10 hover:text-white"
-              }`}
-            >
-              <span>⚙ Settings</span>
-            </button>
           </nav>
         </div>
 
+        {/* User Account Profile Widget */}
         <div className="p-4 border-t border-white/10">
-          <button
-            onClick={() => navigate("/login")}
-            className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-extrabold tracking-[0.12em] text-[#FF5252] hover:bg-red-500/10 uppercase transition-all"
-          >
-            <span>➔ Logout</span>
-          </button>
+          <div className="px-2 pb-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 text-lg font-black text-[#2D7FF9] border border-slate-700">
+                A
+              </div>
+              <div>
+                <span className="block text-md font-black text-white leading-tight">Admin account</span>
+                <span className="block text-md font-medium text-slate-400">Manage system</span>
+              </div>
+            </div>
+
+            <div className="mt-3 flex flex-col gap-1.5 text-md font-bold text-slate-400">
+              <button
+                onClick={() => handleNavClick("overview")}
+                className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 hover:bg-white/5 hover:text-white transition"
+              >
+                <span>👤</span> Profile
+              </button>
+              <button
+                onClick={() => handleNavClick("overview")}
+                className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 hover:bg-white/5 hover:text-white transition"
+              >
+                <span>⚙</span> Settings
+              </button>
+              <button
+                onClick={() => navigate("/login")}
+                className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition"
+              >
+                <span>➔</span> Log out
+              </button>
+            </div>
+          </div>
         </div>
       </aside>
 
       {/* Main Content Area */}
       <main className="flex flex-1 flex-col overflow-y-auto">
         
-        {/* Top Header */}
-        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-[#D6E6F7] bg-white px-6 py-4 shadow-sm">
+        {/* Top Header Bar matching Citizen Portal */}
+        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-slate-200/80 bg-white/90 px-6 py-4 backdrop-blur-md shadow-xs">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-              className="rounded-lg border border-[#D6E6F7] p-2 text-[#0D1B2A] hover:bg-slate-50 md:hidden"
+              className="rounded-lg border border-slate-200 p-2 text-slate-700 hover:bg-slate-50 md:hidden"
             >
               ☰
             </button>
 
-            <div>
-              <span className="text-xl font-black tracking-[0.08em] text-[#0D1B2A]">
-                CIVIC<span className="text-[#2D7FF9]">MIRROR</span>
-              </span>
-            </div>
+            <span className="text-sm font-semibold text-slate-500">
+              Admin dashboard
+            </span>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2.5 rounded-full border border-[#D6E6F7] bg-[#FAFAFC] px-3.5 py-1.5 shadow-sm">
-              <span className="text-xs font-extrabold tracking-[0.14em] text-[#0D1B2A] uppercase">ADMIN 👤</span>
+            {/* Notification Bell with Badge */}
+            <div className="relative">
+              <button
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition"
+                aria-label="Notifications"
+              >
+                🔔
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-black text-white">
+                  2
+                </span>
+              </button>
+
+              {/* Notification Popover */}
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl z-50">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                    <span className="text-xs font-bold text-slate-900">System Notifications</span>
+                    <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700">2 new</span>
+                  </div>
+                  <div className="mt-3 space-y-2 text-xs">
+                    <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-100">
+                      <span className="font-bold text-slate-800 block">Critical Issue Flagged</span>
+                      <span className="text-slate-500 text-[11px]">Water pipe burst reported in Ward 3 • 10m ago</span>
+                    </div>
+                    <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-100">
+                      <span className="font-bold text-slate-800 block">AI Explainability Audit Completed</span>
+                      <span className="text-slate-500 text-[11px]">22 inquiries verified • 1h ago</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Profile Avatar dropdown icon */}
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0D1B2A] text-xs font-black text-white border border-slate-200">
+              A
             </div>
           </div>
         </header>
 
         {/* Dynamic Section Content based on activeNav */}
-        <div className="p-6 space-y-6">
+        <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full">
 
           {/* VIEW 1: OVERVIEW TAB */}
           {activeNav === "overview" && <Overview />}
 
           {/* VIEW 2: QUERIES TAB */}
-          {activeNav === "queries" && <Queries />}
+          {activeNav === "queries" && <Queries onNavigate={setActiveNav} />}
 
           {/* VIEW 3: CLUSTERS TAB */}
-          {activeNav === "clusters" && <Clusters />}
+          {activeNav === "clusters" && <Clusters onNavigate={setActiveNav} />}
 
           {/* VIEW 4: DATA TAB */}
           {activeNav === "data" && <Data />}
@@ -161,21 +215,6 @@ export default function AdminDashboard() {
 
           {/* VIEW 6: AI INSIGHTS TAB */}
           {activeNav === "ai_insights" && <AiInsights />}
-
-          {/* VIEW 7: OTHER TABS */}
-          {activeNav !== "overview" && activeNav !== "queries" && activeNav !== "clusters" && activeNav !== "data" && activeNav !== "projects" && activeNav !== "ai_insights" && (
-            <div className="rounded-2xl border border-[#D6E6F7] bg-white p-8 text-center space-y-3 shadow-sm">
-              <span className="inline-block rounded-full bg-[#2D7FF9]/10 p-3 text-[#2D7FF9]">
-                ⚙
-              </span>
-              <h2 className="text-xl font-black text-[#0D1B2A] capitalize">
-                {activeNav.replace("_", " ")} Workspace
-              </h2>
-              <p className="text-xs text-slate-500 max-w-md mx-auto">
-                Viewing active municipal analytics and explainability logs for {activeNav.replace("_", " ")}.
-              </p>
-            </div>
-          )}
 
         </div>
       </main>
