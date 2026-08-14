@@ -321,22 +321,48 @@ export default function TrackRepairs({ onNavigate }) {
   ];
 
   return (
-    <div className="mx-auto max-w-[1120px]">
-      {/* HEADER */}
-      <header className="max-w-2xl">
-        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#2D7FF9]">
-          Citizen workspace
-        </p>
+    <div className="space-y-8 text-[#0D1B2A] font-['Inter',sans-serif]">
+      {/* =========================================================
+          HEADER BANNER (Matching Admin Portal & Overview UI)
+      ========================================================= */}
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs relative overflow-hidden">
+        {/* Top Accent bar */}
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#2D7FF9]" />
 
-        <h1 className="mt-1.5 text-[30px] font-extrabold tracking-[-0.035em] text-[#0D1B2A] sm:text-[32px]">
-          Track your repairs
-        </h1>
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="flex items-center gap-2 text-xs font-black tracking-widest text-[#2D7FF9] uppercase mb-2">
+              <span className="h-[2.5px] w-5 bg-[#2D7FF9] rounded-full inline-block" />
+              CITIZEN WORKSPACE
+            </p>
+            <h1 className="text-3xl sm:text-4xl font-black text-[#0D1B2A] tracking-tight flex items-center gap-3">
+              Track <span className="text-[#2D7FF9]">Repairs</span>
+            </h1>
+            <p className="mt-2 text-base font-semibold text-[#59687A] max-w-2xl">
+              Follow reported civic issues from review and assignment through to completion.
+            </p>
+          </div>
 
-        <p className="mt-2 text-sm leading-6 text-[#63768A] sm:text-[15px]">
-          Follow reported civic issues from review and assignment through to
-          completion.
-        </p>
-      </header>
+          {/* Stat Box */}
+          <div className="flex flex-col sm:items-end gap-3 shrink-0">
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4.5 py-2.5 text-sm font-semibold">
+              <span className="text-[#657386] block text-[11px] font-black uppercase tracking-wider">Active Monitoring</span>
+              <span className="text-[#0D1B2A] font-black text-lg">{summary.active} Active Issues</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* SUB-SECTION HEADER LINE */}
+      <div className="flex items-center justify-between pt-1">
+        <span className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400">
+          <span className="h-[2px] w-4 bg-slate-300 rounded-full" />
+          ACTIVE MUNICIPAL REPAIRS & TIMELINE
+        </span>
+        <span className="text-xs font-bold text-slate-400">
+          Realtime Progress Sync
+        </span>
+      </div>
 
       {/* SUMMARY */}
       <section

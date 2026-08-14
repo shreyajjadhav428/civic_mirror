@@ -34,24 +34,24 @@ const requests = [
 function statusStyles(status) {
   if (status === "Resolved") {
     return {
-      badge: "border-[#BFE9DE] bg-[#E9F8F4] text-[#087F6A]",
-      accent: "bg-[#00A68E]",
-      icon: "border-[#BFE9DE] bg-[#E9F8F4] text-[#087F6A]",
+      badge: "border-emerald-200 bg-emerald-50 text-[#008D78]",
+      accent: "bg-[#008D78]",
+      icon: "border-emerald-200 bg-emerald-50 text-[#008D78]",
     };
   }
 
   if (status === "In progress") {
     return {
-      badge: "border-[#F1D58B] bg-[#FFF5DC] text-[#936600]",
-      accent: "bg-[#E9A81B]",
-      icon: "border-[#F1D58B] bg-[#FFF5DC] text-[#936600]",
+      badge: "border-amber-200 bg-amber-50 text-amber-800",
+      accent: "bg-amber-500",
+      icon: "border-amber-200 bg-amber-50 text-amber-700",
     };
   }
 
   return {
-    badge: "border-[#C9DFFF] bg-[#EEF5FF] text-[#2864A8]",
+    badge: "border-blue-200 bg-blue-50 text-[#2D7FF9]",
     accent: "bg-[#2D7FF9]",
-    icon: "border-[#C9DFFF] bg-[#EEF5FF] text-[#2864A8]",
+    icon: "border-blue-200 bg-blue-50 text-[#2D7FF9]",
   };
 }
 
@@ -86,111 +86,131 @@ export default function Requests() {
 
   const openRequestPage = () => {
     setSelectedRequest(null);
-    navigate("/citizen/request");
+    navigate("/citizen");
   };
 
-  const trackRequest = (request) => {
+  const startConversation = (request) => {
     if (!request) return;
 
     setSelectedRequest(null);
 
-    navigate("/citizen/repairs", {
-      state: {
-        requestId: request.id,
-        requestTitle: request.title,
-      },
-    });
+    sessionStorage.setItem(
+      "civicMirrorRequestDraft",
+      JSON.stringify({
+        message: `Regarding ${request.id} (${request.title}): `,
+        fileName: "",
+      }),
+    );
+
+    navigate("/citizen");
   };
 
   return (
-    <div className="mx-auto max-w-[1120px]">
-      <header>
-        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#2D7FF9]">
-          Citizen workspace
-        </p>
+    <div className="space-y-8 text-[#0D1B2A] font-['Inter',sans-serif]">
+      {/* =========================================================
+          HEADER BANNER (Matching Admin Portal & Overview UI)
+      ========================================================= */}
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs relative overflow-hidden">
+        {/* Top Accent bar */}
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#2D7FF9]" />
 
-        <div className="mt-1.5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-[30px] font-extrabold tracking-[-0.035em] text-[#0D1B2A]">
+            <p className="flex items-center gap-2 text-xs font-black tracking-widest text-[#2D7FF9] uppercase mb-2">
+              <span className="h-[2.5px] w-5 bg-[#2D7FF9] rounded-full inline-block" />
+              CITIZEN WORKSPACE
+            </p>
+            <h1 className="text-3xl sm:text-4xl font-black text-[#0D1B2A] tracking-tight flex items-center gap-3">
               My <span className="text-[#2D7FF9]">Requests</span>
             </h1>
-
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-[#63768A]">
-              View the civic issues you have reported and follow their progress.
+            <p className="mt-2 text-base font-semibold text-[#59687A] max-w-2xl">
+              View the civic issues you have reported and follow their real-time progress.
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={openRequestPage}
-            className="group inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#0D1B2A] px-4 text-xs font-bold text-white shadow-[0_6px_16px_rgba(13,27,42,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#18324C] hover:shadow-[0_8px_20px_rgba(13,27,42,0.16)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2D7FF9]"
-          >
-            <span className="text-base leading-none">+</span>
-            New request
-          </button>
+          {/* Action Button */}
+          <div className="flex flex-col sm:items-end gap-3 shrink-0">
+            <button
+              type="button"
+              onClick={openRequestPage}
+              className="inline-flex items-center gap-2 rounded-xl bg-[#0D1B2A] px-5 py-3 text-xs font-black text-white hover:bg-[#2D7FF9] transition-all cursor-pointer shadow-xs"
+            >
+              <span className="text-sm leading-none">+</span>
+              New Request
+            </button>
+          </div>
         </div>
-      </header>
+      </div>
 
-      <section className="mt-8 space-y-4" aria-label="Your civic requests">
+      {/* SUB-SECTION HEADER LINE */}
+      <div className="flex items-center justify-between pt-1">
+        <span className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400">
+          <span className="h-[2px] w-4 bg-slate-300 rounded-full" />
+          SUBMITTED CIVIC REQUESTS
+        </span>
+        <span className="text-xs font-bold text-slate-400">
+          Realtime Status Sync
+        </span>
+      </div>
+
+      {/* REQUESTS LIST */}
+      <section className="space-y-4" aria-label="Your civic requests">
         {requests.map((request) => {
           const styles = statusStyles(request.status);
 
           return (
             <article
               key={request.id}
-              className="group relative overflow-hidden rounded-2xl border border-[#DCE7F1] bg-white shadow-[0_8px_24px_rgba(13,27,42,0.045)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#C9D8E6] hover:shadow-[0_12px_30px_rgba(13,27,42,0.075)]"
+              className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-[#2D7FF9]"
             >
               <span
                 className={`absolute left-0 top-0 h-full w-1 ${styles.accent}`}
                 aria-hidden="true"
               />
 
-              <div className="p-5 pl-6 sm:p-6 sm:pl-7">
+              <div className="p-6 pl-7">
                 <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <span
-                        className={`rounded-full border px-2.5 py-1 text-[10px] font-bold ${styles.badge}`}
+                        className={`rounded-full border px-3 py-1 text-[11px] font-black ${styles.badge}`}
                       >
                         {request.status}
                       </span>
 
-                      <span className="text-[11px] font-semibold tracking-[0.04em] text-[#8A9AAA]">
+                      <span className="text-xs font-bold tracking-wider text-slate-400">
                         {request.id}
                       </span>
                     </div>
 
-                    <div className="mt-4 flex items-start gap-3">
+                    <div className="mt-4 flex items-start gap-4">
                       <RequestIcon status={request.status} />
 
                       <div className="min-w-0">
-                        <h2 className="text-[16px] font-extrabold tracking-[-0.015em] text-[#18324C]">
+                        <h2 className="text-base font-black text-[#0D1B2A] group-hover:text-[#2D7FF9] transition-colors">
                           {request.title}
                         </h2>
 
-                        <p className="mt-1.5 max-w-2xl text-[14px] leading-6 text-[#506477]">
+                        <p className="mt-1.5 max-w-2xl text-xs font-medium leading-relaxed text-slate-600">
                           {request.description}
                         </p>
                       </div>
                     </div>
 
-                    <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-[11px] font-medium text-[#718398]">
+                    <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-bold text-slate-500">
                       <span>
-                        <strong className="font-bold text-[#49647D]">
+                        <strong className="font-black text-[#0D1B2A]">
                           Location:
                         </strong>{" "}
                         {request.location}
                       </span>
 
-                      <span
-                        className="hidden text-[#C4D0DB] sm:inline"
-                        aria-hidden="true"
-                      >
+                      <span className="hidden text-slate-300 sm:inline" aria-hidden="true">
                         ·
                       </span>
 
                       <span>
-                        <strong className="font-bold text-[#49647D]">
+                        <strong className="font-black text-[#0D1B2A]">
                           Submitted:
                         </strong>{" "}
                         {request.date}
@@ -201,7 +221,7 @@ export default function Requests() {
                   <button
                     type="button"
                     onClick={() => setSelectedRequest(request)}
-                    className="shrink-0 self-start rounded-xl border border-[#C9D8E6] bg-white px-4 py-2.5 text-xs font-bold text-[#31516E] transition-all duration-200 hover:border-[#2D7FF9] hover:bg-[#EEF5FF] hover:text-[#2864A8] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2D7FF9]"
+                    className="shrink-0 self-start rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-black text-[#0D1B2A] transition-all hover:border-[#2D7FF9] hover:bg-[#EEF5FF] hover:text-[#2D7FF9] cursor-pointer shadow-xs"
                   >
                     View details
                   </button>
@@ -212,43 +232,44 @@ export default function Requests() {
         })}
       </section>
 
+      {/* REQUEST DETAILS MODAL */}
       {selectedRequest && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[#07111D]/45 p-4 backdrop-blur-[3px] sm:p-6"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#0D1B2A]/40 p-4 backdrop-blur-xs sm:p-6"
           onMouseDown={() => setSelectedRequest(null)}
           role="presentation"
         >
           <section
-            className="w-full max-w-xl overflow-hidden rounded-2xl border border-[#DCE7F1] bg-white shadow-[0_24px_70px_rgba(5,18,33,0.20)]"
+            className="w-full max-w-xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
             onMouseDown={(event) => event.stopPropagation()}
             role="dialog"
             aria-modal="true"
             aria-labelledby="request-details-title"
           >
             <div
-              className={`h-1 w-full ${statusStyles(selectedRequest.status).accent}`}
+              className={`h-1.5 w-full ${statusStyles(selectedRequest.status).accent}`}
             />
 
-            <div className="p-5 sm:p-6">
+            <div className="p-6">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <span
-                      className={`rounded-full border px-2.5 py-1 text-[10px] font-bold ${
+                      className={`rounded-full border px-3 py-1 text-[11px] font-black ${
                         statusStyles(selectedRequest.status).badge
                       }`}
                     >
                       {selectedRequest.status}
                     </span>
 
-                    <span className="text-[11px] font-semibold tracking-[0.04em] text-[#8A9AAA]">
+                    <span className="text-xs font-bold text-slate-400">
                       {selectedRequest.id}
                     </span>
                   </div>
 
                   <h2
                     id="request-details-title"
-                    className="mt-3 text-xl font-extrabold tracking-[-0.025em] text-[#0D1B2A]"
+                    className="mt-3 text-xl font-black text-[#0D1B2A]"
                   >
                     {selectedRequest.title}
                   </h2>
@@ -257,7 +278,7 @@ export default function Requests() {
                 <button
                   type="button"
                   onClick={() => setSelectedRequest(null)}
-                  className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[#70859A] transition-colors hover:bg-[#F4F7FA] hover:text-[#0D1B2A]"
+                  className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-[#0D1B2A]"
                   aria-label="Close request details"
                 >
                   <svg
@@ -265,7 +286,7 @@ export default function Requests() {
                     className="h-4 w-4"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="1.8"
+                    strokeWidth="2"
                     strokeLinecap="round"
                   >
                     <path d="M6 6l12 12M18 6L6 18" />
@@ -273,53 +294,53 @@ export default function Requests() {
                 </button>
               </div>
 
-              <div className="mt-6 rounded-xl border border-[#E1EAF2] bg-[#F8FAFC] p-4">
-                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#70859A]">
+              <div className="mt-6 rounded-xl border border-slate-200/80 bg-slate-50/70 p-4">
+                <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">
                   Reported issue
                 </p>
 
-                <p className="mt-2 text-[14px] font-medium leading-6 text-[#263D52]">
+                <p className="mt-2 text-xs font-semibold leading-relaxed text-[#0D1B2A]">
                   {selectedRequest.description}
                 </p>
               </div>
 
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-xl border border-[#E1EAF2] bg-white p-4">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#8293A3]">
+                <div className="rounded-xl border border-slate-200/80 bg-white p-4">
+                  <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">
                     Location
                   </p>
 
-                  <p className="mt-1.5 text-sm font-bold text-[#18324C]">
+                  <p className="mt-1 text-xs font-black text-[#0D1B2A]">
                     {selectedRequest.location}
                   </p>
                 </div>
 
-                <div className="rounded-xl border border-[#E1EAF2] bg-white p-4">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#8293A3]">
+                <div className="rounded-xl border border-slate-200/80 bg-white p-4">
+                  <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">
                     Submitted
                   </p>
 
-                  <p className="mt-1.5 text-sm font-bold text-[#18324C]">
+                  <p className="mt-1 text-xs font-black text-[#0D1B2A]">
                     {selectedRequest.date}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-6 flex flex-col-reverse gap-3 border-t border-[#E8EFF5] pt-5 sm:flex-row sm:justify-end">
+              <div className="mt-6 flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
                 <button
                   type="button"
                   onClick={() => setSelectedRequest(null)}
-                  className="rounded-xl border border-[#DCE7F1] px-4 py-2.5 text-sm font-semibold text-[#49647D] transition-colors hover:bg-[#F7FAFC] hover:text-[#18324C]"
+                  className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-black text-slate-600 transition-colors hover:bg-slate-50 cursor-pointer"
                 >
                   Close
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => trackRequest(selectedRequest)}
-                  className="rounded-xl bg-[#0D1B2A] px-4 py-2.5 text-sm font-bold text-white shadow-[0_5px_14px_rgba(13,27,42,0.12)] transition-all hover:bg-[#18324C] hover:shadow-[0_7px_18px_rgba(13,27,42,0.16)]"
+                  onClick={() => startConversation(selectedRequest)}
+                  className="rounded-xl bg-[#0D1B2A] px-5 py-2.5 text-xs font-black text-white hover:bg-[#2D7FF9] transition-all cursor-pointer shadow-xs"
                 >
-                  Track request
+                  Start conversation →
                 </button>
               </div>
             </div>

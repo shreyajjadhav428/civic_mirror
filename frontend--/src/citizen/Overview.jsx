@@ -17,7 +17,7 @@ const statistics = [
     icon: "resolved",
   },
   {
-    label: "Area updates",
+    label: "Tracked repairs",
     value: "12",
     detail: "Recent civic activity",
     tone: "purple",
@@ -278,10 +278,6 @@ export default function Overview() {
 
     if (!trimmedMessage) return;
 
-    /*
-      Store the draft temporarily so the Request page
-      can read it after navigation.
-    */
     sessionStorage.setItem(
       "civicMirrorRequestDraft",
       JSON.stringify({
@@ -290,10 +286,6 @@ export default function Overview() {
       }),
     );
 
-    /*
-      Clear the Overview composer before navigating.
-      This prevents the old text from remaining here.
-    */
     setMessage("");
     setFileName("");
 
@@ -301,42 +293,58 @@ export default function Overview() {
   };
 
   return (
-    <>
+    <div className="space-y-8 text-[#0D1B2A] font-['Inter',sans-serif]">
       {/* =========================================================
-          PAGE INTRO
+          HEADER BANNER (Matching Admin Portal Design System)
       ========================================================= */}
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs relative overflow-hidden">
+        {/* Top Accent bar */}
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#2D7FF9]" />
 
-      <section className="max-w-[1100px]">
-        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#2D7FF9]">
-          Citizen workspace
-        </p>
-
-        <h1 className="mt-2 text-[36px] font-extrabold leading-[1.08] tracking-[-0.045em] text-[#0D1B2A] sm:text-[42px]">
-          Welcome to Civic
-          <span className="text-[#2D7FF9]">Mirror</span>
-        </h1>
-
-        <p className="mt-3 whitespace-nowrap text-sm leading-6 text-[#63768A] max-[900px]:whitespace-normal">
-          Review civic activity in your area, track your requests, and report
-          an issue when something needs attention.
-        </p>
-      </section>
-
-      {/* =========================================================
-          OVERVIEW + RECENT REQUESTS
-      ========================================================= */}
-
-      <div className="mt-10 grid grid-cols-1 gap-7 lg:grid-cols-[minmax(270px,0.78fr)_minmax(0,1.65fr)]">
-        {/* Overview */}
-
-        <section>
-          <div className="mb-5">
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#70859A]">
-              Civic activity
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="flex items-center gap-2 text-xs font-black tracking-widest text-[#2D7FF9] uppercase mb-2">
+              <span className="h-[2.5px] w-5 bg-[#2D7FF9] rounded-full inline-block" />
+              CITIZEN WORKSPACE
             </p>
+            <h1 className="text-3xl sm:text-4xl font-black text-[#0D1B2A] tracking-tight flex items-center gap-3">
+              Civic <span className="text-[#2D7FF9]">Overview</span>
+            </h1>
+            <p className="mt-2 text-base font-semibold text-[#59687A] max-w-2xl">
+              Review civic activity in your area, track your requests, and report an issue when something needs attention.
+            </p>
+          </div>
 
-            <h2 className="mt-1 text-[22px] font-extrabold tracking-[-0.03em] text-[#0D1B2A]">
-              Your overview
+          {/* Stat Box */}
+          <div className="flex flex-col sm:items-end gap-3 shrink-0">
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4.5 py-2.5 text-sm font-semibold">
+              <span className="text-[#657386] block text-[11px] font-black uppercase tracking-wider">Active Location</span>
+              <span className="text-[#0D1B2A] font-black text-lg">400012 • Shanti Nagar</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* SUB-SECTION HEADER LINE */}
+      <div className="flex items-center justify-between pt-1">
+        <span className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400">
+          <span className="h-[2px] w-4 bg-slate-300 rounded-full" />
+          CIVIC ACTIVITY & REQUEST HISTORY
+        </span>
+        <span className="text-xs font-bold text-slate-400">
+          Realtime Synchronization
+        </span>
+      </div>
+
+      {/* =========================================================
+          OVERVIEW STATISTICS & RECENT REQUESTS GRID
+      ========================================================= */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(270px,0.85fr)_minmax(0,1.65fr)]">
+        {/* Overview Activity Stats */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-black uppercase tracking-wider text-[#0D1B2A]">
+              YOUR OVERVIEW
             </h2>
           </div>
 
@@ -359,11 +367,11 @@ export default function Overview() {
 
               return (
                 <article
-                  className="group relative overflow-hidden rounded-[20px] border border-[#DFE8F0] bg-white p-5 shadow-[0_8px_28px_rgba(13,27,42,0.055)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#CFDDEA] hover:shadow-[0_14px_34px_rgba(13,27,42,0.09)]"
+                  className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-[#2D7FF9]"
                   key={stat.label}
                 >
                   <div
-                    className={`absolute left-0 top-0 h-full w-[3px] ${accent}`}
+                    className={`absolute left-0 top-0 h-full w-[4px] ${accent}`}
                   />
 
                   <div className="flex items-start justify-between gap-4">
@@ -378,17 +386,17 @@ export default function Overview() {
                     />
                   </div>
 
-                  <p className="mt-5 text-[10px] font-bold uppercase tracking-[0.1em] text-[#718398]">
+                  <p className="mt-4 text-xs font-black uppercase tracking-wider text-[#657386]">
                     {stat.label}
                   </p>
 
                   <div className="mt-0.5 flex items-end gap-2">
-                    <p className="text-[32px] font-extrabold tracking-[-0.045em] text-[#18324C]">
+                    <p className="text-3xl font-black tracking-tight text-[#0D1B2A]">
                       {stat.value}
                     </p>
                   </div>
 
-                  <p className="mt-1 text-xs leading-5 text-[#718398]">
+                  <p className="mt-1 text-xs font-medium text-slate-500">
                     {stat.detail}
                   </p>
                 </article>
@@ -397,60 +405,53 @@ export default function Overview() {
           </div>
         </section>
 
-        {/* Recent Requests */}
-
-        <section>
-          <div className="mb-5 flex items-end justify-between gap-4">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#70859A]">
-                Request history
-              </p>
-
-              <h2 className="mt-1 text-[22px] font-extrabold tracking-[-0.03em] text-[#0D1B2A]">
-                Recent requests
-              </h2>
-            </div>
+        {/* Recent Requests List */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-black uppercase tracking-wider text-[#0D1B2A]">
+              RECENT REQUESTS
+            </h2>
 
             <button
               type="button"
               onClick={() => navigate("/citizen/requests")}
-              className="rounded-lg px-2.5 py-1.5 text-[11px] font-bold text-[#2D7FF9] transition-colors hover:bg-[#EEF5FF]"
+              className="rounded-xl px-3 py-1 text-xs font-extrabold text-[#2D7FF9] hover:bg-blue-50 transition-colors"
             >
-              View all
+              View all requests →
             </button>
           </div>
 
-          <div className="overflow-hidden rounded-[20px] border border-[#DFE8F0] bg-white shadow-[0_8px_28px_rgba(13,27,42,0.055)]">
+          <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs">
             {recentRequests.map((request, index) => (
               <button
                 key={request.title}
                 type="button"
                 onClick={() => navigate("/citizen/requests")}
-                className={`group flex w-full items-center gap-4 px-5 py-[18px] text-left transition-colors duration-150 hover:bg-[#FAFCFE] ${
+                className={`group flex w-full items-center gap-4 px-6 py-4.5 text-left transition-colors duration-150 hover:bg-slate-50/80 ${
                   index !== recentRequests.length - 1
-                    ? "border-b border-[#E8EEF4]"
+                    ? "border-b border-slate-100"
                     : ""
                 }`}
               >
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[#DCE7F1] bg-[#F5F8FB] text-[#60788E] transition-colors group-hover:border-[#CFE0F0] group-hover:bg-[#EEF5FF] group-hover:text-[#2D7FF9]">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-slate-200 bg-slate-50 text-[#0D1B2A] transition-colors group-hover:border-[#2D7FF9] group-hover:bg-[#EEF5FF] group-hover:text-[#2D7FF9]">
                   <RequestIcon type={request.icon} />
                 </span>
 
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[14px] font-bold text-[#40586D]">
+                  <span className="block truncate text-sm font-bold text-[#0D1B2A] group-hover:text-[#2D7FF9] transition-colors">
                     {request.title}
                   </span>
 
-                  <span className="mt-1 block text-[12px] font-medium text-[#7B8FA2]">
+                  <span className="mt-0.5 block text-xs font-semibold text-slate-400">
                     {request.date}
                   </span>
                 </span>
 
                 <span
-                  className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold ${
+                  className={`shrink-0 rounded-full px-3 py-1 text-xs font-black ${
                     request.status === "Resolved"
-                      ? "bg-[#E9F8F4] text-[#087F6A]"
-                      : "bg-[#FFF5DC] text-[#936600]"
+                      ? "bg-emerald-50 text-[#008D78] border border-emerald-200"
+                      : "bg-amber-50 text-amber-700 border border-amber-200"
                   }`}
                 >
                   {request.status}
@@ -462,72 +463,65 @@ export default function Overview() {
       </div>
 
       {/* =========================================================
-          AREA
+          LOCAL AREA OVERVIEW
       ========================================================= */}
-
-      <section className="mt-9">
-        <div className="mb-5 flex items-end justify-between gap-4">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#70859A]">
-              Local overview
-            </p>
-
-            <h2 className="mt-1 text-[22px] font-extrabold tracking-[-0.03em] text-[#0D1B2A]">
-              Explore your area
-            </h2>
-          </div>
+      <section className="pt-2 space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-black uppercase tracking-wider text-[#0D1B2A]">
+            EXPLORE YOUR AREA
+          </h2>
 
           <button
             type="button"
-            onClick={() => navigate("/citizen/updates")}
-            className="rounded-lg px-3 py-2 text-[12px] font-semibold text-[#2D7FF9] transition-colors hover:bg-[#EEF5FF]"
+            onClick={() => navigate("/citizen/repairs")}
+            className="rounded-xl px-3 py-1 text-xs font-extrabold text-[#2D7FF9] hover:bg-blue-50 transition-colors"
           >
-            View area activity
+            Track area repairs →
           </button>
         </div>
 
-        <article className="overflow-hidden rounded-[20px] border border-[#DCE7F1] bg-white shadow-[0_8px_28px_rgba(13,27,42,0.055)]">
-          <div className="flex items-center justify-between gap-5 px-5 py-5 sm:px-6">
+        <article className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs">
+          <div className="flex items-center justify-between gap-5 p-6">
             <div className="flex items-center gap-4">
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-[#CFE1F5] bg-[#F0F6FF] text-[#2D7FF9]">
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-[#2D7FF9]/30 bg-[#EEF5FF] text-[#2D7FF9]">
                 <LocationIcon />
               </span>
 
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#7A8DA0]">
-                  Your area
+                <p className="text-xs font-black uppercase tracking-wider text-slate-400">
+                  Your Primary Sector
                 </p>
 
-                <p className="mt-0.5 text-lg font-bold tracking-[-0.02em] text-[#0D1B2A]">
-                  110025
+                <p className="mt-0.5 text-xl font-black text-[#0D1B2A]">
+                  Pincode 400012
                 </p>
 
-                <p className="mt-0.5 text-[13px] font-medium text-[#61758A]">
-                  Shanti Nagar
+                <p className="mt-0.5 text-xs font-bold text-slate-500">
+                  Shanti Nagar Ward
                 </p>
               </div>
             </div>
 
-            <span className="hidden rounded-full border border-[#DCEAF8] bg-[#F5F9FD] px-3 py-1.5 text-[10px] font-bold text-[#60788E] sm:block">
-              Active civic area
+            <span className="hidden rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-1 text-xs font-black text-[#008D78] sm:block">
+              Active Civic Monitoring ✓
             </span>
           </div>
 
-          <div className="flex flex-col gap-4 border-t border-[#E8EFF5] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-            <p className="text-[12px] font-medium text-[#64798D]">
-              <strong className="text-[#0D1B2A]">12</strong> active issues
-              <span className="mx-2 text-[#B4C0CB]">·</span>
-              <strong className="text-[#0D1B2A]">7</strong> resolved
-              <span className="mx-2 text-[#B4C0CB]">·</span>
-              <strong className="text-[#0D1B2A]">3</strong> ongoing projects
+          <div className="flex flex-col gap-4 border-t border-slate-100 px-6 py-4.5 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs font-bold text-slate-600">
+              <strong className="text-[#0D1B2A] font-black">12</strong> active issues
+              <span className="mx-2 text-slate-300">·</span>
+              <strong className="text-[#008D78] font-black">7</strong> resolved
+              <span className="mx-2 text-slate-300">·</span>
+              <strong className="text-[#2D7FF9] font-black">3</strong> ongoing projects
             </p>
 
             <button
               type="button"
-              onClick={() => navigate("/citizen/updates")}
-              className="rounded-lg bg-[#0D1B2A] px-4 py-2.5 text-[12px] font-bold text-white transition-all hover:bg-[#18324C] hover:shadow-[0_5px_16px_rgba(13,27,42,0.16)]"
+              onClick={() => navigate("/citizen/repairs")}
+              className="rounded-xl bg-[#0D1B2A] px-5 py-2.5 text-xs font-black text-white hover:bg-[#2D7FF9] transition-all cursor-pointer shadow-xs"
             >
-              Explore area
+              Track Repairs →
             </button>
           </div>
         </article>
@@ -536,11 +530,10 @@ export default function Overview() {
       {/* =========================================================
           STICKY REQUEST COMPOSER
       ========================================================= */}
-
       <section className="fixed bottom-4 left-4 right-4 z-20 min-[861px]:left-[272px] min-[861px]:right-6">
         <form
           onSubmit={submitRequest}
-          className="mx-auto flex min-h-[58px] w-full max-w-[820px] items-center gap-1 rounded-full border border-[#3B4D5D] bg-[#263746]/[0.98] px-2 shadow-[0_10px_30px_rgba(0,0,0,0.20)] backdrop-blur-xl"
+          className="mx-auto flex min-h-[58px] w-full max-w-[820px] items-center gap-1 rounded-full border border-[#3B4D5D] bg-[#0D1B2A]/[0.98] px-2 shadow-[0_10px_30px_rgba(0,0,0,0.20)] backdrop-blur-xl"
         >
           <input
             ref={fileInput}
@@ -552,28 +545,25 @@ export default function Overview() {
           />
 
           {/* Upload */}
-
           <button
             type="button"
             onClick={() => fileInput.current?.click()}
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-[#D8E9FA] transition-colors hover:bg-[#35495A] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-[#D8E9FA] transition-colors hover:bg-[#1C334D] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF] cursor-pointer"
             aria-label="Attach photo or document"
           >
             <UploadIcon />
           </button>
 
           {/* AI */}
-
           <button
             type="button"
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-[#263746] transition-transform hover:scale-[1.04] hover:bg-[#F8FBFF]"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-[#0D1B2A] transition-transform hover:scale-[1.04] hover:bg-[#F8FBFF] cursor-pointer"
             aria-label="AI assistance"
           >
             <SparkleIcon />
           </button>
 
           {/* Selected file */}
-
           {fileName && (
             <span className="hidden max-w-28 truncate rounded-full border border-[#496071] bg-[#314454] px-2.5 py-1 text-[10px] font-medium text-[#DCE8F5] sm:block">
               {fileName}
@@ -581,7 +571,6 @@ export default function Overview() {
           )}
 
           {/* Message */}
-
           <textarea
             value={message}
             onChange={(event) => setMessage(event.target.value)}
@@ -591,17 +580,15 @@ export default function Overview() {
           />
 
           {/* Voice */}
-
           <button
             type="button"
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-[#D8E9FA] transition-colors hover:bg-[#35495A] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-[#D8E9FA] transition-colors hover:bg-[#1C334D] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF] cursor-pointer"
             aria-label="Use voice input"
           >
             <MicIcon />
           </button>
 
           {/* Send */}
-
           <button
             type="submit"
             disabled={!message.trim()}
@@ -612,8 +599,9 @@ export default function Overview() {
               hover:bg-[#F3F7FB]
               hover:shadow-[0_3px_12px_rgba(255,255,255,0.12)]
               disabled:cursor-not-allowed
-              disabled:bg-[#D3DDE6]
-              disabled:text-[#7A8B9C]
+              disabled:bg-slate-600
+              disabled:text-slate-400
+              cursor-pointer
             "
             aria-label="Open request page"
           >
@@ -621,6 +609,6 @@ export default function Overview() {
           </button>
         </form>
       </section>
-    </>
+    </div>
   );
 }

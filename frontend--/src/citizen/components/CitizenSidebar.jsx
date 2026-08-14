@@ -5,7 +5,6 @@ const primaryNavigation = [
   { label: "Overview", to: "/citizen", icon: "overview", end: true },
   { label: "My requests", to: "/citizen/requests", icon: "requests" },
   { label: "Track repairs", to: "/citizen/repairs", icon: "repairs" },
-  { label: "City updates", to: "/citizen/updates", icon: "updates" },
 ];
 
 function SidebarIcon({ name }) {
@@ -159,32 +158,20 @@ export default function CitizenSidebar({ onLogout }) {
         aria-label="Citizen dashboard navigation"
       >
         <div>
-          {/* Logo */}
-          <div className="flex items-center justify-between">
+          {/* Logo & Header */}
+          <div className="flex items-center justify-between border-b border-white/10 pb-5 pl-7 pr-2">
             <button
               type="button"
               onClick={() => {
                 navigate("/citizen");
                 handleNavigation();
               }}
-              className="flex items-center gap-3 px-2 py-[5px] text-left text-white outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
+              className="group inline-flex items-center text-4xl font-black tracking-tight outline-none cursor-pointer"
               aria-label="CivicMirror home"
             >
-              <span
-                className="grid h-[34px] w-[34px] place-items-center rounded-lg border border-[#A0C6ED]/30 bg-[#173B61] text-[11px] font-extrabold tracking-[-0.04em] text-[#9DC6FF]"
-                aria-hidden="true"
-              >
-                CM
-              </span>
-
-              <span>
-                <strong className="block text-[15px] font-bold tracking-[-0.02em]">
-                  Civic<span className="text-[#69A8FF]">Mirror</span>
-                </strong>
-
-                <small className="mt-0.5 block text-[11px] font-medium text-[#A8BDD2]">
-                  Citizen portal
-                </small>
+              <span className="text-white">C</span>
+              <span className="relative text-[#69A8FF] after:absolute after:-bottom-1 after:left-0 after:h-[2.5px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 group-hover:after:scale-x-100">
+                M
               </span>
             </button>
 
@@ -208,12 +195,9 @@ export default function CitizenSidebar({ onLogout }) {
             </button>
           </div>
 
-          {/* Divider */}
-          <div className="mx-2 my-[22px] h-px bg-white/[0.07]" />
-
           {/* Main navigation */}
           <nav
-            className="grid gap-1"
+            className="grid gap-1 mt-6"
             aria-label="Primary navigation"
           >
             <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.1em] text-[#809BB7]">
@@ -302,7 +286,10 @@ export default function CitizenSidebar({ onLogout }) {
             {/* Logout */}
             <button
               type="button"
-              onClick={onLogout}
+              onClick={() => {
+                if (onLogout) onLogout();
+                navigate("/login");
+              }}
               className="mt-1 flex min-h-[36px] w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#B8CADB] transition-all duration-150 hover:bg-white/[0.045] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#73ADFF]"
             >
               <SidebarIcon name="logout" />
