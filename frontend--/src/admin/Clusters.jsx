@@ -732,7 +732,7 @@ export default function Clusters({ onNavigate }) {
           <div className="modal-popup-container w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-7 sm:p-8 shadow-2xl space-y-6">
             
             {/* Modal Header */}
-            <div className="flex items-start justify-between border-b border-slate-100 pb-4">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3.5">
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="h-2.5 w-2.5 rounded-full bg-[#2D7FF9]" />
@@ -817,6 +817,11 @@ export default function Clusters({ onNavigate }) {
                   <span className={`rounded-md border px-3 py-1 text-xs font-bold uppercase ${selectedCluster.priorityStyle}`}>
                     {selectedCluster.priority}
                   </span>
+                </div>
+
+                <div className="rounded-xl bg-slate-50 p-3 border border-slate-100">
+                  <span className="text-xs font-semibold text-slate-400 uppercase block mb-0.5">Pincode</span>
+                  <span className="font-semibold text-[#0D1B2A] text-xs sm:text-sm">{selectedCluster.pincode}</span>
                 </div>
               </div>
             </div>

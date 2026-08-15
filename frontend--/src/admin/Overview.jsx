@@ -73,12 +73,14 @@ export default function Overview() {
       try {
         const queriesRes = await getUniqueQueries();
         if (isMounted && queriesRes?.data) {
-          const mappedQueries = queriesRes.data.map((q) => ({
-            ...q,
-            text: q.text || q.question || q.query || "Citizen Query",
-            count: q.count ?? q.requestCount ?? 0,
-            category: "Citizen Query"
-          }));
+          const mappedQueries = queriesRes.data
+            .map((q) => ({
+              ...q,
+              text: q.text || q.question || q.query || "Citizen Query",
+              count: q.count ?? q.requestCount ?? 0,
+              category: "Citizen Query"
+            }))
+            .sort((a, b) => b.count - a.count); // SORT IN DESCENDING ORDER OF QUERY COUNT
           setCommonQueries(mappedQueries);
         }
       } catch (err) {

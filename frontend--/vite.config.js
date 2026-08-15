@@ -5,6 +5,20 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  build: {
+    target: 'es2020',
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react-dom') || id.includes('react-router-dom') || id.match(/\/react\//)) {
+              return 'vendor';
+            }
+          }
+        },
+      },
+    },
+  },
   server: {
     proxy: {
       '/api': {

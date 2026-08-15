@@ -6,8 +6,8 @@ export default function Data() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFileType, setSelectedFileType] = useState("All");
 
-  // Pagination / Visible items limit (10 per page)
-  const [visibleCount, setVisibleCount] = useState(10);
+  // Pagination / Visible items limit (6 per page)
+  const [visibleCount, setVisibleCount] = useState(6);
 
   // Modal State for Inspecting Document
   const [selectedFileModal, setSelectedFileModal] = useState(null);
@@ -271,7 +271,7 @@ export default function Data() {
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
-                setVisibleCount(10);
+                setVisibleCount(6);
               }}
               className="h-12 w-full rounded-xl border border-[#DCE7F1] bg-[#FBFCFE] px-4.5 text-base font-semibold text-[#18324C] outline-none transition-colors placeholder:text-[#91A0AF] focus:border-[#9BC5FF] focus:bg-white"
             />
@@ -287,7 +287,7 @@ export default function Data() {
                     key={type}
                     onClick={() => {
                       setSelectedFileType(type);
-                      setVisibleCount(10);
+                      setVisibleCount(6);
                     }}
                     className={`rounded-lg px-3 py-1.5 text-xs sm:text-sm font-bold transition cursor-pointer ${
                       selectedFileType === type
