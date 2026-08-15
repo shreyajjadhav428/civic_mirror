@@ -518,15 +518,15 @@ export default function Clusters({ onNavigate }) {
             </div>
 
             <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 px-5 py-3 text-base font-semibold">
-              <span className="text-emerald-700 block text-xs font-black uppercase tracking-wider">Resolved Complaints</span>
-              <span className="text-emerald-900 font-black text-xl">{totalResolvedComplaints} / {totalAggregatedComplaints}</span>
+              <span className="text-emerald-700 block text-xs font-semibold uppercase tracking-wider">Resolved Complaints</span>
+              <span className="text-emerald-900 font-bold text-xl">{totalResolvedComplaints} / {totalAggregatedComplaints}</span>
             </div>
           </div>
         </div>
 
         {/* Action success message banner */}
         {actionSuccessMsg && (
-          <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-xs font-bold text-emerald-800 shadow-xs flex items-center gap-2">
+          <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-xs font-semibold text-emerald-800 shadow-xs flex items-center gap-2">
             <span>{actionSuccessMsg}</span>
           </div>
         )}
@@ -547,12 +547,12 @@ export default function Clusters({ onNavigate }) {
           {/* Dropdown Filters */}
           <div className="flex flex-wrap items-center gap-3">
             {/* Department Dropdown */}
-            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 py-2.5 text-sm font-bold">
+            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 py-2.5 text-sm font-semibold">
               <span className="text-slate-500">Department:</span>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="bg-transparent text-[#0D1B2A] font-black outline-none cursor-pointer"
+                className="bg-transparent text-[#0D1B2A] font-semibold outline-none cursor-pointer"
               >
                 <option value="All">All 12 Departments</option>
                 {OFFICIAL_DEPARTMENTS.map((dept) => (
@@ -564,12 +564,12 @@ export default function Clusters({ onNavigate }) {
             </div>
 
             {/* Pincode Dropdown */}
-            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 py-2.5 text-sm font-bold">
+            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 py-2.5 text-sm font-semibold">
               <span className="text-slate-500">Pincode:</span>
               <select
                 value={selectedPincode}
                 onChange={(e) => setSelectedPincode(e.target.value)}
-                className="bg-transparent text-[#0D1B2A] font-black outline-none cursor-pointer"
+                className="bg-transparent text-[#0D1B2A] font-semibold outline-none cursor-pointer"
               >
                 {availablePincodes.map((pin) => (
                   <option key={pin} value={pin}>
@@ -585,11 +585,11 @@ export default function Clusters({ onNavigate }) {
       {/* 3. CLUSTER CARDS GRID */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <p className="flex items-center gap-2 text-sm font-black tracking-widest text-slate-400 uppercase">
+          <p className="flex items-center gap-2 text-sm font-bold tracking-widest text-slate-400 uppercase">
             <span className="h-[3px] w-6 bg-slate-300 rounded-full inline-block" />
             IDENTIFIED CLUSTER CARDS
           </p>
-          <span className="text-sm font-bold text-slate-500">
+          <span className="text-sm font-semibold text-slate-500">
             Showing {Math.min(visibleCount, filteredClusters.length)} of {filteredClusters.length} clusters
           </span>
         </div>
@@ -613,7 +613,7 @@ export default function Clusters({ onNavigate }) {
                 return (
                   <div
                     key={cluster.id}
-                    className={`group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition-all ${cluster.cardHoverBorder} hover:shadow-md overflow-hidden`}
+                    className="group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:border-slate-300 overflow-hidden"
                   >
                     {/* Top Accent line */}
                     <div className={`absolute top-0 left-0 w-16 h-1.5 ${cluster.topAccent} rounded-b`} />
@@ -622,15 +622,15 @@ export default function Clusters({ onNavigate }) {
                       {/* Header Row */}
                       <div className="flex items-start justify-between mb-4 pt-1">
                         <div>
-                          <span className="text-xs font-black tracking-wider text-slate-400 uppercase block mb-0.5">
+                          <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase block mb-0.5">
                             {cluster.id}
                           </span>
-                          <h3 className={`text-xl font-black text-[#0D1B2A] ${cluster.titleHover} transition-colors leading-tight`}>
+                          <h3 className="text-xl font-bold text-[#0D1B2A] leading-tight">
                             {cluster.title}
                           </h3>
                         </div>
 
-                        <span className={`rounded-lg border px-3 py-1 text-xs font-black uppercase tracking-wider ${cluster.priorityStyle}`}>
+                        <span className={`rounded-lg border px-3 py-1 text-xs font-semibold uppercase tracking-wider ${cluster.priorityStyle}`}>
                           • {cluster.priority} PRIORITY
                         </span>
                       </div>
@@ -638,15 +638,15 @@ export default function Clusters({ onNavigate }) {
                       {/* Main Stats Box */}
                       <div className="rounded-xl bg-slate-50/70 p-4 border border-slate-100 space-y-3">
                         <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
-                          <span className="text-sm font-bold text-slate-500">Aggregated Complaints</span>
-                          <span className="font-black text-[#0D1B2A] text-lg">
+                          <span className="text-sm font-semibold text-slate-500">Aggregated Complaints</span>
+                          <span className="font-semibold text-[#0D1B2A] text-base sm:text-lg">
                             {cluster.complaintCount} complaints
                           </span>
                         </div>
 
                         {/* Resolution Progress Bar */}
                         <div className="border-b border-slate-200/60 pb-2.5">
-                          <div className="flex items-center justify-between text-xs font-bold mb-1.5">
+                          <div className="flex items-center justify-between text-xs font-semibold mb-1.5">
                             <span className="text-slate-500">Resolution Progress</span>
                             <span className={`${percentResolved === 100 ? 'text-emerald-700' : 'text-[#2D7FF9]'}`}>
                               {resolvedCount} / {cluster.complaintCount} Resolved ({percentResolved}%)
@@ -660,17 +660,10 @@ export default function Clusters({ onNavigate }) {
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
-                          <span className="text-sm font-bold text-slate-500">Geographic Location</span>
-                          <span className="font-black text-[#0D1B2A] text-base">
-                            {cluster.location} <span className="text-slate-400 font-medium">({cluster.pincode})</span>
-                          </span>
-                        </div>
-
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-bold text-slate-500">Responsible Department</span>
-                          <span className={`font-extrabold ${cluster.deptColor} text-base`}>
-                            {cluster.department}
+                          <span className="text-sm font-semibold text-slate-500">Geographic Location</span>
+                          <span className="font-semibold text-[#0D1B2A] text-base">
+                            {cluster.location} <span className="text-slate-400 font-medium">({cluster.pincode})</span>
                           </span>
                         </div>
                       </div>
@@ -680,12 +673,12 @@ export default function Clusters({ onNavigate }) {
                     <div className="mt-5 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
                       {/* Status Dropdown Selector */}
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Cluster Status:</span>
+                        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Cluster Status:</span>
                         <select
                           value={currentStatus}
                           disabled={updatingClusterId === cluster.id}
                           onChange={(e) => handleStatusChange(cluster, e.target.value)}
-                          className={`rounded-lg border px-3 py-1.5 text-xs font-extrabold outline-none cursor-pointer transition shadow-2xs ${
+                          className={`rounded-lg border px-3 py-1.5 text-xs font-semibold outline-none cursor-pointer transition shadow-2xs ${
                             currentStatus === "Completed"
                               ? "bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100"
                               : currentStatus === "In Progress"
@@ -701,7 +694,7 @@ export default function Clusters({ onNavigate }) {
 
                       <button
                         onClick={() => setSelectedCluster(cluster)}
-                        className={`rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-black text-[#0D1B2A] ${cluster.btnHover} transition-all shadow-2xs`}
+                        className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-[#0D1B2A] hover:bg-slate-100 hover:border-slate-300 transition-all cursor-pointer shadow-2xs"
                       >
                         View Cluster Details
                       </button>
@@ -717,17 +710,17 @@ export default function Clusters({ onNavigate }) {
                 {visibleCount < filteredClusters.length ? (
                   <button
                     onClick={() => setVisibleCount((prev) => prev + 10)}
-                    className="group flex items-center gap-2.5 rounded-xl border border-[#2D7FF9] bg-white px-8 py-3.5 text-sm font-extrabold text-[#2D7FF9] hover:bg-[#2D7FF9] hover:text-white transition-all shadow-xs cursor-pointer"
+                    className="group flex items-center gap-2.5 rounded-xl border border-[#2D7FF9] bg-white px-8 py-3.5 text-sm font-semibold text-[#2D7FF9] hover:bg-[#2D7FF9] hover:text-white transition-all shadow-xs cursor-pointer"
                   >
                     <span>Show More Clusters</span>
-                    <span className="rounded-full bg-[#2D7FF9]/10 px-2.5 py-0.5 text-xs font-black text-[#2D7FF9] group-hover:bg-white group-hover:text-[#2D7FF9] transition">
+                    <span className="rounded-full bg-[#2D7FF9]/10 px-2.5 py-0.5 text-xs font-semibold text-[#2D7FF9] group-hover:bg-white group-hover:text-[#2D7FF9] transition">
                       +{filteredClusters.length - visibleCount}
                     </span>
                   </button>
                 ) : (
                   <button
                     onClick={() => setVisibleCount(10)}
-                    className="rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-black text-slate-600 hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
+                    className="rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
                   >
                     Show Less ↑
                   </button>
@@ -740,39 +733,39 @@ export default function Clusters({ onNavigate }) {
 
       {/* 4. CLUSTER DETAILS MODAL */}
       {selectedCluster && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 p-4 backdrop-blur-sm">
-          <div className="modal-popup-container w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-7 shadow-2xl space-y-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs">
+          <div className="modal-popup-container w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 sm:p-7 shadow-2xl space-y-5">
             
             {/* Modal Header */}
-            <div className="flex items-start justify-between border-b border-slate-100 pb-4">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3.5">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#2D7FF9]" />
-                  <span className="font-mono text-xs font-black text-[#2D7FF9] uppercase tracking-wider">
+                  <span className="h-2 w-2 rounded-full bg-[#2D7FF9]" />
+                  <span className="text-xs font-semibold text-[#2D7FF9] uppercase tracking-wider">
                     {selectedCluster.id}
                   </span>
                 </div>
-                <h2 className="text-2xl font-black text-[#0D1B2A] mt-1">
+                <h2 className="text-lg sm:text-xl font-bold text-[#0D1B2A] mt-1 leading-snug">
                   {selectedCluster.title}
                 </h2>
-                <p className="text-base font-bold text-slate-500 mt-0.5">
-                  {selectedCluster.location} <span className="font-mono text-slate-400">({selectedCluster.pincode})</span>
+                <p className="text-xs sm:text-sm font-medium text-slate-500 mt-0.5">
+                  {selectedCluster.location} <span className="text-slate-400">({selectedCluster.pincode})</span>
                 </p>
               </div>
 
               <button
                 onClick={() => setSelectedCluster(null)}
-                className="rounded-xl border border-slate-200 p-2 text-slate-400 hover:bg-slate-50 hover:text-slate-800 text-lg font-bold"
+                className="rounded-lg border border-slate-200 p-1.5 text-slate-400 hover:bg-slate-50 hover:text-slate-700 text-sm font-bold"
               >
                 ✕
               </button>
             </div>
 
             {/* STATUS ACTION BAR INSIDE MODAL */}
-            <div className="rounded-xl bg-slate-50 p-4 border border-slate-200/80 flex flex-wrap items-center justify-between gap-3">
+            <div className="rounded-xl bg-slate-50/80 p-3.5 border border-slate-100 flex flex-wrap items-center justify-between gap-3">
               <div>
-                <span className="text-xs font-black text-slate-400 uppercase block">Cluster Action Status</span>
-                <span className="text-sm font-extrabold text-[#0D1B2A]">
+                <span className="text-xs font-semibold text-slate-400 uppercase block mb-0.5">Cluster Action Status</span>
+                <span className="text-xs sm:text-sm font-bold text-[#0D1B2A]">
                   Currently: <strong className="text-[#2D7FF9]">{selectedCluster.status || "Pending"}</strong> ({selectedCluster.resolvedCount || 0} / {selectedCluster.complaintCount} resolved)
                 </span>
               </div>
@@ -782,7 +775,7 @@ export default function Clusters({ onNavigate }) {
                   value={selectedCluster.status || "Pending"}
                   disabled={updatingClusterId === selectedCluster.id}
                   onChange={(e) => handleStatusChange(selectedCluster, e.target.value)}
-                  className={`rounded-xl border px-4 py-2 text-xs font-black outline-none cursor-pointer transition shadow-xs ${
+                  className={`rounded-lg border px-3 py-1.5 text-xs font-semibold outline-none cursor-pointer transition shadow-2xs ${
                     selectedCluster.status === "Completed"
                       ? "bg-emerald-50 text-emerald-800 border-emerald-300"
                       : selectedCluster.status === "In Progress"
@@ -798,53 +791,48 @@ export default function Clusters({ onNavigate }) {
             </div>
 
             {/* CLUSTER BREAKDOWN METADATA */}
-            <div className="space-y-3">
-              <h4 className="text-base font-black text-[#0D1B2A] uppercase tracking-wider">
+            <div className="space-y-2.5">
+              <h4 className="text-xs sm:text-sm font-bold text-[#0D1B2A] uppercase tracking-wider">
                 Cluster Breakdown
               </h4>
 
-              <div className="grid grid-cols-2 gap-3 text-base">
-                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-xs font-black text-slate-400 uppercase block mb-1">Complaint Count</span>
-                  <span className="font-black text-[#0D1B2A] text-lg">{selectedCluster.complaintCount}</span>
+              <div className="grid grid-cols-2 gap-3 text-xs sm:text-sm">
+                <div className="rounded-xl bg-slate-50 p-3 border border-slate-100">
+                  <span className="text-xs font-semibold text-slate-400 uppercase block mb-0.5">Complaint Count</span>
+                  <span className="font-bold text-[#0D1B2A] text-base">{selectedCluster.complaintCount}</span>
                 </div>
 
-                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-xs font-black text-slate-400 uppercase block mb-1">Resolved Count</span>
-                  <span className="font-black text-emerald-700 text-lg">{selectedCluster.resolvedCount || 0}</span>
+                <div className="rounded-xl bg-slate-50 p-3 border border-slate-100">
+                  <span className="text-xs font-semibold text-slate-400 uppercase block mb-0.5">Resolved Count</span>
+                  <span className="font-bold text-emerald-700 text-base">{selectedCluster.resolvedCount || 0}</span>
                 </div>
 
-                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-xs font-black text-slate-400 uppercase block mb-1">Location</span>
-                  <span className="font-extrabold text-[#0D1B2A]">{selectedCluster.location}</span>
-                </div>
-
-                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-xs font-black text-slate-400 uppercase block mb-1">Pincode</span>
-                  <span className="font-black text-[#0D1B2A]">{selectedCluster.pincode}</span>
-                </div>
-
-                <div className="col-span-2 rounded-xl bg-slate-50 p-3.5 border border-slate-100 flex items-center justify-between">
-                  <span className="text-xs font-black text-slate-400 uppercase">Priority Level</span>
-                  <span className={`rounded-lg border px-3 py-1 text-xs font-black uppercase ${selectedCluster.priorityStyle}`}>
+                <div className="rounded-xl bg-slate-50 p-3 border border-slate-100 flex items-center justify-between">
+                  <span className="text-xs font-semibold text-slate-400 uppercase">Priority Level</span>
+                  <span className={`rounded-lg border px-2.5 py-0.5 text-xs font-semibold uppercase ${selectedCluster.priorityStyle}`}>
                     • {selectedCluster.priority}
                   </span>
+                </div>
+
+                <div className="rounded-xl bg-slate-50 p-3 border border-slate-100">
+                  <span className="text-xs font-semibold text-slate-400 uppercase block mb-0.5">Pincode</span>
+                  <span className="font-semibold text-[#0D1B2A] text-xs sm:text-sm">{selectedCluster.pincode}</span>
                 </div>
               </div>
             </div>
 
             {/* RELATED ISSUES BOX */}
-            <div className="space-y-3">
-              <h4 className="text-base font-black text-[#0D1B2A] uppercase tracking-wider">
+            <div className="space-y-2.5">
+              <h4 className="text-xs sm:text-sm font-bold text-[#0D1B2A] uppercase tracking-wider">
                 Related Complaints ({selectedCluster.relatedComplaints?.length || 0})
               </h4>
 
-              <div className="rounded-xl bg-slate-50 p-4 border border-slate-200/80 space-y-2 max-h-48 overflow-y-auto">
-                <ul className="space-y-2 text-sm font-semibold text-slate-700">
+              <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100 space-y-2 max-h-40 overflow-y-auto">
+                <ul className="space-y-2 text-xs sm:text-sm font-normal text-slate-700">
                   {selectedCluster.relatedComplaints?.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2.5">
-                      <span className="text-[#2D7FF9] font-black">•</span>
-                      <span>{item}</span>
+                    <li key={idx} className="flex items-start gap-2">
+                      <span className="text-[#2D7FF9] font-bold">•</span>
+                      <span className="leading-relaxed">{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -855,7 +843,7 @@ export default function Clusters({ onNavigate }) {
             <div className="flex justify-end pt-3 border-t border-slate-100">
               <button
                 onClick={() => setSelectedCluster(null)}
-                className="rounded-xl border border-slate-200 px-5 py-2.5 text-xs font-black text-slate-600 hover:bg-slate-50"
+                className="rounded-xl border border-slate-200 px-5 py-2 text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-50 transition"
               >
                 Close Window
               </button>

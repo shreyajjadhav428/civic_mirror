@@ -50,20 +50,28 @@ export default function Overview() {
       try {
         const clustersRes = await getComplaintClusters();
         if (isMounted && clustersRes?.data) {
-          const mappedClusters = clustersRes.data.map((c, idx) => ({
-            id: c.clusterId || `ISS-0${idx + 1}`,
-            title: c.category ? `${c.category} Issues` : `Pincode ${c.pincode}`,
-            count: c.complaintCount || 0,
-            dotColor: c.status === "In Progress" ? "bg-blue-500" : (c.status === "Completed" || c.status === "Resolved") ? "bg-emerald-500" : c.unmatchedCount > 0 ? "bg-red-500" : "bg-amber-500",
-            urgency: c.unmatchedCount > 0 ? "High Priority" : "Moderate Priority",
-            department: c.category || "Municipal Dept",
-            location: `Pincode ${c.pincode}`,
-            pincode: c.pincode,
-            category: c.category,
-            status: c.status || (c.unmatchedCount > 0 ? "Pending Action" : "Under Review"),
-            description: `Aggregated complaint cluster with ${c.complaintCount} citizen report(s) in Pincode ${c.pincode}.`,
-            complaints: c.complaints || []
-          }));
+          const mappedClusters = clustersRes.data
+            .map((c, idx) => {
+              const deptName = c.category || "Municipal Dept";
+              const pinStr = c.pincode ? `Pincode ${c.pincode}` : "All Areas";
+              const totalCount = c.complaintCount ?? (c.complaints ? c.complaints.length : 0);
+              return {
+                id: c.clusterId || `ISS-0${idx + 1}`,
+                title: `${deptName} Issues`,
+                count: totalCount,
+                dotColor: c.status === "In Progress" ? "bg-blue-500" : (c.status === "Completed" || c.status === "Resolved") ? "bg-emerald-500" : c.unmatchedCount > 0 ? "bg-red-500" : "bg-amber-500",
+                urgency: c.unmatchedCount > 0 ? "High Priority" : "Moderate Priority",
+                department: deptName,
+                location: pinStr,
+                pincode: c.pincode,
+                category: c.category,
+                status: c.status || (c.unmatchedCount > 0 ? "Pending Action" : "Under Review"),
+                description: `Aggregated complaint cluster with ${totalCount} citizen report(s) for ${deptName} in ${pinStr}.`,
+                complaints: c.complaints || []
+              };
+            })
+            .sort((a, b) => b.count - a.count); // SORT IN DESCENDING ORDER OF TOTAL COMPLAINTS
+
           setPriorityIssues(mappedClusters);
         }
       } catch (err) {
@@ -73,12 +81,14 @@ export default function Overview() {
       try {
         const queriesRes = await getUniqueQueries();
         if (isMounted && queriesRes?.data) {
-          const mappedQueries = queriesRes.data.map((q) => ({
-            ...q,
-            text: q.text || q.question || q.query || "Citizen Query",
-            count: q.count ?? q.requestCount ?? 0,
-            category: "Citizen Query"
-          }));
+          const mappedQueries = queriesRes.data
+            .map((q) => ({
+              ...q,
+              text: q.text || q.question || q.query || "Citizen Query",
+              count: q.count ?? q.requestCount ?? 0,
+              category: "Citizen Query"
+            }))
+            .sort((a, b) => b.count - a.count); // SORT IN DESCENDING ORDER OF QUERY COUNT
           setCommonQueries(mappedQueries);
         }
       } catch (err) {
@@ -233,13 +243,13 @@ export default function Overview() {
               />
             </svg>
 
-            <span className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${stat.titleColor}`}>
+            <span className={`text-xs sm:text-sm font-semibold uppercase tracking-wider ${stat.titleColor}`}>
               {stat.title}
             </span>
             <div className={`mt-2.5 text-3xl sm:text-4xl font-black ${stat.valColor}`}>
               {stat.value}
             </div>
-            <div className="mt-2 text-xs sm:text-sm font-bold text-emerald-600">
+            <div className="mt-2 text-xs sm:text-sm font-semibold text-emerald-600">
               {stat.trend}
             </div>
           </div>
@@ -257,7 +267,7 @@ export default function Overview() {
               </h3>
               <button
                 onClick={() => setShowAllPriorityModal(true)}
-                className="text-sm sm:text-base font-bold text-[#2D7FF9] hover:underline relative z-10"
+                className="text-sm sm:text-base font-semibold text-[#2D7FF9] hover:underline relative z-10"
               >
                 View all ({priorityIssues.length})
               </button>
@@ -282,16 +292,16 @@ export default function Overview() {
                     <div className="flex items-center gap-3.5">
                       <span className={`h-4 w-4 rounded-full ${issue.dotColor} shrink-0`} />
                       <div>
-                        <span className="text-base sm:text-lg font-bold text-slate-800 group-hover/item:text-[#2D7FF9] transition block">
+                        <span className="text-base sm:text-lg font-semibold text-slate-800 group-hover/item:text-[#2D7FF9] transition block">
                           {issue.title}
                         </span>
                         <span className="text-xs sm:text-sm text-slate-500 font-medium block mt-0.5">
-                          {issue.department}
+                          {issue.location}
                         </span>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className={`rounded-lg px-3 py-1 text-xs sm:text-sm font-bold ${
+                      <span className={`rounded-lg px-3 py-1 text-xs sm:text-sm font-semibold ${
                         issue.status === "In Progress"
                           ? "bg-blue-50 text-blue-700 border border-blue-200"
                           : issue.status === "Completed" || issue.status === "Resolved"
@@ -300,7 +310,7 @@ export default function Overview() {
                       }`}>
                         {issue.status}
                       </span>
-                      <span className="text-base sm:text-lg font-extrabold text-slate-800">
+                      <span className="text-base sm:text-lg font-semibold text-slate-800">
                         {issue.count}
                       </span>
                     </div>
@@ -320,7 +330,7 @@ export default function Overview() {
               </h3>
               <button
                 onClick={() => setShowAllQueriesModal(true)}
-                className="text-sm sm:text-base font-bold text-[#2D7FF9] hover:underline relative z-10"
+                className="text-sm sm:text-base font-semibold text-[#2D7FF9] hover:underline relative z-10"
               >
                 View all ({commonQueries.length})
               </button>
@@ -351,11 +361,11 @@ export default function Overview() {
                           d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      <span className="font-bold text-slate-800 text-sm sm:text-base">
+                      <span className="font-semibold text-slate-800 text-sm sm:text-base">
                         {query.text}
                       </span>
                     </div>
-                    <span className="font-extrabold text-slate-800 bg-slate-100 px-3 py-1 rounded-lg text-sm sm:text-base shrink-0 ml-2">
+                    <span className="font-semibold text-slate-800 bg-slate-100 px-3 py-1 rounded-lg text-sm sm:text-base shrink-0 ml-2">
                       {query.count}
                     </span>
                   </div>
@@ -377,14 +387,14 @@ export default function Overview() {
                   <h3 className="font-extrabold text-slate-900 text-xl">
                     {selectedPriorityIssue.title}
                   </h3>
-                  <span className="text-sm font-bold text-slate-400">
-                    ID: {selectedPriorityIssue.id} • Urgency: <strong className="text-red-600">{selectedPriorityIssue.urgency}</strong>
+                  <span className="text-sm font-semibold text-slate-400">
+                    ID: {selectedPriorityIssue.id} • Urgency: <strong className="text-red-600 font-bold">{selectedPriorityIssue.urgency}</strong>
                   </span>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedPriorityIssue(null)}
-                className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 text-base font-bold"
+                className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 text-base font-semibold"
               >
                 ✕
               </button>
@@ -393,15 +403,15 @@ export default function Overview() {
             <div className="mt-6 space-y-4 text-sm text-slate-700">
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                  <span className="font-bold text-slate-500 block mb-1 text-xs uppercase tracking-wider">Active Citizen Reports</span>
-                  <span className="font-black text-3xl text-[#2D7FF9]">
+                  <span className="font-semibold text-slate-500 block mb-1 text-xs uppercase tracking-wider">Active Citizen Reports</span>
+                  <span className="font-extrabold text-3xl text-[#2D7FF9]">
                     {selectedPriorityIssue.count}
                   </span>
                 </div>
 
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                  <span className="font-bold text-slate-500 block mb-1 text-xs uppercase tracking-wider">Current Status</span>
-                  <span className={`inline-block rounded-full px-3.5 py-1.5 text-sm font-extrabold ${
+                  <span className="font-semibold text-slate-500 block mb-1 text-xs uppercase tracking-wider">Current Status</span>
+                  <span className={`inline-block rounded-full px-3.5 py-1.5 text-sm font-semibold ${
                     selectedPriorityIssue.status === "In Progress"
                       ? "bg-blue-100 text-blue-800 border border-blue-200"
                       : selectedPriorityIssue.status === "Resolved" || selectedPriorityIssue.status === "Completed"
@@ -415,20 +425,20 @@ export default function Overview() {
 
               <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
                 <div>
-                  <span className="font-extrabold text-slate-900 block text-sm">Assigned Department:</span>
+                  <span className="font-semibold text-slate-900 block text-sm">Assigned Department:</span>
                   <span className="text-slate-700 font-semibold text-sm">{selectedPriorityIssue.department}</span>
                 </div>
                 <div>
-                  <span className="font-extrabold text-slate-900 block text-sm">Primary Location:</span>
+                  <span className="font-semibold text-slate-900 block text-sm">Primary Location:</span>
                   <span className="text-slate-700 font-semibold text-sm">{selectedPriorityIssue.location}</span>
                 </div>
               </div>
 
               <div>
-                <span className="font-extrabold text-slate-900 block mb-1.5 text-sm">
+                <span className="font-semibold text-slate-900 block mb-1.5 text-sm">
                   Issue Description & Field Notes:
                 </span>
-                <p className="bg-slate-50 p-4 rounded-xl text-slate-800 border border-slate-100 leading-relaxed font-medium text-sm">
+                <p className="bg-slate-50 p-4 rounded-xl text-slate-800 border border-slate-100 leading-relaxed font-normal text-sm">
                   {selectedPriorityIssue.description}
                 </p>
               </div>
@@ -438,13 +448,13 @@ export default function Overview() {
               <div className="flex gap-2">
                 <button
                   onClick={() => handleAssignCrew(selectedPriorityIssue.id)}
-                  className="rounded-xl bg-[#2D7FF9] px-4 py-2.5 text-sm font-extrabold text-white shadow-md hover:bg-[#1E4FA3] transition"
+                  className="rounded-xl bg-[#2D7FF9] px-4 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-[#1E4FA3] transition cursor-pointer"
                 >
                   👷 Dispatch Crew
                 </button>
                 <button
                   onClick={() => handleResolveIssue(selectedPriorityIssue.id)}
-                  className="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-extrabold text-white shadow-md hover:bg-emerald-700 transition"
+                  className="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-emerald-700 transition cursor-pointer"
                 >
                   ✓ Mark as Resolved
                 </button>
@@ -452,7 +462,7 @@ export default function Overview() {
 
               <button
                 onClick={() => setSelectedPriorityIssue(null)}
-                className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-100"
+                className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer"
               >
                 Close
               </button>
@@ -474,7 +484,7 @@ export default function Overview() {
               </div>
               <button
                 onClick={() => setShowAllPriorityModal(false)}
-                className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 text-base font-bold"
+                className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 text-base font-semibold"
               >
                 ✕
               </button>
@@ -504,22 +514,22 @@ export default function Overview() {
                     <div className="flex items-center gap-3">
                       <span className={`h-3.5 w-3.5 rounded-full ${issue.dotColor} shrink-0`} />
                       <div>
-                        <span className="font-extrabold text-slate-900 text-sm block">{issue.title}</span>
-                        <span className="text-xs text-slate-500 font-semibold">{issue.department} • {issue.location}</span>
+                        <span className="font-semibold text-slate-900 text-sm block">{issue.title}</span>
+                        <span className="text-xs text-slate-500 font-semibold">{issue.location}</span>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <span className="rounded-lg bg-white px-3 py-1 text-xs font-extrabold text-slate-700 border border-slate-200">
+                      <span className="rounded-lg bg-white px-3 py-1 text-xs font-semibold text-slate-700 border border-slate-200">
                         {issue.status}
                       </span>
-                      <span className="font-black text-slate-800 text-sm">{issue.count} reports</span>
+                      <span className="font-semibold text-slate-800 text-sm">{issue.count} reports</span>
                       <button
                         onClick={() => {
                           setSelectedPriorityIssue(issue);
                           setShowAllPriorityModal(false);
                         }}
-                        className="rounded-lg bg-[#2D7FF9] px-3.5 py-1.5 text-xs font-extrabold text-white hover:bg-[#1E4FA3]"
+                        className="rounded-lg bg-[#2D7FF9] px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-[#1E4FA3] cursor-pointer"
                       >
                         Inspect →
                       </button>
@@ -531,7 +541,7 @@ export default function Overview() {
             <div className="mt-6 flex justify-end border-t border-slate-100 pt-4">
               <button
                 onClick={() => setShowAllPriorityModal(false)}
-                className="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-extrabold text-white"
+                className="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white cursor-pointer"
               >
                 Close Window
               </button>
@@ -554,7 +564,7 @@ export default function Overview() {
               </div>
               <button
                 onClick={() => setShowAllQueriesModal(false)}
-                className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 text-base font-bold"
+                className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 text-base font-semibold"
               >
                 ✕
               </button>
@@ -581,11 +591,11 @@ export default function Overview() {
                     <div className="flex items-center gap-3">
                       <span className="rounded-lg bg-[#2D7FF9]/10 p-2 text-[#2D7FF9] font-bold">💬</span>
                       <div>
-                        <span className="font-bold text-slate-800 block text-sm">{query.text}</span>
+                        <span className="font-semibold text-slate-800 block text-sm">{query.text}</span>
                         <span className="text-xs text-slate-500 font-semibold">Category: {query.category}</span>
                       </div>
                     </div>
-                    <span className="font-extrabold text-[#2D7FF9] text-sm bg-white px-3 py-1 rounded-lg border border-slate-200 shrink-0 ml-2">
+                    <span className="font-semibold text-[#2D7FF9] text-sm bg-white px-3 py-1 rounded-lg border border-slate-200 shrink-0 ml-2">
                       {query.count} citizen queries
                     </span>
                   </div>
@@ -595,7 +605,7 @@ export default function Overview() {
             <div className="mt-6 flex justify-end border-t border-slate-100 pt-4">
               <button
                 onClick={() => setShowAllQueriesModal(false)}
-                className="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-extrabold text-white"
+                className="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white cursor-pointer"
               >
                 Close Window
               </button>
