@@ -1,37 +1,4 @@
-import axios from "axios"; // HTTP Client
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  timeout: 15000,
-});
-
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("civicmirror_token");
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem("civicmirror_token");
-      localStorage.removeItem("civicmirror_user");
-    }
-
-    return Promise.reject(error);
-  }
-);
+import api from "./axios.config";
 
 export const loginUser = async (email, password) => {
   try {
