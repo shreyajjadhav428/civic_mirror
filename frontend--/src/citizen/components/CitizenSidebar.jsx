@@ -164,7 +164,7 @@ export default function CitizenSidebar({ onLogout }) {
             >
               <span className="text-white">C</span>
               <span className="relative text-[#69A8FF] after:absolute after:-bottom-1 after:left-0 after:h-[2.5px] after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition-transform after:duration-300 group-hover:after:scale-x-100">
-                Mcd
+                M
               </span>
             </button>
 
