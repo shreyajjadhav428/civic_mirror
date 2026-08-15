@@ -11,6 +11,14 @@ export default function Requests() {
   const [selectedDate, setSelectedDate] = useState("All Time");
   const [selectedFlagged, setSelectedFlagged] = useState("All");
 
+  // Pagination state
+  const [visibleCount, setVisibleCount] = useState(10);
+
+  // Reset pagination when filters or search change
+  useEffect(() => {
+    setVisibleCount(10);
+  }, [searchQuery, selectedPincode, selectedCategory, selectedStatus, selectedDate, selectedFlagged]);
+
   // Selected Request Modal State
   const [selectedRequestModal, setSelectedRequestModal] = useState(null);
   const [showAiExplanation, setShowAiExplanation] = useState(false);
@@ -79,6 +87,9 @@ export default function Requests() {
 
     return matchesSearch && matchesPincode && matchesCategory && matchesStatus && matchesFlagged;
   });
+
+  // Paginated display slice
+  const displayedRequests = filteredRequests.slice(0, visibleCount);
 
   const getPriorityStyle = (priority) => {
     switch (priority) {
@@ -166,7 +177,7 @@ export default function Requests() {
           {/* Quick Filter Counts */}
           <div className="text-[13px] font-bold text-slate-500 flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-emerald-500 inline-block" />
-            <span>Showing {filteredRequests.length} of {requestsList.length} requests</span>
+            <span>Showing {displayedRequests.length} of {filteredRequests.length} requests (Total: {requestsList.length})</span>
           </div>
         </div>
 
@@ -280,7 +291,7 @@ export default function Requests() {
           <span className="text-xs font-semibold text-slate-400">Click any request to view details & AI evidence</span>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs overflow-hidden">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs space-y-6">
           <div className="overflow-x-auto rounded-xl border border-slate-200/70">
             <table className="w-full text-left text-base">
               <thead className="bg-slate-50/80 text-[12px] font-black text-slate-500 uppercase border-b border-slate-200">
@@ -293,14 +304,14 @@ export default function Requests() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-semibold">
-                {filteredRequests.length === 0 ? (
+                {displayedRequests.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="py-12 text-center text-[12px] font-semibold text-slate-400">
                       No citizen requests match your current search or filter parameters.
                     </td>
                   </tr>
                 ) : (
-                  filteredRequests.map((item) => (
+                  displayedRequests.map((item) => (
                     <tr
                       key={item.id}
                       onClick={() => {
@@ -348,6 +359,27 @@ export default function Requests() {
               </tbody>
             </table>
           </div>
+
+          {/* Right-Aligned Show More / Show Less Link */}
+          {filteredRequests.length > 10 && (
+            <div className="flex justify-end pt-2 pr-2">
+              {visibleCount < filteredRequests.length ? (
+                <button
+                  onClick={() => setVisibleCount((prev) => prev + 10)}
+                  className="text-[#2D7FF9] font-black text-sm hover:underline cursor-pointer bg-transparent border-none p-0 transition"
+                >
+                  Show More →
+                </button>
+              ) : (
+                <button
+                  onClick={() => setVisibleCount(10)}
+                  className="text-[#2D7FF9] font-black text-sm hover:underline cursor-pointer bg-transparent border-none p-0 transition"
+                >
+                  Show Less ↑
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -415,8 +447,6 @@ export default function Requests() {
                   <span className="font-extrabold text-[#0D1B2A]">{selectedRequestModal.submittedDate}</span>
                 </div>
               </div>
-
-
             </div>
 
             {/* Footer */}
