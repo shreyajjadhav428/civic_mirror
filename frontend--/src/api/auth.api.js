@@ -45,9 +45,9 @@ export const loginUser = async (email, password) => {
   }
 };
 
-export const registerUser = async (email, password, role = "citizen") => {
+export const registerUser = async (email, password, role = "citizen", area = "Shanti Nagar", pincode = "110025") => {
   try {
-    const response = await api.post("/auth/register", { email, password, role });
+    const response = await api.post("/auth/register", { email, password, role, area, pincode });
     return response.data;
   } catch (error) {
     if (error.response?.data) {

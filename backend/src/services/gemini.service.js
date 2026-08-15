@@ -110,12 +110,12 @@ For genuine civic requests, identify the most appropriate category (Roads, Stree
 Set detectedCategory to the best-supported category.
 
 ==================================================
-5. PINCODE DETECTION
+5. PINCODE AND LOCATION DETECTION
 ==================================================
 
-Extract a 6-digit Indian postal pincode if explicitly present in the user's prompt.
-If no pincode is present, set detectedPincode = null.
-NEVER infer or invent a pincode from unrelated information.
+Extract a 6-digit Indian postal pincode if explicitly present in the user's prompt text.
+If no pincode is explicitly written in the prompt text, use the citizen's registered profile location and pincode provided under "CITIZEN REGISTERED PROFILE LOCATION".
+NEVER return null, empty, or "undefined" for detectedPincode when citizen registered profile location is available.
 
 ==================================================
 6. MUNICIPAL EVIDENCE IS THE ONLY SOURCE OF TRUTH
@@ -207,11 +207,16 @@ export const analyzePromptForTools = async (userPrompt) => {
   return { functionCalls: [] };
 };
 
-export const generateExplainableAnswer = async (userPrompt, municipalEvidence) => {
-  // gemini-3.5-flash-lite: confirmed working on this API key (fast).
-  // gemini-3.5-flash: exists but can be slow/rate-limited — 15s timeout guard applied.
+export const generateExplainableAnswer = async (userPrompt, municipalEvidence, userContext = {}) => {
   const modelsToTry = ['gemini-3.5-flash-lite', 'gemini-3.5-flash'];
+  const userArea = userContext.userArea || 'Shanti Nagar';
+  const userPincode = userContext.userPincode || '110025';
+
   const promptWithEvidence = `
+    CITIZEN REGISTERED PROFILE LOCATION (Default Context from Supabase Users Table):
+    Area: ${userArea}
+    Pincode: ${userPincode}
+
     MUNICIPAL EVIDENCE (Source of Truth):
     ${JSON.stringify(municipalEvidence, null, 2)}
     
@@ -255,7 +260,7 @@ export const generateExplainableAnswer = async (userPrompt, municipalEvidence) =
     const p = municipalEvidence.projects[0];
     const dept = p.departments?.name || p.category || "Municipal Operations";
     return {
-      summary: `Active project ${p.project_code || 'EL-204'} ('${p.title || 'Infrastructure Work'}') is currently ongoing in this area.`,
+      summary: `Active project ${p.project_code || 'EL-204'} ('${p.title || 'Infrastructure Work'}') is currently ongoing in ${userArea} (Pincode ${userPincode}).`,
       reason: `Municipal database records confirm an active project under ${dept} at ${p.progress || 0}% progress.`,
       status: p.status || "In Progress",
       priority: "High",
@@ -265,12 +270,12 @@ export const generateExplainableAnswer = async (userPrompt, municipalEvidence) =
       isSpam: false,
       evidence: [{ reference_id: p.project_code || 'EL-204', detail: `${p.title || 'Project'} is ${p.progress || 0}% completed by ${dept}.` }],
       detectedCategory: p.category || "General",
-      detectedPincode: p.pincode || "110025"
+      detectedPincode: p.pincode || userPincode
     };
   } else {
     return {
-      summary: `No active municipal project currently covers this reported issue in this pincode area.`,
-      reason: `A search of active municipal database records returned zero ongoing projects for this category. Your query has been automatically registered into the database and routed to the Municipal Admin Dashboard for review.`,
+      summary: `No active municipal project currently covers this reported issue in ${userArea} (Pincode ${userPincode}).`,
+      reason: `A search of active municipal database records returned zero ongoing projects for this category in Pincode ${userPincode}. Your query has been automatically registered into the database and routed to the Municipal Admin Dashboard for review.`,
       status: "Under Review",
       priority: "High",
       expectedAction: "Auto-registered as a new complaint ticket and queued for administrative review.",
@@ -279,7 +284,7 @@ export const generateExplainableAnswer = async (userPrompt, municipalEvidence) =
       isSpam: false,
       evidence: [],
       detectedCategory: "General Infrastructure",
-      detectedPincode: "110025"
+      detectedPincode: userPincode
     };
   }
 };

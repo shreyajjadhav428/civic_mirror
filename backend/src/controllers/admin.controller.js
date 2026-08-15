@@ -279,14 +279,15 @@ export const getAdminProjects = async (req, res) => {
   try {
     const { data: dbProjects, error } = await supabase
       .from('projects')
-      .select('*, complaints(id, complaint_code, description, status)')
+      .select('*, budgets(*), complaints(id, complaint_code, description, status)')
       .order('created_at', { ascending: false });
 
     if (error) throw error;
 
     const formattedProjects = (dbProjects || []).map((p, idx) => {
-      const budgetNum = Number(p.budget) || (2200000 + (idx * 500000));
-      const utilNum = Number(p.utilized_budget) || Math.round(budgetNum * ((p.progress || 50) / 100));
+      const budgetObj = Array.isArray(p.budgets) ? p.budgets[0] : p.budgets;
+      const budgetNum = Number(budgetObj?.total_allocated) || Number(p.budget) || (2200000 + (idx * 500000));
+      const utilNum = Number(budgetObj?.spent) || Number(p.utilized_budget) || Math.round(budgetNum * ((p.progress || 50) / 100));
       const remNum = Math.max(0, budgetNum - utilNum);
       const isCompleted = p.status === 'Completed' || p.progress === 100;
 
@@ -310,8 +311,8 @@ export const getAdminProjects = async (req, res) => {
         utilizedBudget: utilNum,
         remainingBudget: remNum,
         relatedComplaintsCount: connected.length,
-        affectedCitizens: connected.length, // deterministic: actual linked complaint count, no random
-        status: isCompleted ? 'Completed' : 'In Progress',
+        affectedCitizens: connected.length,
+        status: isCompleted ? 'Completed' : (p.status || 'In Progress'),
         statusBadge: isCompleted ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-teal-50 text-[#008D78] border-teal-200',
         connectedComplaints: connected
       };
@@ -326,63 +327,161 @@ export const getAdminProjects = async (req, res) => {
 
 /**
  * POST /api/admin/projects
- * Creates a new municipal project in Supabase.
+ * Creates a new municipal project in Supabase projects table and syncs foreign-key connected budgets table.
  */
 export const createAdminProject = async (req, res) => {
   try {
     const { name, department, pincode, startDate, expectedCompletion, budget, utilizedBudget, affectedCitizens, status } = req.body;
 
-    const newProjectData = {
-      id: `proj-${Date.now()}`,
-      project_code: `PRJ-${Math.floor(100 + Math.random() * 900)}`,
+    const projectId = `proj-${Date.now()}`;
+    const projectCode = `PRJ-${Math.floor(100 + Math.random() * 900)}`;
+    const budgetAllocated = Number(budget) || 1000000;
+    const spentBudget = Number(utilizedBudget) || 0;
+
+    // Safely parse date to valid YYYY-MM-DD for PostgreSQL DATE type
+    let validDate = '2026-11-30';
+    if (expectedCompletion) {
+      const d = new Date(expectedCompletion);
+      if (!isNaN(d.getTime())) {
+        validDate = d.toISOString().split('T')[0];
+      }
+    }
+
+    const coreProjectData = {
+      id: projectId,
+      project_code: projectCode,
       title: name || 'New Infrastructure Project',
       category: department || 'Municipal Works',
-      pincode: pincode || '110025',
+      pincode: String(pincode || '110025'),
       status: status || 'In Progress',
-      budget: Number(budget) || 1000000,
-      utilized_budget: Number(utilizedBudget) || 0,
-      expected_completion: expectedCompletion || '2026-11-30',
+      expected_completion: validDate,
       progress: status === 'Completed' ? 100 : 15
     };
 
-    const { data, error } = await supabase
+    // Insert into Supabase projects table
+    const { data: pData, error: pError } = await supabase
       .from('projects')
-      .insert([newProjectData])
+      .insert([coreProjectData])
       .select('*');
 
-    if (error) throw error;
+    if (pError) {
+      console.error('Error inserting into Supabase projects table:', pError);
+      throw pError;
+    }
 
-    return res.status(201).json({ status: 'success', data: data?.[0] || newProjectData });
+    const insertedProject = pData?.[0] || coreProjectData;
+    const actualProjectId = insertedProject.id;
+
+    // Insert corresponding record in budgets table linked by foreign key project_id
+    try {
+      const budgetRecord = {
+        id: `bdg-${Date.now()}`,
+        project_id: actualProjectId,
+        total_allocated: budgetAllocated,
+        spent: spentBudget,
+        fiscal_year: new Date().getFullYear().toString()
+      };
+
+      await supabase
+        .from('budgets')
+        .insert([budgetRecord]);
+    } catch (bErr) {
+      console.warn('Syncing budget table record warning:', bErr?.message);
+    }
+
+    const returnedProject = {
+      id: actualProjectId,
+      project_code: insertedProject.project_code || projectCode,
+      name: insertedProject.title || name || 'New Infrastructure Project',
+      department: insertedProject.category || department || 'Municipal Works',
+      pincode: insertedProject.pincode || pincode || '110025',
+      startDate: startDate || '01 Aug 2026',
+      expectedCompletion: insertedProject.expected_completion ? new Date(insertedProject.expected_completion).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) : '30 Nov 2026',
+      progress: insertedProject.progress ?? 15,
+      budget: budgetAllocated,
+      utilizedBudget: spentBudget,
+      remainingBudget: Math.max(0, budgetAllocated - spentBudget),
+      relatedComplaintsCount: 0,
+      affectedCitizens: Number(affectedCitizens) || 0,
+      status: insertedProject.status || status || 'In Progress',
+      statusBadge: (insertedProject.status || status) === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-teal-50 text-[#008D78] border-teal-200',
+      connectedComplaints: []
+    };
+
+    return res.status(201).json({ status: 'success', data: returnedProject });
   } catch (error) {
     console.error('Error creating admin project:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ error: 'Internal Server Error', message: error.message });
   }
 };
 
 /**
  * PATCH /api/admin/projects/:id
- * Updates an existing municipal project in Supabase.
+ * Updates an existing municipal project in Supabase projects and linked budgets table.
  */
 export const updateAdminProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, progress, utilizedBudget, expectedCompletion } = req.body;
+    const { status, progress, budget, utilizedBudget, expectedCompletion } = req.body;
 
-    const updates = {};
-    if (status !== undefined) updates.status = status;
-    if (progress !== undefined) updates.progress = progress;
-    if (utilizedBudget !== undefined) updates.utilized_budget = utilizedBudget;
-    if (expectedCompletion !== undefined) updates.expected_completion = expectedCompletion;
+    const projectUpdates = {};
+    if (status !== undefined) projectUpdates.status = status;
+    if (progress !== undefined) projectUpdates.progress = progress;
+    if (expectedCompletion !== undefined) projectUpdates.expected_completion = expectedCompletion;
+    if (utilizedBudget !== undefined) projectUpdates.utilized_budget = Number(utilizedBudget);
+    if (budget !== undefined) projectUpdates.budget = Number(budget);
 
-    const { data, error } = await supabase
+    if (Object.keys(projectUpdates).length > 0) {
+      const { error: pErr } = await supabase
+        .from('projects')
+        .update(projectUpdates)
+        .eq('id', id);
+
+      if (pErr) console.warn('Updating projects table warning:', pErr.message);
+    }
+
+    // Sync updates to linked budgets table
+    if (budget !== undefined || utilizedBudget !== undefined) {
+      try {
+        const { data: existingBudget } = await supabase
+          .from('budgets')
+          .select('id, total_allocated, spent')
+          .eq('project_id', id)
+          .maybeSingle();
+
+        if (existingBudget) {
+          const bUpdates = {};
+          if (budget !== undefined) bUpdates.total_allocated = Number(budget);
+          if (utilizedBudget !== undefined) bUpdates.spent = Number(utilizedBudget);
+
+          await supabase
+            .from('budgets')
+            .update(bUpdates)
+            .eq('project_id', id);
+        } else {
+          await supabase
+            .from('budgets')
+            .insert([{
+              id: `bdg-${Date.now()}`,
+              project_id: id,
+              total_allocated: Number(budget) || 1000000,
+              spent: Number(utilizedBudget) || 0,
+              fiscal_year: new Date().getFullYear().toString()
+            }]);
+        }
+      } catch (bErr) {
+        console.warn('Syncing budget update warning:', bErr?.message);
+      }
+    }
+
+    // Return updated project record
+    const { data: updatedProjectData } = await supabase
       .from('projects')
-      .update(updates)
+      .select('*, budgets(*), complaints(id, complaint_code, description, status)')
       .eq('id', id)
-      .select('*');
+      .maybeSingle();
 
-    if (error) throw error;
-
-    return res.status(200).json({ status: 'success', data: data?.[0] || null });
+    return res.status(200).json({ status: 'success', data: updatedProjectData || { id, ...req.body } });
   } catch (error) {
     console.error('Error updating admin project:', error);
     return res.status(500).json({ error: 'Internal Server Error' });
@@ -394,18 +493,22 @@ export const updateAdminProject = async (req, res) => {
  */
 export const getUniqueQueries = async (req, res) => {
   try {
-    const { data: complaints } = await supabase
+    const { data: complaints, error } = await supabase
       .from('complaints')
-      .select('id, complaint_code, description, category, pincode, created_at, project_id, projects(title, project_code)');
+      .select('id, complaint_code, description, category, pincode, status, created_at, project_id, projects(title, project_code)');
 
-    // Group complaints by category & pincode or summary theme
+    if (error) throw error;
+
+    // Group complaints by category & topic
     const categoryGroups = {};
 
     (complaints || []).forEach((c) => {
       const cat = c.category || 'General Inquiries';
       if (!categoryGroups[cat]) {
+        const catSlug = cat.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 6);
         categoryGroups[cat] = {
-          id: `CQ-${100 + Object.keys(categoryGroups).length + 1}`,
+          id: `CQ-${catSlug}-${Object.keys(categoryGroups).length + 1}`,
+          category: cat,
           question: `Recurring issues regarding ${cat}`,
           requestCount: 0,
           relatedRequests: [],
@@ -417,27 +520,28 @@ export const getUniqueQueries = async (req, res) => {
         };
       }
       categoryGroups[cat].requestCount += 1;
-      categoryGroups[cat].relatedRequests.push(`${c.complaint_code || c.id}: ${c.description.slice(0, 45)}...`);
-      categoryGroups[cat].locations.add(`Pincode ${c.pincode}`);
+      categoryGroups[cat].relatedRequests.push(`${c.complaint_code || c.id}: ${c.description}`);
+      if (c.pincode) categoryGroups[cat].locations.add(`Pincode ${c.pincode}`);
       if (c.projects?.title) categoryGroups[cat].projects.add(c.projects.title);
       if (c.created_at) categoryGroups[cat].dates.add(new Date(c.created_at).toLocaleDateString("en-US", { month: "short", day: "2-digit" }));
-      if (categoryGroups[cat].similarQueries.length < 3) {
+      if (categoryGroups[cat].similarQueries.length < 5) {
         categoryGroups[cat].similarQueries.push(c.description);
       }
     });
 
     const commonQueries = Object.values(categoryGroups).map((g) => ({
       id: g.id,
+      category: g.category,
       question: g.question,
       text: g.question,
       query: g.question,
       requestCount: g.requestCount,
       count: g.requestCount,
-      relatedRequests: g.relatedRequests.slice(0, 4),
+      relatedRequests: g.relatedRequests.slice(0, 5),
       locations: Array.from(g.locations),
       departments: Array.from(g.departments),
       projects: g.projects.size > 0 ? Array.from(g.projects) : ['General Municipal Assessment'],
-      dates: Array.from(g.dates).slice(0, 2),
+      dates: Array.from(g.dates).slice(0, 3),
       similarQueries: g.similarQueries,
     })).sort((a, b) => b.requestCount - a.requestCount);
 
@@ -450,7 +554,7 @@ export const getUniqueQueries = async (req, res) => {
 
 /**
  * GET /api/admin/inquiries
- * Retrieves public inquiries with AI verification status and AI insight analytics.
+ * Retrieves public inquiries with AI verification status and AI insight analytics directly from Supabase complaints table.
  */
 export const getAdminInquiries = async (req, res) => {
   try {
@@ -465,6 +569,7 @@ export const getAdminInquiries = async (req, res) => {
     let verifiedCount = 0;
     let pendingCount = 0;
     let flaggedCount = 0;
+    let inProgressCount = 0;
 
     const pincodeCounts = {};
     const departmentCounts = {};
@@ -473,15 +578,26 @@ export const getAdminInquiries = async (req, res) => {
       let aiStatus = 'Pending Review';
       let confidence = '92.4%';
 
+      const statusLower = (c.status || '').toLowerCase();
+
       if (c.admin_flagged) {
         aiStatus = 'Flagged';
         confidence = '87.1%';
         flaggedCount += 1;
-      } else if (c.project_id || c.projects) {
-        aiStatus = 'Verified';
+      } else if (statusLower.includes('resolved') || statusLower.includes('complete') || statusLower.includes('verified')) {
+        aiStatus = 'Resolved';
         confidence = '98.9%';
         verifiedCount += 1;
+      } else if (statusLower.includes('progress')) {
+        aiStatus = 'In Progress';
+        confidence = '94.2%';
+        inProgressCount += 1;
+      } else if (c.project_id || c.projects) {
+        aiStatus = 'Verified';
+        confidence = '95.5%';
+        verifiedCount += 1;
       } else {
+        aiStatus = 'Pending Review';
         pendingCount += 1;
       }
 
@@ -494,6 +610,7 @@ export const getAdminInquiries = async (req, res) => {
 
       return {
         id: c.complaint_code || c.id,
+        raw_id: c.id,
         topic: c.description,
         department: c.category || 'General Administration',
         date: c.created_at ? new Date(c.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) : 'Recent',
@@ -503,12 +620,14 @@ export const getAdminInquiries = async (req, res) => {
         evidenceCount: c.project_id ? 14 : 5,
         summary: c.ai_summary || c.description,
         pincode: c.pincode,
-        status: c.status
+        status: c.status || 'Pending',
+        admin_flagged: c.admin_flagged || false,
+        created_at: c.created_at
       };
     });
 
     const totalQueries = list.length;
-    const relatedToProjectsCount = verifiedCount;
+    const relatedToProjectsCount = verifiedCount + inProgressCount;
     const projectRelationPercent = totalQueries > 0 ? Math.round((relatedToProjectsCount / totalQueries) * 100) : 0;
 
     const topPincodes = Object.entries(pincodeCounts)
@@ -523,7 +642,7 @@ export const getAdminInquiries = async (req, res) => {
 
     const aiInsight = {
       summaryText: totalQueries > 0 
-        ? `A significant concentration of citizen queries (${projectRelationPercent}%) relates directly to ongoing infrastructure and municipal project work.`
+        ? `A significant concentration of citizen queries (${projectRelationPercent}%) relates directly to active infrastructure and municipal project work.`
         : 'No public citizen inquiries currently logged in the database.',
       totalRelatedQueries: totalQueries,
       projectRelationPercent: projectRelationPercent || 0,
@@ -531,7 +650,8 @@ export const getAdminInquiries = async (req, res) => {
       primaryDepartments: topDepartments.length > 0 ? topDepartments : ['No active departments'],
       verifiedCount,
       pendingCount,
-      flaggedCount
+      flaggedCount,
+      inProgressCount
     };
 
     return res.status(200).json({

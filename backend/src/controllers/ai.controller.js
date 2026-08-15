@@ -27,19 +27,31 @@ export const askCivicMirror = async (req, res) => {
     let userPincode = '110025';
     let userArea = 'Shanti Nagar';
 
-    // 0. Auto-resolve citizen profile pincode & area from Supabase
+    // 0. Auto-resolve citizen profile pincode & area from Supabase users table
     if (user_id) {
       const { data: userProfile } = await supabase
         .from('users')
         .select('pincode, area')
         .eq('id', user_id)
-        .single();
+        .maybeSingle();
 
       if (userProfile?.pincode) userPincode = userProfile.pincode;
       if (userProfile?.area) userArea = userProfile.area;
     }
 
-    // 1. Fallback pincode extraction from prompt text or user profile
+    // Fallback: If no userProfile found by ID, fetch first user profile from Supabase users table
+    if (!userPincode || userPincode === '110025') {
+      const { data: firstUser } = await supabase
+        .from('users')
+        .select('pincode, area')
+        .limit(1)
+        .maybeSingle();
+
+      if (firstUser?.pincode) userPincode = firstUser.pincode;
+      if (firstUser?.area) userArea = firstUser.area;
+    }
+
+    // 1. Pincode extraction from prompt text or user profile
     const pincodeMatch = prompt.match(/\b\d{6}\b/);
     if (pincodeMatch) {
       detectedPincode = pincodeMatch[0];
@@ -47,7 +59,7 @@ export const askCivicMirror = async (req, res) => {
       detectedPincode = userPincode;
     }
 
-    const effectivePrompt = pincodeMatch ? prompt : `${prompt} (Location: ${userArea}, Pincode: ${userPincode})`;
+    const effectivePrompt = pincodeMatch ? prompt : `${prompt} (Citizen Location Context: Area ${userArea}, Pincode ${userPincode})`;
 
     const analysisResponse = await analyzePromptForTools(effectivePrompt);
 
@@ -97,11 +109,13 @@ export const askCivicMirror = async (req, res) => {
     // 1. Package the evidence tightly for Gemini
     const packagedEvidence = packageEvidenceForAI(localProjects, localDocuments);
 
-    // 2. Generate the explainable answer
-    const decisionCardData = await generateExplainableAnswer(prompt, packagedEvidence);
+    // 2. Generate the explainable answer passing Supabase user profile context
+    const decisionCardData = await generateExplainableAnswer(prompt, packagedEvidence, { userArea, userPincode });
 
     const activeCitizenId = user_id || 'user-citizen-1';
-    const activePincode = decisionCardData.detectedPincode || detectedPincode || '110025';
+    const activePincode = decisionCardData.detectedPincode || detectedPincode || userPincode;
+    decisionCardData.detectedPincode = activePincode;
+    decisionCardData.detectedArea = userArea;
 
     // Check if input is spam, casual chatter, or off-topic text
     const isSpam = decisionCardData?.isSpam || false;
@@ -160,26 +174,38 @@ export const askCivicMirror = async (req, res) => {
 
     let createdComplaint = null;
 
-    if (isUnique) {
-      // SCENARIO B: NO ACTIVE PROJECT -> Unique request automatically routed & flagged for Admin Dashboard
-      const finalPincode = decisionCardData.detectedPincode || detectedPincode || '110025';
-      const finalCategory = decisionCardData.detectedCategory || detectedCategory || 'General Infrastructure';
-      const complaintCode = `CMP-${Math.floor(1000 + Math.random() * 9000)}`;
-      const complaintId = `cmp-${Date.now()}`;
+    const finalPincode = decisionCardData.detectedPincode || detectedPincode || userPincode || '110025';
+    const finalCategory = decisionCardData.detectedCategory || detectedCategory || 'General Infrastructure';
+    const complaintCode = `CMP-${Math.floor(1000 + Math.random() * 9000)}`;
+    const complaintId = `cmp-${Date.now()}`;
 
-      const newComplaintData = {
-        id: complaintId,
-        complaint_code: complaintCode,
-        user_id: activeCitizenId,
-        description: prompt,
-        category: finalCategory,
-        pincode: finalPincode,
-        status: 'Pending',
-        project_id: null,
-        admin_flagged: true,
-        ai_summary: decisionCardData.summary || `Unique citizen prompt via AI agent. No active project found in pincode ${finalPincode}. Flagged for administrative review.`
-      };
+    let matchedProjectId = null;
+    let initialStatus = 'Pending';
+    let adminFlagged = true;
+    let defaultSummary = `Unique citizen prompt via AI agent. No active project found in pincode ${finalPincode}. Flagged for administrative review.`;
 
+    if (!isUnique && localProjects.length > 0) {
+      const activeProj = localProjects[0];
+      matchedProjectId = activeProj.id || null;
+      initialStatus = activeProj.status || 'In Progress';
+      adminFlagged = false;
+      defaultSummary = `Associated with active project ${activeProj.project_code || 'Ongoing'} (${activeProj.title || 'Work'}). Scheduled completion: ${activeProj.expected_completion || 'Ongoing'}.`;
+    }
+
+    const newComplaintData = {
+      id: complaintId,
+      complaint_code: complaintCode,
+      user_id: activeCitizenId,
+      description: prompt,
+      category: finalCategory,
+      pincode: finalPincode,
+      status: initialStatus,
+      project_id: matchedProjectId,
+      admin_flagged: adminFlagged,
+      ai_summary: decisionCardData.summary || defaultSummary
+    };
+
+    try {
       const { data: inserted, error: insertErr } = await supabase
         .from('complaints')
         .insert([newComplaintData])
@@ -191,6 +217,9 @@ export const askCivicMirror = async (req, res) => {
       } else {
         createdComplaint = newComplaintData;
       }
+    } catch (err) {
+      console.warn('Error inserting complaint record:', err.message);
+      createdComplaint = newComplaintData;
     }
 
     // 3. Return the response payload with assurance details & unique request flags

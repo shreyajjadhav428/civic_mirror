@@ -11,134 +11,18 @@ export default function Queries({ onNavigate }) {
   const [selectedInquiry, setSelectedInquiry] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Dynamic Backend State (Populated by Backend API or rich defaults)
-  const [commonQueries, setCommonQueries] = useState([
-    {
-      id: "Q-101",
-      question: "When will Sector 12 road resurfacing be completed?",
-      category: "Road Infrastructure",
-      requestCount: 78,
-      maxCount: 100,
-      topAccent: "bg-[#2D7FF9]",
-      badgeStyle: "bg-blue-50 text-[#2D7FF9] border-blue-200",
-      barColor: "bg-[#2D7FF9]",
-      departments: ["Engineering & Road Ops"],
-      locations: ["Sector 12", "Shanti Nagar"],
-      projects: ["PRJ-01 (Sector 12 Resurfacing)"],
-      relatedRequests: [
-        "Status update for Sector 12 tarring",
-        "Expected completion date for road construction near Ward 4",
-        "Contractor delay reports for Sector 12 roadwork"
-      ]
-    },
-    {
-      id: "Q-102",
-      question: "Frequent water pressure drop issues during peak hours",
-      category: "Water Supply",
-      requestCount: 64,
-      maxCount: 100,
-      topAccent: "bg-[#00A68E]",
-      badgeStyle: "bg-teal-50 text-[#00A68E] border-teal-200",
-      barColor: "bg-[#00A68E]",
-      departments: ["Water Supply & Hydro Ops"],
-      locations: ["Ward 3", "Green Park Ward 9"],
-      projects: ["PRJ-03 (High-Pressure Pipeline Installation)"],
-      relatedRequests: [
-        "Low water volume in morning supply",
-        "Pipeline maintenance timeline in Green Park",
-        "Water booster pump replacement schedule"
-      ]
-    },
-    {
-      id: "Q-103",
-      question: "Broken streetlights along Western Bypass highway corridor",
-      category: "Electrical Works",
-      requestCount: 42,
-      maxCount: 100,
-      topAccent: "bg-[#FFC107]",
-      badgeStyle: "bg-amber-50 text-amber-800 border-amber-200",
-      barColor: "bg-[#FFC107]",
-      departments: ["Electrical Maintenance"],
-      locations: ["Western Highway Bypass", "Outer Ring Ward 14"],
-      projects: ["PRJ-02 (Smart LED Streetlight Grid)"],
-      relatedRequests: [
-        "Dark stretches on Western Bypass at night",
-        "Repair request for poles #45 through #52",
-        "Solar light battery replacement timeline"
-      ]
-    },
-    {
-      id: "Q-104",
-      question: "Timetable for municipal garbage segregation rollout",
-      category: "Sanitation",
-      requestCount: 36,
-      maxCount: 100,
-      topAccent: "bg-[#6366F1]",
-      badgeStyle: "bg-indigo-50 text-indigo-700 border-indigo-200",
-      barColor: "bg-[#6366F1]",
-      departments: ["Solid Waste Management"],
-      locations: ["Central Ward", "Sector 8"],
-      projects: ["PRJ-05 (Zero-Waste Segregation Drive)"],
-      relatedRequests: [
-        "Wet waste vs dry waste pickup schedule",
-        "Compost bin distribution program",
-        "Sanitation vehicle arrival notifications"
-      ]
-    }
-  ]);
-
-  const [inquiries, setInquiries] = useState([
-    {
-      id: "INQ-9481",
-      topic: "Road resurfacing progress query for Sector 12 area",
-      citizen: "Rajesh Sharma",
-      date: "14 Aug 2026",
-      department: "Engineering & Road Ops",
-      aiStatus: "Resolved",
-      pincode: "400012",
-      summary: "Inquiry cross-referenced against PRJ-01 active work order. AI verified contractor status is on schedule."
-    },
-    {
-      id: "INQ-9482",
-      topic: "Water supply disruption report for Green Park colony",
-      citizen: "Priya Nair",
-      date: "14 Aug 2026",
-      department: "Water Supply",
-      aiStatus: "Resolved",
-      pincode: "400009",
-      summary: "Matched with pipeline maintenance ticket #WM-204. Supply restoration estimated within 4 hours."
-    },
-    {
-      id: "INQ-9483",
-      topic: "Request for street light replacement near Sector 8 main gate",
-      citizen: "Amitabh Sen",
-      date: "13 Aug 2026",
-      department: "Electrical Works",
-      aiStatus: "Pending Review",
-      pincode: "400008",
-      summary: "Pending verification against streetlight inventory DB. Dispatched to ward inspector."
-    },
-    {
-      id: "INQ-9484",
-      topic: "Duplicate complaint regarding drainage overflow in Ward 4",
-      citizen: "Sunita Verma",
-      date: "13 Aug 2026",
-      department: "Public Works",
-      aiStatus: "Flagged",
-      pincode: "400004",
-      summary: "Flagged by AI as duplicate submission of INQ-9460. Merged into active ticket."
-    }
-  ]);
-
+  // Dynamic Backend State (Populated strictly by database)
+  const [commonQueries, setCommonQueries] = useState([]);
+  const [inquiries, setInquiries] = useState([]);
   const [aiInsight, setAiInsight] = useState({
-    summaryText: "A high proportion (68%) of recent citizen inquiries relate to road infrastructure and water supply work schedules.",
-    totalRelatedQueries: 220,
-    projectRelationPercent: 68,
-    mostAffectedLocations: ["Sector 12", "Green Park Ward 9", "Western Bypass"],
-    primaryDepartments: ["Engineering & Road Ops", "Water Supply"],
-    verifiedCount: 154,
-    pendingCount: 42,
-    flaggedCount: 24,
+    summaryText: "Syncing citizen inquiry data from Supabase complaints table...",
+    totalRelatedQueries: 0,
+    projectRelationPercent: 0,
+    mostAffectedLocations: [],
+    primaryDepartments: [],
+    verifiedCount: 0,
+    pendingCount: 0,
+    flaggedCount: 0,
   });
 
   // -------------------------------------------------------------------
@@ -151,8 +35,8 @@ export default function Queries({ onNavigate }) {
       setLoading(true);
       try {
         const inquiriesRes = await getAdminInquiries();
-        if (isMounted && inquiriesRes?.data && inquiriesRes.data.inquiries?.length > 0) {
-          setInquiries(inquiriesRes.data.inquiries);
+        if (isMounted && inquiriesRes?.data) {
+          setInquiries(inquiriesRes.data.inquiries || []);
           if (inquiriesRes.data.aiInsight) {
             setAiInsight(inquiriesRes.data.aiInsight);
           }
@@ -163,8 +47,8 @@ export default function Queries({ onNavigate }) {
 
       try {
         const queriesRes = await getUniqueQueries();
-        if (isMounted && queriesRes?.data && queriesRes.data.length > 0) {
-          setCommonQueries(queriesRes.data);
+        if (isMounted && queriesRes?.data) {
+          setCommonQueries(queriesRes.data || []);
         }
       } catch (err) {
         console.error("Error fetching unique queries from backend:", err);

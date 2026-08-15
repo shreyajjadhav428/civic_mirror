@@ -76,7 +76,7 @@ export const registerUser = async (req, res) => {
       .from('users')
       .select('id, email')
       .eq('email', email)
-      .single();
+      .maybeSingle();
 
     if (existingUser) {
       return res.status(400).json({

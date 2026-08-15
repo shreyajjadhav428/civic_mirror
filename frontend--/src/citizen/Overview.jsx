@@ -253,7 +253,7 @@ function ExplanationCard({ data }) {
   );
 }
 
-function WhyCard({ data, expanded, onToggle }) {
+function WhyCard({ data, expanded = true, onToggle }) {
   const explanation = data?.explanation || {};
   const isSpam = explanation.isSpam;
   const isUnique = explanation.isUniqueRequest;
@@ -572,9 +572,9 @@ export default function Overview() {
   const [fileName, setFileName] = useState("");
   const [messages, setMessages] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
-  // Per-message expanded state: Set of message IDs whose WhyCard is open
-  const [expandedWhyIds, setExpandedWhyIds] = useState(new Set());
-  const toggleWhy = (id) => setExpandedWhyIds((prev) => {
+  // Per-message collapsed state: Set of message IDs whose WhyCard is explicitly closed by user
+  const [collapsedWhyIds, setCollapsedWhyIds] = useState(new Set());
+  const toggleWhy = (id) => setCollapsedWhyIds((prev) => {
     const next = new Set(prev);
     next.has(id) ? next.delete(id) : next.add(id);
     return next;
@@ -695,7 +695,7 @@ export default function Overview() {
                     {message.showAnalysis && (
                       <div className="space-y-5 pt-1">
                         <ExplanationCard data={message.analysisData} />
-                        <WhyCard data={message.analysisData} expanded={expandedWhyIds.has(message.id)} onToggle={() => toggleWhy(message.id)} />
+                        <WhyCard data={message.analysisData} expanded={!collapsedWhyIds.has(message.id)} onToggle={() => toggleWhy(message.id)} />
                         <EvidenceCard data={message.analysisData} onSelect={setSelectedEvidence} />
                         <Timeline data={message.analysisData} />
                       </div>

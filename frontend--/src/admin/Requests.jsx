@@ -15,117 +15,31 @@ export default function Requests() {
   const [showAiExplanation, setShowAiExplanation] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Request Data Library (Built around backend cluster/inquiry structure + fallback specs)
-  const [requestsList, setRequestsList] = useState([
-    {
-      id: "REQ-1001",
-      request: "Streetlight near my house hasn't worked for three days.",
-      title: "Streetlight not working",
-      category: "Streetlight",
-      pincode: "110025",
-      area: "Shanti Nagar",
-      status: "Pending",
-      priority: "High",
-      submittedDate: "12 Aug 2026",
-      flagged: false,
-      aiAnalysis: {
-        relatedProject: "Electrical Maintenance Phase II",
-        evidenceCount: "4 records",
-        explanation: "Cross-referenced against work order DB and transformer telemetry logs. 4 related citizen tickets logged in Pincode 110025 within 72 hours. Correlated with active capital project PRJ-02 (Smart LED Streetlight Grid)."
-      }
-    },
-    {
-      id: "REQ-1002",
-      request: "Deep potholes and asphalt erosion near Sector 12 main junction causing traffic jams.",
-      title: "Road damage",
-      category: "Road",
-      pincode: "110025",
-      area: "Sector 12",
-      status: "In Progress",
-      priority: "Medium",
-      submittedDate: "11 Aug 2026",
-      flagged: false,
-      aiAnalysis: {
-        relatedProject: "Sector 12 Road Resurfacing Campaign",
-        evidenceCount: "8 records",
-        explanation: "Correlated with GIS contractor work schedule for Sector 12 resurfacing. Sub-contractor patch team assigned to Ward 4."
-      }
-    },
-    {
-      id: "REQ-1003",
-      request: "Major underground pipeline leak causing water logging in Green Park block C.",
-      title: "Water leakage",
-      category: "Water",
-      pincode: "110026",
-      area: "Green Park Ward 9",
-      status: "Resolved",
-      priority: "Low",
-      submittedDate: "10 Aug 2026",
-      flagged: false,
-      aiAnalysis: {
-        relatedProject: "High-Pressure Main Pipeline Upgrade",
-        evidenceCount: "12 records",
-        explanation: "Pressure sensor telemetry confirmed pressure stabilization following valve replacement at Ward 9 pump station."
-      }
-    },
-    {
-      id: "REQ-1004",
-      request: "Uncollected garbage bins overflowing along market area for over 48 hours.",
-      title: "Garbage accumulation",
-      category: "Sanitation",
-      pincode: "400012",
-      area: "Central Market",
-      status: "Pending",
-      priority: "High",
-      submittedDate: "13 Aug 2026",
-      flagged: true,
-      aiAnalysis: {
-        relatedProject: "Zero-Waste Segregation Drive",
-        evidenceCount: "6 records",
-        explanation: "Identified shift discrepancy in sanitation truck routing log #ST-402. Flagged for urgent municipal inspector review."
-      }
-    },
-    {
-      id: "REQ-1005",
-      request: "Sparking electric transformer near Sector 8 community hall.",
-      title: "Transformer hazard",
-      category: "Electrical",
-      pincode: "400008",
-      area: "Sector 8",
-      status: "In Progress",
-      priority: "High",
-      submittedDate: "14 Aug 2026",
-      flagged: true,
-      aiAnalysis: {
-        relatedProject: "Substation Grid Overhaul Phase I",
-        evidenceCount: "5 records",
-        explanation: "High-priority safety hazard flagged by emergency AI classifier. Field repair team dispatched under work order #EO-991."
-      }
-    }
-  ]);
+  // Request Data Library (Populated dynamically from backend Supabase complaints table)
+  const [requestsList, setRequestsList] = useState([]);
 
-  // Load backend data if available
+  // Load backend data on mount
   useEffect(() => {
     let isMounted = true;
     async function loadBackendRequests() {
       setLoading(true);
       try {
         const res = await getAdminInquiries();
-        if (isMounted && res?.data?.inquiries?.length > 0) {
+        if (isMounted && res?.data?.inquiries) {
           const mapped = res.data.inquiries.map((inq, idx) => ({
             id: inq.id || `REQ-10${idx + 1}`,
             request: inq.topic || "Citizen civic issue report.",
-            title: inq.topic ? inq.topic.split(" ").slice(0, 4).join(" ") : "Civic Request",
-            category: inq.department ? inq.department.split(" ")[0] : "General",
+            title: inq.topic ? (inq.topic.length > 45 ? inq.topic.slice(0, 45) + "..." : inq.topic) : "Civic Request",
+            category: inq.department || "General",
             pincode: inq.pincode || "110025",
-            area: inq.citizen ? `${inq.citizen}'s Ward` : "Municipal Area",
-            status: inq.aiStatus === "Verified" ? "In Progress" : inq.aiStatus === "Flagged" ? "Pending" : "Pending",
+            area: `Pincode ${inq.pincode || "110025"}`,
+            status: inq.aiStatus === "Resolved" ? "Resolved" : inq.aiStatus === "In Progress" ? "In Progress" : "Pending",
             priority: inq.aiStatus === "Flagged" ? "High" : "Medium",
-            submittedDate: inq.date || "14 Aug 2026",
-            flagged: inq.aiStatus === "Flagged",
+            submittedDate: inq.date || "Recent",
+            flagged: inq.aiStatus === "Flagged" || Boolean(inq.admin_flagged),
             aiAnalysis: {
               relatedProject: `${inq.department || "Municipal Operations"} Project`,
-              evidenceCount: `${Math.floor(Math.random() * 8) + 2} records`,
+              evidenceCount: `${inq.evidenceCount || 5} records`,
               explanation: inq.summary || "AI cross-referenced inquiry log against municipal database records."
             }
           }));

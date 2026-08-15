@@ -11,7 +11,7 @@ import { loginUser, registerUser } from "../api/auth.api";
 // Set to false when backend authentication is ready.
 // ─────────────────────────────────────────────────────────────────────
 
-export const DEV_BYPASS_AUTH = true;
+export const DEV_BYPASS_AUTH = false;
 
 const AuthContext = createContext(null);
 
@@ -71,14 +71,16 @@ export function AuthProvider({ children }) {
 
     if (!response.authenticated || !response.token) {
       throw new Error(
-        response.message || "Authentication failed."
+        response.message || "Authentication failed. Invalid email or password."
       );
     }
 
     const userData = {
       id: response.user?.id || "user-citizen-1",
       email: response.user?.email || email,
-      role: response.role || "citizen",
+      role: response.role || selectedRole,
+      area: response.user?.area || "Shanti Nagar",
+      pincode: response.user?.pincode || "110025",
     };
 
     localStorage.setItem(
@@ -128,32 +130,30 @@ export function AuthProvider({ children }) {
       return mockResponse;
     }
 
-    try {
-      const area = metadata.area || "Shanti Nagar";
-      const pincode = metadata.pincode || "110025";
-      const response = await registerUser(email, password, role, area, pincode);
+    const area = metadata.area || "Shanti Nagar";
+    const pincode = metadata.pincode || "110025";
+    const response = await registerUser(email, password, role, area, pincode);
 
-      if (response?.authenticated && response?.token) {
-        const userData = {
-          id: response.user?.id || "user-citizen-1",
-          email: response.user?.email || email,
-          role: response.role || role,
-          area: response.user?.area || area,
-          pincode: response.user?.pincode || pincode,
-          name: metadata.name || "",
-        };
-
-        localStorage.setItem("civicmirror_token", response.token);
-        localStorage.setItem("civicmirror_user", JSON.stringify(userData));
-
-        setToken(response.token);
-        setUser(userData);
-      }
-      return response;
-    } catch (err) {
-      console.error("Error in AuthContext register:", err);
-      throw err;
+    if (response?.error || !response?.authenticated || !response?.token) {
+      throw new Error(response?.message || "Registration failed. Please try again.");
     }
+
+    const userData = {
+      id: response.user?.id || "user-citizen-1",
+      email: response.user?.email || email,
+      role: response.role || role,
+      area: response.user?.area || area,
+      pincode: response.user?.pincode || pincode,
+      name: metadata.name || "",
+    };
+
+    localStorage.setItem("civicmirror_token", response.token);
+    localStorage.setItem("civicmirror_user", JSON.stringify(userData));
+
+    setToken(response.token);
+    setUser(userData);
+
+    return response;
   };
 
   // ─────────────────────────────────────────────────────────────────────
