@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   getAdminOverview,
   getComplaintClusters,
-  getUniqueQueries,
   updateComplaintStatus,
 } from "../api/admin.api";
 
@@ -11,7 +10,6 @@ export default function Overview() {
   const [dateFilter, setDateFilter] = useState("Today");
   const [selectedPriorityIssue, setSelectedPriorityIssue] = useState(null);
   const [showAllPriorityModal, setShowAllPriorityModal] = useState(false);
-  const [showAllQueriesModal, setShowAllQueriesModal] = useState(false);
   const [selectedAreaModal, setSelectedAreaModal] = useState(null);
   const [actionSuccessMsg, setActionSuccessMsg] = useState("");
   const [loading, setLoading] = useState(true);
@@ -27,8 +25,6 @@ export default function Overview() {
 
   const [priorityIssues, setPriorityIssues] = useState([]);
   const [prioritySearch, setPrioritySearch] = useState("");
-  const [querySearch, setQuerySearch] = useState("");
-  const [commonQueries, setCommonQueries] = useState([]);
 
   // -------------------------------------------------------------------
   // FETCH BACKEND DATA ON MOUNT & FILTER CHANGE
@@ -65,21 +61,6 @@ export default function Overview() {
         }
       } catch (err) {
         console.error("Error fetching priority clusters from backend:", err);
-      }
-
-      try {
-        const queriesRes = await getUniqueQueries();
-        if (isMounted && queriesRes?.data) {
-          const mappedQueries = queriesRes.data.map((q) => ({
-            ...q,
-            text: q.text || q.question || q.query || "Citizen Query",
-            count: q.count ?? q.requestCount ?? 0,
-            category: "Citizen Query"
-          }));
-          setCommonQueries(mappedQueries);
-        }
-      } catch (err) {
-        console.error("Error fetching queries from backend:", err);
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -144,6 +125,7 @@ export default function Overview() {
       prev.map((iss) => (iss.id === issueId ? { ...iss, status: "Crew Dispatched" } : iss))
     );
     setActionSuccessMsg(`Repair crew dispatched for ${selectedPriorityIssue?.title || "issue"}!`);
+    setSelectedPriorityIssue(null);
     setTimeout(() => setActionSuccessMsg(""), 3000);
   };
 
@@ -159,7 +141,7 @@ export default function Overview() {
       console.warn("Backend status update error:", e);
     }
     setPriorityIssues((prev) =>
-      prev.map((iss) => (iss.id === issueId ? { ...iss, count: Math.max(0, iss.count - 1), status: "Resolved & Closed" } : iss))
+      prev.map((iss) => (iss.id === issueId ? { ...iss, count: Math.max(0, iss.count - 1), status: "Resolved" } : iss))
     );
     setOverviewMetrics((prev) => ({
       ...prev,
@@ -167,6 +149,7 @@ export default function Overview() {
       resolved: prev.resolved + 1,
     }));
     setActionSuccessMsg(`Issue "${selectedPriorityIssue?.title || "selected"}" marked as resolved!`);
+    setSelectedPriorityIssue(null);
     setTimeout(() => setActionSuccessMsg(""), 3000);
   };
 
@@ -262,10 +245,10 @@ export default function Overview() {
         ))}
       </div>
 
-      {/* Priority Issues & Most Common Queries */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+      {/* Priority Issues */}
+      <div className="grid grid-cols-1 gap-6">
         {/* Priority Issues Card */}
-        <div className="group relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-[#FF5722]/10 hover:shadow-md lg:col-span-6 flex flex-col justify-between overflow-hidden">
+        <div className="group relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-[#FF5722]/10 hover:shadow-md col-span-12 flex flex-col justify-between overflow-hidden">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <h3 className="text-lg font-extrabold uppercase tracking-wider text-[#1E3A8A]">
@@ -314,61 +297,6 @@ export default function Overview() {
                         {issue.count}
                       </span>
                     </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Most Common Queries Card */}
-        <div className="group relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-[#2D7FF9]/10 hover:shadow-md lg:col-span-6 flex flex-col justify-between overflow-hidden">
-          <div>
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="text-lg font-extrabold uppercase tracking-wider text-[#1E3A8A]">
-                MOST COMMON QUERIES
-              </h3>
-              <button
-                onClick={() => setShowAllQueriesModal(true)}
-                className="text-sm font-bold text-[#2D7FF9] hover:underline relative z-10"
-              >
-                View all ({commonQueries.length})
-              </button>
-            </div>
-
-            <div className="mt-4 space-y-3.5">
-              {commonQueries.length === 0 ? (
-                <div className="py-6 text-center text-xs font-semibold text-slate-400">
-                  No common citizen queries logged yet.
-                </div>
-              ) : (
-                commonQueries.map((query, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => alert(`Query detail: "${query.text}" (${query.count} citizen requests)`)}
-                    className="flex items-center justify-between text-sm text-slate-800 cursor-pointer p-2 rounded-xl hover:bg-slate-50 relative z-10 transition border border-transparent hover:border-slate-200"
-                  >
-                    <div className="flex items-center gap-3">
-                      <svg
-                        className="h-4.5 w-4.5 text-[#2D7FF9] shrink-0"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                      <span className="font-extrabold text-slate-700 hover:text-[#2D7FF9] transition">
-                        {query.text}
-                      </span>
-                    </div>
-                    <span className="font-black text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg text-sm shrink-0 ml-2">
-                      {query.count}
-                    </span>
                   </div>
                 ))
               )}
@@ -545,68 +473,7 @@ export default function Overview() {
         </div>
       )}
 
-      {/* VIEW ALL CITIZEN QUERIES MODAL */}
-      {showAllQueriesModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-6 backdrop-blur-sm animate-fadeIn">
-          <div className="modal-popup-container w-full max-w-3xl max-h-[85vh] flex flex-col rounded-2xl border border-slate-200 bg-white p-8 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-              <div>
-                <h3 className="font-extrabold text-slate-900 text-xl">
-                  Citizen Inquiries & Frequently Asked Queries
-                </h3>
-                <p className="text-sm text-slate-500 font-semibold">Aggregated query frequencies across ward helplines.</p>
-              </div>
-              <button
-                onClick={() => setShowAllQueriesModal(false)}
-                className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 text-base font-bold"
-              >
-                ✕
-              </button>
-            </div>
 
-            <div className="my-4">
-              <input
-                type="text"
-                placeholder="Search citizen queries..."
-                value={querySearch}
-                onChange={(e) => setQuerySearch(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#2D7FF9]"
-              />
-            </div>
-
-            <div className="mt-2 space-y-3 overflow-y-auto pr-1 flex-1 max-h-96">
-              {commonQueries
-                .filter((q) => q.text.toLowerCase().includes(querySearch.toLowerCase()))
-                .map((query, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between border-b border-slate-100 pb-3 text-sm bg-slate-50 p-3.5 rounded-xl hover:bg-slate-100 transition"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="rounded-lg bg-[#2D7FF9]/10 p-2 text-[#2D7FF9] font-bold">💬</span>
-                      <div>
-                        <span className="font-bold text-slate-800 block text-sm">{query.text}</span>
-                        <span className="text-xs text-slate-500 font-semibold">Category: {query.category}</span>
-                      </div>
-                    </div>
-                    <span className="font-extrabold text-[#2D7FF9] text-sm bg-white px-3 py-1 rounded-lg border border-slate-200 shrink-0 ml-2">
-                      {query.count} citizen queries
-                    </span>
-                  </div>
-                ))}
-            </div>
-
-            <div className="mt-6 flex justify-end border-t border-slate-100 pt-4">
-              <button
-                onClick={() => setShowAllQueriesModal(false)}
-                className="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-extrabold text-white"
-              >
-                Close Window
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

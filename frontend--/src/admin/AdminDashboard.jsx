@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Overview from "./Overview";
 import Requests from "./Requests";
-import Queries from "./Queries";
 import Clusters from "./Clusters";
 import Data from "./Data";
 import Projects from "./Projects";
@@ -72,7 +71,6 @@ export default function AdminDashboard() {
 
   const getTabFromPath = (path) => {
     if (path.includes("/requests")) return "requests";
-    if (path.includes("/queries")) return "queries";
     if (path.includes("/clusters")) return "clusters";
     if (path.includes("/data")) return "data";
     if (path.includes("/projects")) return "projects";
@@ -91,7 +89,6 @@ export default function AdminDashboard() {
     { id: "overview", label: "Overview" },
     { id: "clusters", label: "Issue Clusters" },
     { id: "requests", label: "Requests" },
-    { id: "queries", label: "Queries" },
     { id: "data", label: "Data Library" },
     { id: "projects", label: "Projects" },
     { id: "ai_insights", label: "AI Insights" }
@@ -294,10 +291,7 @@ export default function AdminDashboard() {
           {/* VIEW 3: REQUESTS TAB */}
           {activeNav === "requests" && <Requests />}
 
-          {/* VIEW 4: QUERIES TAB */}
-          {activeNav === "queries" && <Queries onNavigate={setActiveNav} />}
-
-          {/* VIEW 5: DATA TAB */}
+          {/* VIEW 4: DATA TAB */}
           {activeNav === "data" && <Data />}
 
           {/* VIEW 6: PROJECTS TAB */}
