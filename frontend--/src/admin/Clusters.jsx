@@ -32,11 +32,11 @@ export const DEFAULT_CLUSTERS = [
     pendingCount: 3,
     status: "Pending",
     priority: "High",
-    priorityStyle: "bg-red-50 text-red-600 border-red-200",
+    priorityStyle: "bg-rose-50 text-rose-700 border-rose-200",
     topAccent: "bg-amber-500",
     deptColor: "text-amber-700",
     cardHoverBorder: "hover:border-[#2D7FF9]",
-    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    btnHover: "hover:bg-[#EEF5FF] hover:border-[#2D7FF9] hover:text-[#2D7FF9]",
     titleHover: "group-hover:text-[#2D7FF9]",
     relatedComplaints: [
       "Streetlights on 4th avenue are completely dead in Shanti Nagar",
@@ -61,11 +61,11 @@ export const DEFAULT_CLUSTERS = [
     pendingCount: 2,
     status: "In Progress",
     priority: "High",
-    priorityStyle: "bg-red-50 text-red-600 border-red-200",
+    priorityStyle: "bg-rose-50 text-rose-700 border-rose-200",
     topAccent: "bg-sky-500",
     deptColor: "text-sky-700",
     cardHoverBorder: "hover:border-[#2D7FF9]",
-    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    btnHover: "hover:bg-[#EEF5FF] hover:border-[#2D7FF9] hover:text-[#2D7FF9]",
     titleHover: "group-hover:text-[#2D7FF9]",
     relatedComplaints: [
       "No water pressure in Block B during peak morning hours",
@@ -89,11 +89,11 @@ export const DEFAULT_CLUSTERS = [
     pendingCount: 3,
     status: "Pending",
     priority: "High",
-    priorityStyle: "bg-red-50 text-red-600 border-red-200",
+    priorityStyle: "bg-rose-50 text-rose-700 border-rose-200",
     topAccent: "bg-indigo-500",
     deptColor: "text-indigo-700",
     cardHoverBorder: "hover:border-[#2D7FF9]",
-    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    btnHover: "hover:bg-[#EEF5FF] hover:border-[#2D7FF9] hover:text-[#2D7FF9]",
     titleHover: "group-hover:text-[#2D7FF9]",
     relatedComplaints: [
       "Sewage line blockage overflowing near commercial market",
@@ -118,11 +118,11 @@ export const DEFAULT_CLUSTERS = [
     pendingCount: 2,
     status: "In Progress",
     priority: "High",
-    priorityStyle: "bg-red-50 text-red-600 border-red-200",
+    priorityStyle: "bg-rose-50 text-rose-700 border-rose-200",
     topAccent: "bg-amber-600",
     deptColor: "text-amber-800",
     cardHoverBorder: "hover:border-[#2D7FF9]",
-    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    btnHover: "hover:bg-[#EEF5FF] hover:border-[#2D7FF9] hover:text-[#2D7FF9]",
     titleHover: "group-hover:text-[#2D7FF9]",
     relatedComplaints: [
       "Massive crater pothole on Main Road near Ward 4",
@@ -148,11 +148,11 @@ export const DEFAULT_CLUSTERS = [
     pendingCount: 3,
     status: "Pending",
     priority: "Medium",
-    priorityStyle: "bg-amber-50 text-amber-700 border-amber-200",
+    priorityStyle: "bg-amber-50 text-amber-800 border-amber-200",
     topAccent: "bg-emerald-500",
     deptColor: "text-emerald-700",
     cardHoverBorder: "hover:border-[#2D7FF9]",
-    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    btnHover: "hover:bg-[#EEF5FF] hover:border-[#2D7FF9] hover:text-[#2D7FF9]",
     titleHover: "group-hover:text-[#2D7FF9]",
     relatedComplaints: [
       "Garbage overflow and uncollected public bins near Sector 8",
@@ -176,11 +176,11 @@ export const DEFAULT_CLUSTERS = [
     pendingCount: 2,
     status: "Pending",
     priority: "Medium",
-    priorityStyle: "bg-amber-50 text-amber-700 border-amber-200",
+    priorityStyle: "bg-amber-50 text-amber-800 border-amber-200",
     topAccent: "bg-blue-600",
     deptColor: "text-blue-700",
     cardHoverBorder: "hover:border-[#2D7FF9]",
-    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    btnHover: "hover:bg-[#EEF5FF] hover:border-[#2D7FF9] hover:text-[#2D7FF9]",
     titleHover: "group-hover:text-[#2D7FF9]",
     relatedComplaints: [
       "Stagnant rainwater and blocked stormwater drain flooding street",
@@ -203,11 +203,11 @@ export const DEFAULT_CLUSTERS = [
     pendingCount: 1,
     status: "In Progress",
     priority: "Medium",
-    priorityStyle: "bg-amber-50 text-amber-700 border-amber-200",
+    priorityStyle: "bg-amber-50 text-amber-800 border-amber-200",
     topAccent: "bg-green-500",
     deptColor: "text-green-700",
     cardHoverBorder: "hover:border-[#2D7FF9]",
-    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    btnHover: "hover:bg-[#EEF5FF] hover:border-[#2D7FF9] hover:text-[#2D7FF9]",
     titleHover: "group-hover:text-[#2D7FF9]",
     relatedComplaints: [
       "Overgrown tree branches blocking street lamps and vision",
@@ -230,11 +230,11 @@ export const DEFAULT_CLUSTERS = [
     pendingCount: 3,
     status: "Pending",
     priority: "Medium",
-    priorityStyle: "bg-amber-50 text-amber-700 border-amber-200",
+    priorityStyle: "bg-amber-50 text-amber-800 border-amber-200",
     topAccent: "bg-rose-500",
     deptColor: "text-rose-700",
     cardHoverBorder: "hover:border-[#2D7FF9]",
-    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    btnHover: "hover:bg-[#EEF5FF] hover:border-[#2D7FF9] hover:text-[#2D7FF9]",
     titleHover: "group-hover:text-[#2D7FF9]",
     relatedComplaints: [
       "Unauthorized construction material dumped on public sidewalk",
@@ -257,11 +257,11 @@ export const DEFAULT_CLUSTERS = [
     pendingCount: 1,
     status: "In Progress",
     priority: "High",
-    priorityStyle: "bg-red-50 text-red-600 border-red-200",
+    priorityStyle: "bg-rose-50 text-rose-700 border-rose-200",
     topAccent: "bg-red-500",
     deptColor: "text-red-700",
     cardHoverBorder: "hover:border-[#2D7FF9]",
-    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    btnHover: "hover:bg-[#EEF5FF] hover:border-[#2D7FF9] hover:text-[#2D7FF9]",
     titleHover: "group-hover:text-[#2D7FF9]",
     relatedComplaints: [
       "Traffic signal controller malfunctioning at major intersection",
@@ -285,11 +285,11 @@ export const DEFAULT_CLUSTERS = [
     pendingCount: 3,
     status: "Pending",
     priority: "High",
-    priorityStyle: "bg-red-50 text-red-600 border-red-200",
+    priorityStyle: "bg-rose-50 text-rose-700 border-rose-200",
     topAccent: "bg-fuchsia-500",
     deptColor: "text-fuchsia-700",
     cardHoverBorder: "hover:border-[#2D7FF9]",
-    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    btnHover: "hover:bg-[#EEF5FF] hover:border-[#2D7FF9] hover:text-[#2D7FF9]",
     titleHover: "group-hover:text-[#2D7FF9]",
     relatedComplaints: [
       "Mosquito breeding risk in stagnant puddles near ward clinic",
@@ -317,7 +317,7 @@ export const DEFAULT_CLUSTERS = [
     topAccent: "bg-orange-500",
     deptColor: "text-orange-700",
     cardHoverBorder: "hover:border-[#2D7FF9]",
-    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    btnHover: "hover:bg-[#EEF5FF] hover:border-[#2D7FF9] hover:text-[#2D7FF9]",
     titleHover: "group-hover:text-[#2D7FF9]",
     relatedComplaints: [
       "Pack of aggressive stray dogs near residential gate",
@@ -344,7 +344,7 @@ export const DEFAULT_CLUSTERS = [
     topAccent: "bg-teal-500",
     deptColor: "text-teal-700",
     cardHoverBorder: "hover:border-[#2D7FF9]",
-    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    btnHover: "hover:bg-[#EEF5FF] hover:border-[#2D7FF9] hover:text-[#2D7FF9]",
     titleHover: "group-hover:text-[#2D7FF9]",
     relatedComplaints: [
       "Severe dust pollution from unmitigated building site",
@@ -489,122 +489,113 @@ export default function Clusters({ onNavigate }) {
   const totalResolvedComplaints = clusterData.reduce((sum, c) => sum + (c.resolvedCount || 0), 0);
 
   return (
-    <div className="space-y-8 text-[#0D1B2A] font-['Inter',sans-serif]">
+    <div className="space-y-6 text-[#0D1B2A] font-['Inter',sans-serif]">
       {/* 1. HEADER BANNER */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs relative overflow-hidden">
-        {/* Top Accent bar */}
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#2D7FF9]" />
-
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="flex items-center gap-2 text-sm font-black tracking-widest text-[#2D7FF9] uppercase mb-2">
-              <span className="h-[3px] w-6 bg-[#2D7FF9] rounded-full inline-block" />
-              GEOGRAPHIC CONCENTRATIONS & DEPARTMENTS
-            </p>
-            <h1 className="text-4xl sm:text-5xl font-black text-[#0D1B2A] tracking-tight flex items-center gap-3">
-              Complaint <span className="text-[#2D7FF9]">Clusters</span>
-              {loading && <span className="text-xs font-semibold text-slate-400 animate-pulse">(Fetching live data...)</span>}
-            </h1>
-            <p className="mt-2 text-lg font-semibold text-[#59687A] max-w-2xl">
-              Turn user queries into <strong>pincode & department clusters</strong> covering all 12 municipal departments.
-            </p>
-          </div>
-
-          {/* Stat Box */}
-          <div className="flex flex-wrap sm:flex-nowrap sm:items-end gap-3 shrink-0">
-            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-5 py-3 text-base font-semibold">
-              <span className="text-[#657386] block text-xs font-black uppercase tracking-wider">Active Clusters</span>
-              <span className="text-[#0D1B2A] font-black text-xl">{filteredClusters.length} Clustered Groups</span>
-            </div>
-
-            <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 px-5 py-3 text-base font-semibold">
-              <span className="text-emerald-700 block text-xs font-black uppercase tracking-wider">Resolved Complaints</span>
-              <span className="text-emerald-900 font-black text-xl">{totalResolvedComplaints} / {totalAggregatedComplaints}</span>
-            </div>
-          </div>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-2">
+        <div>
+          <p className="flex items-center gap-2 text-xs sm:text-sm font-bold tracking-widest text-[#2D7FF9] uppercase mb-1.5">
+            <span className="h-[2.5px] w-4 bg-[#2D7FF9] rounded-full inline-block" />
+            GEOGRAPHIC CONCENTRATIONS & DEPARTMENTS
+          </p>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-[#0D1B2A] tracking-tight flex items-center gap-2.5">
+            Complaint <span className="text-[#2D7FF9]">Clusters</span>
+            {loading && <span className="text-sm font-semibold text-slate-400 animate-pulse ml-2">(Fetching live data...)</span>}
+          </h1>
+          <p className="mt-1.5 text-sm sm:text-base font-normal text-slate-600 leading-relaxed max-w-2xl">
+            Turn user queries into <strong>pincode & department clusters</strong> covering all 12 municipal departments.
+          </p>
         </div>
 
-        {/* Action success message banner */}
-        {actionSuccessMsg && (
-          <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-xs font-bold text-emerald-800 shadow-xs flex items-center gap-2">
-            <span>{actionSuccessMsg}</span>
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs sm:text-sm font-semibold shadow-2xs">
+            <span className="text-slate-400 block text-[10px] sm:text-xs font-bold uppercase tracking-wider">Active Clusters</span>
+            <span className="text-[#0D1B2A] font-bold text-sm sm:text-base">{filteredClusters.length} Clustered Groups</span>
           </div>
-        )}
 
-        {/* 2. SEARCH & FILTER CONTROL BAR */}
-        <div className="mt-7 pt-6 border-t border-slate-100 flex flex-col gap-3.5 sm:flex-row sm:items-center justify-between">
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs sm:text-sm font-semibold shadow-2xs">
+            <span className="text-emerald-700 block text-[10px] sm:text-xs font-bold uppercase tracking-wider">Resolved Complaints</span>
+            <span className="text-emerald-900 font-bold text-sm sm:text-base">{totalResolvedComplaints} / {totalAggregatedComplaints}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Action success message banner */}
+      {actionSuccessMsg && (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-sm font-bold text-emerald-800 shadow-2xs flex items-center gap-2">
+          <span>{actionSuccessMsg}</span>
+        </div>
+      )}
+
+      {/* 2. SEARCH & FILTER CONTROL BAR */}
+      <div className="rounded-xl border border-[#DCE7F1] bg-white p-3.5 shadow-2xs space-y-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center justify-between">
           {/* Search Box */}
-          <div className="relative flex-1 max-w-md">
+          <div className="relative flex-1">
             <input
               type="text"
               placeholder="Search cluster, location, department, or pincode..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/60 px-4.5 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-[#2D7FF9] focus:bg-white transition"
+              className="h-11 w-full rounded-xl border border-[#DCE7F1] bg-[#FBFCFE] px-4 text-sm sm:text-base font-semibold text-[#18324C] outline-none transition-colors placeholder:text-[#91A0AF] focus:border-[#9BC5FF] focus:bg-white"
             />
           </div>
 
           {/* Dropdown Filters */}
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
             {/* Department Dropdown */}
-            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 py-2.5 text-sm font-bold">
-              <span className="text-slate-500">Department:</span>
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="bg-transparent text-[#0D1B2A] font-black outline-none cursor-pointer"
-              >
-                <option value="All">All 12 Departments</option>
-                {OFFICIAL_DEPARTMENTS.map((dept) => (
-                  <option key={dept.name} value={dept.name}>
-                    {dept.icon} {dept.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="h-11 rounded-xl border border-[#DCE7F1] bg-[#FBFCFE] px-4 text-sm sm:text-base font-semibold text-[#486278] outline-none transition-colors focus:border-[#9BC5FF] cursor-pointer"
+            >
+              <option value="All">All 12 Departments</option>
+              {OFFICIAL_DEPARTMENTS.map((dept) => (
+                <option key={dept.name} value={dept.name}>
+                  {dept.icon} {dept.name}
+                </option>
+              ))}
+            </select>
 
             {/* Pincode Dropdown */}
-            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 py-2.5 text-sm font-bold">
-              <span className="text-slate-500">Pincode:</span>
-              <select
-                value={selectedPincode}
-                onChange={(e) => setSelectedPincode(e.target.value)}
-                className="bg-transparent text-[#0D1B2A] font-black outline-none cursor-pointer"
-              >
-                {availablePincodes.map((pin) => (
-                  <option key={pin} value={pin}>
-                    {pin === "All" ? "All Pincodes" : `Pincode ${pin}`}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <select
+              value={selectedPincode}
+              onChange={(e) => setSelectedPincode(e.target.value)}
+              className="h-11 rounded-xl border border-[#DCE7F1] bg-[#FBFCFE] px-4 text-sm sm:text-base font-semibold text-[#486278] outline-none transition-colors focus:border-[#9BC5FF] cursor-pointer"
+            >
+              {availablePincodes.map((pin) => (
+                <option key={pin} value={pin}>
+                  {pin === "All" ? "All Pincodes" : `Pincode ${pin}`}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>
 
+      {/* SUB-SECTION HEADER LINE */}
+      <div className="flex items-center justify-between pt-1 border-b border-slate-200/60 pb-3">
+        <span className="flex items-center gap-2 text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-500">
+          <span className="h-[2.5px] w-4 bg-slate-400 rounded-full" />
+          IDENTIFIED CLUSTER CARDS ({filteredClusters.length})
+        </span>
+        <span className="text-xs sm:text-sm font-semibold text-slate-400">
+          Showing {Math.min(visibleCount, filteredClusters.length)} of {filteredClusters.length} clusters
+        </span>
+      </div>
+
       {/* 3. CLUSTER CARDS GRID */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <p className="flex items-center gap-2 text-sm font-black tracking-widest text-slate-400 uppercase">
-            <span className="h-[3px] w-6 bg-slate-300 rounded-full inline-block" />
-            IDENTIFIED CLUSTER CARDS
-          </p>
-          <span className="text-sm font-bold text-slate-500">
-            Showing {Math.min(visibleCount, filteredClusters.length)} of {filteredClusters.length} clusters
-          </span>
-        </div>
-
         {loading && clusterData.length === 0 ? (
-          <div className="py-16 text-center text-xs font-semibold text-slate-400 animate-pulse">
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-12 text-center text-slate-500 font-semibold text-base">
             Loading issue clusters from database...
           </div>
         ) : filteredClusters.length === 0 ? (
-          <div className="py-16 text-center text-xs font-semibold text-slate-400">
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-12 text-center text-slate-500 font-semibold text-base">
             No active complaint clusters found matching your filter criteria.
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               {filteredClusters.slice(0, visibleCount).map((cluster) => {
                 const currentStatus = cluster.status || "Pending";
                 const resolvedCount = cluster.resolvedCount || 0;
@@ -613,63 +604,63 @@ export default function Clusters({ onNavigate }) {
                 return (
                   <div
                     key={cluster.id}
-                    className={`group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition-all ${cluster.cardHoverBorder} hover:shadow-md overflow-hidden`}
+                    className="group relative flex flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-6 sm:p-7 shadow-2xl transition-all hover:border-slate-300 hover:shadow-xs overflow-hidden"
                   >
                     {/* Top Accent line */}
-                    <div className={`absolute top-0 left-0 w-16 h-1.5 ${cluster.topAccent} rounded-b`} />
+                    <div className={`absolute top-0 left-0 w-14 h-1.5 ${cluster.topAccent} rounded-b`} />
 
                     <div>
                       {/* Header Row */}
                       <div className="flex items-start justify-between mb-4 pt-1">
                         <div>
-                          <span className="text-xs font-black tracking-wider text-slate-400 uppercase block mb-0.5">
+                          <span className="text-xs font-bold tracking-wider text-slate-400 uppercase block mb-1">
                             {cluster.id}
                           </span>
-                          <h3 className={`text-xl font-black text-[#0D1B2A] ${cluster.titleHover} transition-colors leading-tight`}>
+                          <h3 className="text-lg sm:text-xl font-bold text-[#0D1B2A] group-hover:text-[#2D7FF9] transition-colors leading-snug">
                             {cluster.title}
                           </h3>
                         </div>
 
-                        <span className={`rounded-lg border px-3 py-1 text-xs font-black uppercase tracking-wider ${cluster.priorityStyle}`}>
-                          • {cluster.priority} PRIORITY
+                        <span className={`rounded-md border px-3 py-1 text-xs font-bold uppercase tracking-wide ${cluster.priorityStyle}`}>
+                          {cluster.priority} PRIORITY
                         </span>
                       </div>
 
                       {/* Main Stats Box */}
-                      <div className="rounded-xl bg-slate-50/70 p-4 border border-slate-100 space-y-3">
+                      <div className="rounded-xl bg-slate-50/70 p-4 border border-slate-100 space-y-3 text-sm sm:text-base">
                         <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
-                          <span className="text-sm font-bold text-slate-500">Aggregated Complaints</span>
-                          <span className="font-black text-[#0D1B2A] text-lg">
+                          <span className="font-semibold text-slate-500">Aggregated Complaints</span>
+                          <span className="font-bold text-[#0D1B2A]">
                             {cluster.complaintCount} complaints
                           </span>
                         </div>
 
                         {/* Resolution Progress Bar */}
                         <div className="border-b border-slate-200/60 pb-2.5">
-                          <div className="flex items-center justify-between text-xs font-bold mb-1.5">
+                          <div className="flex items-center justify-between text-xs sm:text-sm font-bold mb-1.5">
                             <span className="text-slate-500">Resolution Progress</span>
-                            <span className={`${percentResolved === 100 ? 'text-emerald-700' : 'text-[#2D7FF9]'}`}>
+                            <span className={`${percentResolved === 100 ? 'text-[#008D78]' : 'text-[#2D7FF9]'}`}>
                               {resolvedCount} / {cluster.complaintCount} Resolved ({percentResolved}%)
                             </span>
                           </div>
                           <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200">
                             <div
-                              className={`h-full transition-all duration-500 ${percentResolved === 100 ? 'bg-emerald-500' : 'bg-[#2D7FF9]'}`}
+                              className={`h-full transition-all duration-500 ${percentResolved === 100 ? 'bg-[#008D78]' : 'bg-[#2D7FF9]'}`}
                               style={{ width: `${percentResolved}%` }}
                             />
                           </div>
                         </div>
 
                         <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
-                          <span className="text-sm font-bold text-slate-500">Geographic Location</span>
-                          <span className="font-black text-[#0D1B2A] text-base">
-                            {cluster.location} <span className="text-slate-400 font-medium">({cluster.pincode})</span>
+                          <span className="font-semibold text-slate-500">Geographic Location</span>
+                          <span className="font-bold text-[#0D1B2A]">
+                            {cluster.location} <span className="text-slate-400 font-normal">({cluster.pincode})</span>
                           </span>
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-bold text-slate-500">Responsible Department</span>
-                          <span className={`font-extrabold ${cluster.deptColor} text-base`}>
+                          <span className="font-semibold text-slate-500">Responsible Department</span>
+                          <span className={`font-bold ${cluster.deptColor}`}>
                             {cluster.department}
                           </span>
                         </div>
@@ -680,17 +671,17 @@ export default function Clusters({ onNavigate }) {
                     <div className="mt-5 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
                       {/* Status Dropdown Selector */}
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Cluster Status:</span>
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Status:</span>
                         <select
                           value={currentStatus}
                           disabled={updatingClusterId === cluster.id}
                           onChange={(e) => handleStatusChange(cluster, e.target.value)}
-                          className={`rounded-lg border px-3 py-1.5 text-xs font-extrabold outline-none cursor-pointer transition shadow-2xs ${
+                          className={`rounded-lg border px-3 py-1.5 text-xs sm:text-sm font-bold outline-none cursor-pointer transition shadow-2xs ${
                             currentStatus === "Completed"
-                              ? "bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100"
+                              ? "bg-emerald-50 text-[#008D78] border-emerald-200 hover:bg-emerald-100"
                               : currentStatus === "In Progress"
-                              ? "bg-blue-50 text-blue-800 border-blue-300 hover:bg-blue-100"
-                              : "bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100"
+                              ? "bg-blue-50 text-[#2D7FF9] border-blue-200 hover:bg-blue-100"
+                              : "bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100"
                           }`}
                         >
                           <option value="Pending">⏳ Pending</option>
@@ -701,9 +692,9 @@ export default function Clusters({ onNavigate }) {
 
                       <button
                         onClick={() => setSelectedCluster(cluster)}
-                        className={`rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-black text-[#0D1B2A] ${cluster.btnHover} transition-all shadow-2xs`}
+                        className="rounded-xl border border-slate-200 bg-white px-4.5 py-2 text-xs sm:text-sm font-semibold text-[#0D1B2A] hover:border-[#2D7FF9] hover:bg-[#EEF5FF] hover:text-[#2D7FF9] transition-all cursor-pointer shadow-2xs"
                       >
-                        View Cluster Details
+                        View details
                       </button>
                     </div>
                   </div>
@@ -711,23 +702,20 @@ export default function Clusters({ onNavigate }) {
               })}
             </div>
 
-            {/* SHOW MORE BUTTON IF MORE THAN VISIBLE COUNT */}
+            {/* RIGHT-ALIGNED SHOW MORE / SHOW LESS BLUE TEXT LINK */}
             {filteredClusters.length > 10 && (
-              <div className="flex justify-center pt-6">
+              <div className="flex justify-end pt-3 pr-1">
                 {visibleCount < filteredClusters.length ? (
                   <button
                     onClick={() => setVisibleCount((prev) => prev + 10)}
-                    className="group flex items-center gap-2.5 rounded-xl border border-[#2D7FF9] bg-white px-8 py-3.5 text-sm font-extrabold text-[#2D7FF9] hover:bg-[#2D7FF9] hover:text-white transition-all shadow-xs cursor-pointer"
+                    className="text-[#2D7FF9] font-bold text-sm sm:text-base hover:underline cursor-pointer bg-transparent border-none p-0 transition flex items-center gap-1.5"
                   >
-                    <span>Show More Clusters</span>
-                    <span className="rounded-full bg-[#2D7FF9]/10 px-2.5 py-0.5 text-xs font-black text-[#2D7FF9] group-hover:bg-white group-hover:text-[#2D7FF9] transition">
-                      +{filteredClusters.length - visibleCount}
-                    </span>
+                    Show More ({filteredClusters.length - visibleCount} remaining) →
                   </button>
                 ) : (
                   <button
                     onClick={() => setVisibleCount(10)}
-                    className="rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-black text-slate-600 hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
+                    className="text-[#2D7FF9] font-bold text-sm sm:text-base hover:underline cursor-pointer bg-transparent border-none p-0 transition flex items-center gap-1.5"
                   >
                     Show Less ↑
                   </button>
@@ -740,39 +728,39 @@ export default function Clusters({ onNavigate }) {
 
       {/* 4. CLUSTER DETAILS MODAL */}
       {selectedCluster && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 p-4 backdrop-blur-sm">
-          <div className="modal-popup-container w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-7 shadow-2xl space-y-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs animate-fadeIn">
+          <div className="modal-popup-container w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-7 sm:p-8 shadow-2xl space-y-6">
             
             {/* Modal Header */}
             <div className="flex items-start justify-between border-b border-slate-100 pb-4">
               <div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 mb-1">
                   <span className="h-2.5 w-2.5 rounded-full bg-[#2D7FF9]" />
-                  <span className="font-mono text-xs font-black text-[#2D7FF9] uppercase tracking-wider">
+                  <span className="font-mono text-xs font-semibold text-[#2D7FF9] uppercase tracking-wider">
                     {selectedCluster.id}
                   </span>
                 </div>
-                <h2 className="text-2xl font-black text-[#0D1B2A] mt-1">
+                <h2 className="text-xl sm:text-2xl font-bold text-[#0D1B2A]">
                   {selectedCluster.title}
                 </h2>
-                <p className="text-base font-bold text-slate-500 mt-0.5">
+                <p className="text-sm font-medium text-slate-500 mt-1">
                   {selectedCluster.location} <span className="font-mono text-slate-400">({selectedCluster.pincode})</span>
                 </p>
               </div>
 
               <button
                 onClick={() => setSelectedCluster(null)}
-                className="rounded-xl border border-slate-200 p-2 text-slate-400 hover:bg-slate-50 hover:text-slate-800 text-lg font-bold"
+                className="text-slate-400 hover:text-slate-700 text-xl font-bold p-1 cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
             {/* STATUS ACTION BAR INSIDE MODAL */}
-            <div className="rounded-xl bg-slate-50 p-4 border border-slate-200/80 flex flex-wrap items-center justify-between gap-3">
+            <div className="rounded-xl bg-slate-50 p-4.5 border border-slate-200/80 flex flex-wrap items-center justify-between gap-3 text-sm">
               <div>
-                <span className="text-xs font-black text-slate-400 uppercase block">Cluster Action Status</span>
-                <span className="text-sm font-extrabold text-[#0D1B2A]">
+                <span className="font-semibold text-slate-400 uppercase block text-xs">Cluster Action Status</span>
+                <span className="font-bold text-[#0D1B2A] text-base">
                   Currently: <strong className="text-[#2D7FF9]">{selectedCluster.status || "Pending"}</strong> ({selectedCluster.resolvedCount || 0} / {selectedCluster.complaintCount} resolved)
                 </span>
               </div>
@@ -782,12 +770,12 @@ export default function Clusters({ onNavigate }) {
                   value={selectedCluster.status || "Pending"}
                   disabled={updatingClusterId === selectedCluster.id}
                   onChange={(e) => handleStatusChange(selectedCluster, e.target.value)}
-                  className={`rounded-xl border px-4 py-2 text-xs font-black outline-none cursor-pointer transition shadow-xs ${
+                  className={`rounded-xl border px-3.5 py-2 text-xs sm:text-sm font-bold outline-none cursor-pointer transition shadow-xs ${
                     selectedCluster.status === "Completed"
-                      ? "bg-emerald-50 text-emerald-800 border-emerald-300"
+                      ? "bg-emerald-50 text-[#008D78] border-emerald-200"
                       : selectedCluster.status === "In Progress"
-                      ? "bg-blue-50 text-blue-800 border-blue-300"
-                      : "bg-amber-50 text-amber-800 border-amber-300"
+                      ? "bg-blue-50 text-[#2D7FF9] border-blue-200"
+                      : "bg-amber-50 text-amber-800 border-amber-200"
                   }`}
                 >
                   <option value="Pending">⏳ Pending</option>
@@ -799,35 +787,35 @@ export default function Clusters({ onNavigate }) {
 
             {/* CLUSTER BREAKDOWN METADATA */}
             <div className="space-y-3">
-              <h4 className="text-base font-black text-[#0D1B2A] uppercase tracking-wider">
+              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                 Cluster Breakdown
               </h4>
 
-              <div className="grid grid-cols-2 gap-3 text-base">
-                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-xs font-black text-slate-400 uppercase block mb-1">Complaint Count</span>
-                  <span className="font-black text-[#0D1B2A] text-lg">{selectedCluster.complaintCount}</span>
+              <div className="grid grid-cols-2 gap-3.5 text-sm">
+                <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
+                  <span className="font-semibold text-slate-400 uppercase block mb-1 text-xs">Complaint Count</span>
+                  <span className="font-bold text-[#0D1B2A] text-base">{selectedCluster.complaintCount}</span>
                 </div>
 
-                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-xs font-black text-slate-400 uppercase block mb-1">Resolved Count</span>
-                  <span className="font-black text-emerald-700 text-lg">{selectedCluster.resolvedCount || 0}</span>
+                <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
+                  <span className="font-semibold text-slate-400 uppercase block mb-1 text-xs">Resolved Count</span>
+                  <span className="font-bold text-[#008D78] text-base">{selectedCluster.resolvedCount || 0}</span>
                 </div>
 
-                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-xs font-black text-slate-400 uppercase block mb-1">Location</span>
-                  <span className="font-extrabold text-[#0D1B2A]">{selectedCluster.location}</span>
+                <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
+                  <span className="font-semibold text-slate-400 uppercase block mb-1 text-xs">Location</span>
+                  <span className="font-bold text-[#0D1B2A] text-base">{selectedCluster.location}</span>
                 </div>
 
-                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-xs font-black text-slate-400 uppercase block mb-1">Pincode</span>
-                  <span className="font-black text-[#0D1B2A]">{selectedCluster.pincode}</span>
+                <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
+                  <span className="font-semibold text-slate-400 uppercase block mb-1 text-xs">Pincode</span>
+                  <span className="font-bold text-[#0D1B2A] text-base">{selectedCluster.pincode}</span>
                 </div>
 
-                <div className="col-span-2 rounded-xl bg-slate-50 p-3.5 border border-slate-100 flex items-center justify-between">
-                  <span className="text-xs font-black text-slate-400 uppercase">Priority Level</span>
-                  <span className={`rounded-lg border px-3 py-1 text-xs font-black uppercase ${selectedCluster.priorityStyle}`}>
-                    • {selectedCluster.priority}
+                <div className="col-span-2 rounded-xl bg-slate-50 p-4 border border-slate-100 flex items-center justify-between">
+                  <span className="font-semibold text-slate-400 uppercase text-xs">Priority Level</span>
+                  <span className={`rounded-md border px-3 py-1 text-xs font-bold uppercase ${selectedCluster.priorityStyle}`}>
+                    {selectedCluster.priority}
                   </span>
                 </div>
               </div>
@@ -835,15 +823,15 @@ export default function Clusters({ onNavigate }) {
 
             {/* RELATED ISSUES BOX */}
             <div className="space-y-3">
-              <h4 className="text-base font-black text-[#0D1B2A] uppercase tracking-wider">
+              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                 Related Complaints ({selectedCluster.relatedComplaints?.length || 0})
               </h4>
 
-              <div className="rounded-xl bg-slate-50 p-4 border border-slate-200/80 space-y-2 max-h-48 overflow-y-auto">
-                <ul className="space-y-2 text-sm font-semibold text-slate-700">
+              <div className="rounded-xl bg-slate-50 p-4.5 border border-slate-200/80 space-y-2 max-h-48 overflow-y-auto">
+                <ul className="space-y-2 text-sm font-normal text-slate-700">
                   {selectedCluster.relatedComplaints?.map((item, idx) => (
                     <li key={idx} className="flex items-start gap-2.5">
-                      <span className="text-[#2D7FF9] font-black">•</span>
+                      <span className="text-[#2D7FF9] font-bold">•</span>
                       <span>{item}</span>
                     </li>
                   ))}
@@ -852,12 +840,12 @@ export default function Clusters({ onNavigate }) {
             </div>
 
             {/* Modal Close Footer */}
-            <div className="flex justify-end pt-3 border-t border-slate-100">
+            <div className="flex justify-end pt-4 border-t border-slate-100">
               <button
                 onClick={() => setSelectedCluster(null)}
-                className="rounded-xl border border-slate-200 px-5 py-2.5 text-xs font-black text-slate-600 hover:bg-slate-50"
+                className="rounded-xl border border-slate-200 px-6 py-2.5 text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer"
               >
-                Close Window
+                Close
               </button>
             </div>
 

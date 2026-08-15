@@ -171,45 +171,40 @@ export default function Data() {
   return (
     <div className="space-y-8 text-[#0D1B2A] font-['Inter',sans-serif]">
       {/* 1. HEADER BANNER */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs relative overflow-hidden">
-        {/* Top Accent bar */}
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#2D7FF9]" />
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-3">
+        <div>
+          <p className="flex items-center gap-2 text-sm sm:text-base font-bold tracking-widest text-[#2D7FF9] uppercase mb-1.5">
+            <span className="h-[2.5px] w-4 bg-[#2D7FF9] rounded-full inline-block" />
+            MUNICIPAL DATA
+          </p>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-[#0D1B2A] tracking-tight flex items-center gap-3">
+            Municipal <span className="text-[#2D7FF9]">Knowledge</span>
+            {loading && <span className="text-base font-semibold text-slate-400 animate-pulse ml-2">(Fetching live data...)</span>}
+          </h1>
+          <p className="mt-1.5 text-base sm:text-lg font-normal text-slate-600 leading-relaxed max-w-3xl">
+            Documents currently available to CivicMirror AI.
+          </p>
+        </div>
 
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="flex items-center gap-2 text-sm font-black tracking-widest text-[#2D7FF9] uppercase mb-2">
-              <span className="h-[3px] w-6 bg-[#2D7FF9] rounded-full inline-block" />
-              MUNICIPAL DATA
-            </p>
-            <h1 className="text-4xl sm:text-5xl font-black text-[#0D1B2A] tracking-tight">
-              Municipal <span className="text-[#2D7FF9]">Knowledge</span>
-            </h1>
-            <p className="mt-2 text-lg font-semibold text-[#59687A] max-w-2xl">
-              Documents currently available to CivicMirror AI.
-            </p>
-          </div>
-
-          {/* Stat Box */}
-          <div className="flex flex-col sm:items-end gap-3 shrink-0">
-            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 px-5 py-3 text-base font-semibold">
-              <span className="text-[#657386] block text-xs font-black uppercase tracking-wider">Indexed Knowledge</span>
-              <span className="text-[#0D1B2A] font-black text-xl">{filteredFiles.length} Ingested Documents</span>
-            </div>
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm sm:text-base font-semibold shadow-2xs">
+            <span className="text-slate-400 block text-xs sm:text-sm font-bold uppercase tracking-wider">Indexed Knowledge</span>
+            <span className="text-[#0D1B2A] font-bold text-base sm:text-lg">{filteredFiles.length} Ingested Documents</span>
           </div>
         </div>
       </div>
 
       {/* 2. INLINE UPLOAD DOCUMENT SECTION (CENTERED) */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-8 shadow-xs space-y-6 text-center">
+      <div className="rounded-xl border border-slate-200/80 bg-white p-8 sm:p-10 shadow-2xl space-y-6 text-center">
         <div className="max-w-xl mx-auto">
-          <p className="flex items-center justify-center gap-2 text-xs font-black tracking-widest text-[#2D7FF9] uppercase mb-1">
+          <p className="flex items-center justify-center gap-2 text-xs sm:text-sm font-bold tracking-widest text-[#2D7FF9] uppercase mb-1.5">
             <span className="h-2 w-2 rounded-full bg-[#2D7FF9]" />
             DOCUMENT INGESTION
           </p>
-          <h2 className="text-2xl font-black text-[#0D1B2A]">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0D1B2A]">
             Upload Municipal Document
           </h2>
-          <p className="text-sm font-semibold text-slate-500 mt-1">
+          <p className="text-sm sm:text-base font-normal text-slate-600 mt-2">
             Drag and drop or select files to update CivicMirror AI knowledge base. Supported formats: <strong>PDF • CSV • XLSX</strong>
           </p>
         </div>
@@ -227,15 +222,15 @@ export default function Data() {
             <span className="text-4xl">📤</span>
           </div>
 
-          <h3 className="text-xl font-black text-[#0D1B2A]">
+          <h3 className="text-xl sm:text-2xl font-bold text-[#0D1B2A]">
             Drag & Drop Municipal Files Here
           </h3>
-          <p className="text-xs font-semibold text-slate-500 mt-1 max-w-sm">
+          <p className="text-xs sm:text-sm font-medium text-slate-500 mt-1 max-w-sm">
             Upload budget spreadsheets, work orders, or engineering PDFs (Max size 25MB)
           </p>
 
           <div className="mt-6">
-            <span className="rounded-xl bg-[#2D7FF9] px-7 py-3 text-xs font-black text-white shadow-sm hover:bg-[#1E4FA3] transition inline-block">
+            <span className="rounded-xl bg-[#2D7FF9] px-7 py-3 text-sm sm:text-base font-bold text-white shadow-sm hover:bg-[#1E4FA3] transition inline-block cursor-pointer">
               Browse Files
             </span>
           </div>
@@ -243,8 +238,8 @@ export default function Data() {
 
         {/* Ingestion Progress or Success Feedback */}
         {isUploading && (
-          <div className="max-w-2xl mx-auto rounded-2xl border border-slate-200 bg-slate-50 p-5 text-left space-y-3">
-            <div className="flex items-center justify-between text-xs font-bold">
+          <div className="max-w-2xl mx-auto rounded-xl border border-slate-200 bg-slate-50 p-5 text-left space-y-3">
+            <div className="flex items-center justify-between text-sm font-bold">
               <span className="text-[#0D1B2A]">Uploading & Vector Indexing...</span>
               <span className="text-[#2D7FF9]">{uploadProgress}%</span>
             </div>
@@ -258,9 +253,9 @@ export default function Data() {
         )}
 
         {uploadSuccessMsg && (
-          <div className="max-w-2xl mx-auto rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-xs font-extrabold text-emerald-800 flex items-center justify-between">
+          <div className="max-w-2xl mx-auto rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-sm font-bold text-emerald-800 flex items-center justify-between">
             <span>✓ {uploadSuccessMsg}</span>
-            <span className="text-[10px] text-emerald-600 uppercase font-semibold">Indexed into Knowledge Graph</span>
+            <span className="text-xs text-emerald-600 uppercase font-semibold">Indexed into Knowledge Graph</span>
           </div>
         )}
       </div>
@@ -268,7 +263,7 @@ export default function Data() {
       {/* 3. DATA LIBRARY GRID WITH FILTERS */}
       <div className="space-y-4">
         {/* Header & Filter Bar */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs flex flex-col gap-4 sm:flex-row sm:items-center justify-between">
+        <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-2xl flex flex-col gap-4 sm:flex-row sm:items-center justify-between">
           <div className="relative flex-1 max-w-md">
             <input
               type="text"
@@ -278,13 +273,13 @@ export default function Data() {
                 setSearchQuery(e.target.value);
                 setVisibleCount(10);
               }}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/60 px-4.5 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-[#2D7FF9] focus:bg-white transition"
+              className="h-12 w-full rounded-xl border border-[#DCE7F1] bg-[#FBFCFE] px-4.5 text-base font-semibold text-[#18324C] outline-none transition-colors placeholder:text-[#91A0AF] focus:border-[#9BC5FF] focus:bg-white"
             />
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
             {/* Type Filter */}
-            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 py-2.5 text-sm font-bold">
+            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-2 text-sm font-bold">
               <span className="text-slate-500">Type:</span>
               <div className="flex items-center gap-1">
                 {["All", "PDF", "CSV", "XLSX"].map((type) => (
@@ -294,7 +289,7 @@ export default function Data() {
                       setSelectedFileType(type);
                       setVisibleCount(10);
                     }}
-                    className={`rounded-lg px-2.5 py-1 text-xs font-black transition ${
+                    className={`rounded-lg px-3 py-1.5 text-xs sm:text-sm font-bold transition cursor-pointer ${
                       selectedFileType === type
                         ? "bg-[#0D1B2A] text-white"
                         : "text-slate-600 hover:bg-slate-200/60"
@@ -309,12 +304,12 @@ export default function Data() {
         </div>
 
         {/* List Header Count */}
-        <div className="flex items-center justify-between pt-2">
-          <p className="flex items-center gap-2 text-sm font-black tracking-widest text-slate-400 uppercase">
-            <span className="h-[3px] w-6 bg-slate-300 rounded-full inline-block" />
+        <div className="flex items-center justify-between pt-1 border-b border-slate-200/60 pb-3.5">
+          <p className="flex items-center gap-2.5 text-sm sm:text-base font-bold uppercase tracking-wider text-slate-500">
+            <span className="h-[2.5px] w-4 bg-slate-400 rounded-full inline-block" />
             MUNICIPAL DATA LIBRARY
           </p>
-          <span className="text-sm font-bold text-slate-500">
+          <span className="text-sm sm:text-base font-semibold text-slate-400">
             Showing {Math.min(visibleCount, filteredFiles.length)} of {filteredFiles.length} documents
           </span>
         </div>
@@ -325,7 +320,7 @@ export default function Data() {
             <div
               key={file.id}
               onClick={() => setSelectedFileModal(file)}
-              className="group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition-all hover:border-slate-300 hover:shadow-md overflow-hidden cursor-pointer"
+              className="group relative flex flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-6 shadow-2xl transition-all hover:border-slate-300 hover:shadow-xs overflow-hidden cursor-pointer"
             >
               {/* Top Accent Bar */}
               <div className={`absolute top-0 left-0 w-14 h-1.5 ${file.topAccent} rounded-b`} />
@@ -333,10 +328,10 @@ export default function Data() {
               <div>
                 {/* Header File Info */}
                 <div className="flex items-start justify-between mb-3 pt-1">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{file.icon}</span>
+                  <div className="flex items-center gap-3.5">
+                    <span className="text-3xl">{file.icon}</span>
                     <div>
-                      <h3 className="text-lg font-black text-[#0D1B2A] group-hover:text-[#2D7FF9] transition-colors leading-tight">
+                      <h3 className="text-lg font-bold text-[#0D1B2A] group-hover:text-[#2D7FF9] transition-colors leading-snug">
                         {file.filename}
                       </h3>
                       <span className="text-xs font-semibold text-slate-400">
@@ -347,16 +342,16 @@ export default function Data() {
                 </div>
 
                 {/* File Details Box */}
-                <div className="mt-4 rounded-xl bg-slate-50/70 p-4 border border-slate-100 space-y-2.5">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-bold text-slate-500">Extracted Records</span>
-                    <span className="font-black text-[#0D1B2A]">
+                <div className="mt-4 rounded-xl bg-slate-50/70 p-4 border border-slate-100 space-y-2.5 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-slate-500">Extracted Records</span>
+                    <span className="font-bold text-[#0D1B2A]">
                       {file.extractedRecords} records
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-bold text-slate-500">File Size</span>
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-slate-500">File Size</span>
                     <span className="font-semibold text-slate-700">{file.size}</span>
                   </div>
                 </div>
@@ -367,21 +362,18 @@ export default function Data() {
 
         {/* SHOW MORE BUTTON IF MORE THAN VISIBLE COUNT */}
         {filteredFiles.length > 10 && (
-          <div className="flex justify-center pt-6">
+          <div className="flex justify-end pt-3 pr-1">
             {visibleCount < filteredFiles.length ? (
               <button
                 onClick={() => setVisibleCount((prev) => prev + 10)}
-                className="group flex items-center gap-2.5 rounded-xl border border-[#2D7FF9] bg-white px-8 py-3.5 text-sm font-extrabold text-[#2D7FF9] hover:bg-[#2D7FF9] hover:text-white transition-all shadow-xs cursor-pointer"
+                className="text-[#2D7FF9] font-bold text-sm sm:text-base hover:underline cursor-pointer bg-transparent border-none p-0 transition flex items-center gap-1.5"
               >
-                <span>Show More Documents</span>
-                <span className="rounded-full bg-[#2D7FF9]/10 px-2.5 py-0.5 text-xs font-black text-[#2D7FF9] group-hover:bg-white group-hover:text-[#2D7FF9] transition">
-                  +{filteredFiles.length - visibleCount}
-                </span>
+                Show More Documents ({filteredFiles.length - visibleCount} remaining) →
               </button>
             ) : (
               <button
                 onClick={() => setVisibleCount(10)}
-                className="rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-black text-slate-600 hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
+                className="text-[#2D7FF9] font-bold text-sm sm:text-base hover:underline cursor-pointer bg-transparent border-none p-0 transition flex items-center gap-1.5"
               >
                 Show Less ↑
               </button>
@@ -392,77 +384,77 @@ export default function Data() {
 
       {/* 4. DOCUMENT INSPECTOR MODAL */}
       {selectedFileModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-7 shadow-2xl space-y-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs animate-fadeIn">
+          <div className="modal-popup-container w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-7 sm:p-8 shadow-2xl space-y-6">
             {/* Header */}
-            <div className="flex items-start justify-between border-b border-slate-100 pb-4">
-              <div className="flex items-center gap-3">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-5">
+              <div className="flex items-center gap-3.5">
                 <span className="text-3xl">{selectedFileModal.icon}</span>
                 <div>
-                  <span className="text-xs font-black text-[#2D7FF9] uppercase tracking-wider block mb-0.5">
+                  <span className="text-xs font-semibold text-[#2D7FF9] uppercase tracking-wider block mb-1">
                     DOCUMENT KNOWLEDGE METADATA
                   </span>
-                  <h3 className="text-xl font-black text-[#0D1B2A]">{selectedFileModal.filename}</h3>
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#0D1B2A]">{selectedFileModal.filename}</h3>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedFileModal(null)}
-                className="rounded-xl border border-slate-200 p-2 text-slate-400 hover:bg-slate-50 hover:text-slate-800 text-lg font-bold"
+                className="text-slate-400 hover:text-slate-700 text-xl font-bold p-1 cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
             {/* Document Attributes */}
-            <div className="space-y-4 text-sm text-[#0D1B2A]">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-xs font-black text-slate-400 uppercase block mb-1">Updated Date</span>
-                  <span className="font-extrabold text-[#0D1B2A]">{selectedFileModal.updatedDate}</span>
+            <div className="space-y-5 text-sm text-[#0D1B2A]">
+              <div className="grid grid-cols-2 gap-3.5">
+                <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
+                  <span className="text-xs font-semibold text-slate-400 uppercase block mb-1">Updated Date</span>
+                  <span className="font-bold text-[#0D1B2A] text-base">{selectedFileModal.updatedDate}</span>
                 </div>
 
-                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-xs font-black text-slate-400 uppercase block mb-1">File Size</span>
-                  <span className="font-extrabold text-[#0D1B2A]">{selectedFileModal.size}</span>
+                <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
+                  <span className="text-xs font-semibold text-slate-400 uppercase block mb-1">File Size</span>
+                  <span className="font-bold text-[#0D1B2A] text-base">{selectedFileModal.size}</span>
                 </div>
 
-                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-xs font-black text-slate-400 uppercase block mb-1">Records Extracted</span>
-                  <span className="text-base font-black text-[#2D7FF9]">{selectedFileModal.extractedRecords} records</span>
+                <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
+                  <span className="text-xs font-semibold text-slate-400 uppercase block mb-1">Records Extracted</span>
+                  <span className="text-base font-bold text-[#2D7FF9]">{selectedFileModal.extractedRecords} records</span>
                 </div>
 
-                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-xs font-black text-slate-400 uppercase block mb-1">Related Projects</span>
-                  <span className="text-base font-black text-[#0D1B2A]">{selectedFileModal.relatedProjects} projects</span>
+                <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
+                  <span className="text-xs font-semibold text-slate-400 uppercase block mb-1">Related Projects</span>
+                  <span className="text-base font-bold text-[#0D1B2A]">{selectedFileModal.relatedProjects} projects</span>
                 </div>
               </div>
 
-              <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                <span className="text-xs font-black text-slate-400 uppercase block mb-1.5">Related Municipal Departments</span>
-                <div className="flex flex-wrap gap-1.5">
+              <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
+                <span className="text-xs font-semibold text-slate-400 uppercase block mb-2">Related Municipal Departments</span>
+                <div className="flex flex-wrap gap-2">
                   {selectedFileModal.departments?.map((dept, i) => (
-                    <span key={i} className="rounded-lg bg-[#2D7FF9]/10 border border-[#2D7FF9]/20 px-2.5 py-1 text-xs font-bold text-[#2D7FF9]">
+                    <span key={i} className="rounded-lg bg-[#2D7FF9]/10 border border-[#2D7FF9]/20 px-3 py-1 text-xs font-bold text-[#2D7FF9]">
                       {dept}
                     </span>
                   ))}
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-slate-800 bg-[#0D1B2A] p-5 text-white shadow-md">
+              <div className="rounded-xl border border-slate-800 bg-[#0D1B2A] p-5 text-white shadow-md">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">
                   How Document Contributes to CivicMirror Knowledge:
                 </span>
-                <p className="text-sm font-semibold leading-relaxed text-slate-200 mt-1">
+                <p className="text-sm sm:text-base font-normal leading-relaxed text-slate-200 mt-1">
                   "{selectedFileModal.contributionSummary}"
                 </p>
               </div>
             </div>
 
             {/* Footer Actions */}
-            <div className="flex justify-end pt-3 border-t border-slate-100">
+            <div className="flex justify-end pt-5 border-t border-slate-100">
               <button
                 onClick={() => setSelectedFileModal(null)}
-                className="rounded-xl border border-slate-200 px-5 py-2.5 text-xs font-black text-slate-600 hover:bg-slate-50"
+                className="rounded-xl border border-slate-200 px-6 py-2.5 text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer"
               >
                 Close Inspector
               </button>
