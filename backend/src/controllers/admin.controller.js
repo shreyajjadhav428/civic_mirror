@@ -813,11 +813,26 @@ export const updateComplaintStatus = async (req, res) => {
     if (status !== undefined) updates.status = status;
     if (admin_flagged !== undefined) updates.admin_flagged = admin_flagged;
 
-    const { data, error } = await supabase
+    // 1. Try update by primary key `id`
+    let { data, error } = await supabase
       .from('complaints')
       .update(updates)
       .eq('id', id)
       .select('*');
+
+    // 2. If zero rows updated by `id`, try matching by `complaint_code`
+    if (!data || data.length === 0) {
+      const { data: dataByCode, error: errByCode } = await supabase
+        .from('complaints')
+        .update(updates)
+        .eq('complaint_code', id)
+        .select('*');
+
+      if (!errByCode && dataByCode?.length > 0) {
+        data = dataByCode;
+        error = null;
+      }
+    }
 
     if (error) throw error;
 
