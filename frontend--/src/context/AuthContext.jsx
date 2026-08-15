@@ -101,14 +101,46 @@ export function AuthProvider({ children }) {
   // REGISTER
   // ─────────────────────────────────────────────────────────────────────
 
-  const register = async (email, password, role = "citizen") => {
+  const register = async (email, password, role = "citizen", metadata = {}) => {
+    if (DEV_BYPASS_AUTH) {
+      const mockUser = {
+        id: "user-citizen-" + Math.floor(Math.random() * 1000 + 10),
+        email: email || "citizen@civicmirror.com",
+        role: "citizen",
+        name: metadata.name || "New Resident",
+        area: metadata.area || "Shanti Nagar",
+        pincode: metadata.pincode || "110025",
+      };
+
+      const mockResponse = {
+        authenticated: true,
+        token: "dev_mock_token_reg_" + Date.now(),
+        role: "citizen",
+        user: mockUser,
+      };
+
+      localStorage.setItem("civicmirror_token", mockResponse.token);
+      localStorage.setItem("civicmirror_user", JSON.stringify(mockUser));
+
+      setToken(mockResponse.token);
+      setUser(mockUser);
+
+      return mockResponse;
+    }
+
     try {
-      const response = await registerUser(email, password, role);
+      const area = metadata.area || "Shanti Nagar";
+      const pincode = metadata.pincode || "110025";
+      const response = await registerUser(email, password, role, area, pincode);
+
       if (response?.authenticated && response?.token) {
         const userData = {
           id: response.user?.id || "user-citizen-1",
           email: response.user?.email || email,
           role: response.role || role,
+          area: response.user?.area || area,
+          pincode: response.user?.pincode || pincode,
+          name: metadata.name || "",
         };
 
         localStorage.setItem("civicmirror_token", response.token);

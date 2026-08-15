@@ -26,6 +26,8 @@ export default function App() {
       />
 
       <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Login initialMode="register" />} />
+      <Route path="/register" element={<Login initialMode="register" />} />
       <Route path="/citizen/*" element={<CitizenDashboard />} />
       <Route path="/admin/*" element={<AdminDashboard />} />
     </Routes>

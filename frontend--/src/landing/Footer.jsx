@@ -59,6 +59,18 @@ export default function Footer() {
               </li>
               <li>
                 <a
+                  href="/signup"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/signup");
+                  }}
+                  className="text-white/70 transition-colors duration-200 hover:text-[#2D7FF9]"
+                >
+                  Sign Up / Create Account
+                </a>
+              </li>
+              <li>
+                <a
                   href="/login"
                   onClick={(e) => {
                     e.preventDefault();

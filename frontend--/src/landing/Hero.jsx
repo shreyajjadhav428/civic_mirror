@@ -263,12 +263,30 @@ export default function Hero() {
           box-shadow: 0 4px 20px rgba(45, 127, 249, 0.45);
         }
 
-        .cm-header__login--desktop {
+        .cm-header__signup {
+          font-size: 0.76rem;
+          font-weight: 700;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #FFFFFF;
+          text-decoration: none;
+          padding: 9px 20px;
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 6px;
+          transition: background 0.22s ease, border-color 0.22s ease;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .cm-header__signup:hover {
+          background: rgba(255, 255, 255, 0.22);
+          border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .cm-header__login--desktop, .cm-header__signup--desktop {
           display: inline-block;
         }
 
         @media (max-width: 640px) {
-          .cm-header__login--desktop {
+          .cm-header__login--desktop, .cm-header__signup--desktop {
             display: none;
           }
         }
@@ -641,6 +659,16 @@ export default function Hero() {
 
             <div className="cm-header__right-actions">
               <a
+                href="/signup"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/signup");
+                }}
+                className="cm-header__signup cm-header__signup--desktop"
+              >
+                Sign Up
+              </a>
+              <a
                 href="/login"
                 onClick={(e) => {
                   e.preventDefault();
@@ -697,6 +725,17 @@ export default function Hero() {
                 Vision
               </a>
               <a
+                href="/signup"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsMobileMenuOpen(false);
+                  navigate("/signup");
+                }}
+                className="cm-header__signup cm-header__signup--mobile"
+              >
+                Sign Up
+              </a>
+              <a
                 href="/login"
                 onClick={(e) => {
                   e.preventDefault();
@@ -730,18 +769,30 @@ export default function Hero() {
             Artificial Intelligence.
           </p>
 
-          {/* Primary CTA button (Left-aligned) */}
-          <a
-            href="/login"
-            onClick={(e) => {
-              e.preventDefault();
-              navigate("/login");
-            }}
-            className={`cm-hero__cta ${isLoaded ? "cm-hero__cta--visible" : ""}`}
-          >
-            <span>Explore Platform</span>
-            <span className="cm-hero__cta-arrow" aria-hidden="true">→</span>
-          </a>
+          {/* Primary CTA buttons (Left-aligned) */}
+          <div className="flex flex-wrap items-center gap-4">
+            <a
+              href="/signup"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/signup");
+              }}
+              className={`cm-hero__cta ${isLoaded ? "cm-hero__cta--visible" : ""}`}
+            >
+              <span>Get Started / Sign Up</span>
+              <span className="cm-hero__cta-arrow" aria-hidden="true">→</span>
+            </a>
+            <a
+              href="/login"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/login");
+              }}
+              className={`inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/10 px-6 py-3.5 text-xs font-black tracking-widest text-white uppercase backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+            >
+              <span>Login</span>
+            </a>
+          </div>
         </div>
 
         {/* Scroll Indicator (Bottom-Right) */}

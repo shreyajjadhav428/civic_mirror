@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
-export default function AuthPage() {
+export default function AuthPage({ initialMode = "login" }) {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isRegisterInitial =
+    initialMode === "register" ||
+    location.pathname === "/signup" ||
+    location.pathname === "/register" ||
+    location.search.includes("mode=register");
 
   // View state: true = Login, false = Register
-  const [isLoginView, setIsLoginView] = useState(true);
+  const [isLoginView, setIsLoginView] = useState(!isRegisterInitial);
 
   // Form states
   const [email, setEmail] = useState("");
@@ -19,11 +26,18 @@ export default function AuthPage() {
   const [userRole, setUserRole] = useState("user"); // "user" (Resident) or "admin" (Government)
   const [mounted, setMounted] = useState(false);
 
-  const { login, register } = useAuth(); // Assuming your AuthContext exposes both methods
+  const { login, register } = useAuth();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (isRegisterInitial) {
+      setIsLoginView(false);
+      setUserRole("user");
+    }
+  }, [location.pathname, initialMode]);
 
   const handleClose = () => {
     setMounted(false);
@@ -223,37 +237,52 @@ export default function AuthPage() {
                 </>
               ) : (
                 <>
+                  <div className="mb-3 flex items-center gap-3">
+                    <span className="h-px w-8 bg-[#00A68E]" />
+                    <p className="text-xs font-extrabold tracking-[0.18em] text-[#00806D]">RESIDENT REGISTRATION</p>
+                  </div>
                   <h2 className="text-3xl font-black tracking-[-0.035em] text-[#0D1B2A] sm:text-4xl">
-                    Get started
+                    Create User Account
                   </h2>
                   <p className="mt-2.5 text-sm leading-6 text-[#4B5563]">
-                    Create your CivicMirror workspace.
+                    Register as a resident to submit reports, track civic repairs, and access municipal data.
                   </p>
                 </>
               )}
             </div>
 
-            {/* User / Admin Toggle Control */}
-            <div className="mb-5 flex rounded-lg bg-slate-100 p-1">
-              <button
-                type="button"
-                onClick={() => setUserRole("user")}
-                className={`flex-1 rounded-md py-2 text-center text-xs font-black tracking-wider uppercase transition-all duration-200 ${
-                  userRole === "user" ? "bg-white text-[#0D1B2A] shadow-sm" : "text-slate-500 hover:text-slate-800"
-                }`}
-              >
-                Resident
-              </button>
-              <button
-                type="button"
-                onClick={() => setUserRole("admin")}
-                className={`flex-1 rounded-md py-2 text-center text-xs font-black tracking-wider uppercase transition-all duration-200 ${
-                  userRole === "admin" ? "bg-white text-[#0D1B2A] shadow-sm" : "text-slate-500 hover:text-slate-800"
-                }`}
-              >
-                Government
-              </button>
-            </div>
+            {/* User / Admin Toggle Control for Login View; Resident Badge for Register View */}
+            {isLoginView ? (
+              <div className="mb-5 flex rounded-lg bg-slate-100 p-1">
+                <button
+                  type="button"
+                  onClick={() => setUserRole("user")}
+                  className={`flex-1 rounded-md py-2 text-center text-xs font-black tracking-wider uppercase transition-all duration-200 ${
+                    userRole === "user" ? "bg-white text-[#0D1B2A] shadow-sm" : "text-slate-500 hover:text-slate-800"
+                  }`}
+                >
+                  Resident
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUserRole("admin")}
+                  className={`flex-1 rounded-md py-2 text-center text-xs font-black tracking-wider uppercase transition-all duration-200 ${
+                    userRole === "admin" ? "bg-white text-[#0D1B2A] shadow-sm" : "text-slate-500 hover:text-slate-800"
+                  }`}
+                >
+                  Government
+                </button>
+              </div>
+            ) : (
+              <div className="mb-5 rounded-lg border border-[#D6E6F7] bg-[#F4F8FE] p-3 text-center">
+                <span className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-[#1E4FA3]">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  New Citizen Account
+                </span>
+              </div>
+            )}
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -376,22 +405,27 @@ export default function AuthPage() {
                 type="submit"
                 className="group relative mt-2 flex h-14 w-full items-center justify-center overflow-hidden rounded-lg bg-[#0D1B2A] px-6 text-sm font-black tracking-[0.14em] text-white shadow-[0_10px_24px_rgba(13,27,42,0.14)] outline-none transition-all duration-200 hover:bg-[#162B42] hover:shadow-[0_12px_26px_rgba(13,27,42,0.18)] focus-visible:ring-4 focus-visible:ring-[#2D7FF9]/20 active:scale-[0.995]"
               >
-                <span className="relative z-10">{isLoginView ? "LOGIN" : "REGISTER"}</span>
+                <span className="relative z-10">{isLoginView ? "LOGIN" : "CREATE USER ACCOUNT"}</span>
                 <span className="absolute bottom-0 left-0 h-[3px] w-full bg-[#2D7FF9] transition-colors duration-200 group-hover:bg-[#2D7FF9]" />
               </button>
 
-              {/* Dynamic Footer Link */}
-              <div className="pt-2 text-center">
-                <span className="text-sm text-[#4B5563]">
-                  {isLoginView ? "New user? " : "Already have an account? "}
-                </span>
-                <a
-                  href={isLoginView ? "#register" : "#login"}
+              {/* Prominent Callout Card for Sign Up / Login toggle */}
+              <div className="mt-6 rounded-xl border border-[#D6E6F7] bg-slate-50 p-4 text-center">
+                <p className="text-xs font-bold text-[#0D1B2A] uppercase tracking-wider">
+                  {isLoginView ? "Don't have an account?" : "Already have an account?"}
+                </p>
+                <p className="mt-1 text-xs text-[#4B5563]">
+                  {isLoginView
+                    ? "Create a new resident account to submit complaints & track repairs."
+                    : "Log in with your existing email address and password."}
+                </p>
+                <button
+                  type="button"
                   onClick={toggleView}
-                  className="text-sm font-semibold text-[#1E4FA3] hover:text-[#2D7FF9] outline-none focus-visible:underline"
+                  className="mt-3 w-full rounded-lg border border-[#2D7FF9] bg-white px-4 py-2.5 text-xs font-black tracking-widest text-[#1E4FA3] uppercase shadow-sm transition-all hover:bg-[#2D7FF9] hover:text-white"
                 >
-                  {isLoginView ? "Sign up" : "Log in"}
-                </a>
+                  {isLoginView ? "Sign Up / Create Account" : "Back to Login"}
+                </button>
               </div>
             </form>
           </div>
