@@ -203,19 +203,19 @@ export default function Overview() {
       {/* Welcome Header Bar */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-xl font-extrabold text-slate-900">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             Welcome back, Admin
-            {loading && <span className="text-xs font-semibold text-slate-400 animate-pulse">(Fetching live data...)</span>}
+            {loading && <span className="text-xs sm:text-sm font-semibold text-slate-400 animate-pulse ml-2">(Fetching live data...)</span>}
           </h2>
         </div>
       </div>
 
       {/* Dynamic Top 4 Stat Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {currentStats.stats.map((stat, idx) => (
           <div
             key={idx}
-            className={`group relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 ${stat.hoverBorder} hover:shadow-md cursor-pointer overflow-hidden`}
+            className={`group relative rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 ${stat.hoverBorder} hover:shadow-md cursor-pointer overflow-hidden`}
           >
             <svg className="absolute inset-0 h-full w-full pointer-events-none rounded-xl">
               <rect
@@ -233,13 +233,13 @@ export default function Overview() {
               />
             </svg>
 
-            <span className={`text-xs font-extrabold uppercase tracking-wider ${stat.titleColor}`}>
+            <span className={`text-xs sm:text-sm font-extrabold uppercase tracking-wider ${stat.titleColor}`}>
               {stat.title}
             </span>
-            <div className={`mt-2 text-2xl font-black ${stat.valColor}`}>
+            <div className={`mt-2.5 text-3xl sm:text-4xl font-black ${stat.valColor}`}>
               {stat.value}
             </div>
-            <div className="mt-2 text-xs font-bold text-emerald-600">
+            <div className="mt-2 text-xs sm:text-sm font-bold text-emerald-600">
               {stat.trend}
             </div>
           </div>
@@ -249,27 +249,27 @@ export default function Overview() {
       {/* Priority Issues & Most Common Queries */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Priority Issues Card */}
-        <div className="group relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-[#FF5722]/10 hover:shadow-md lg:col-span-6 flex flex-col justify-between overflow-hidden">
+        <div className="group relative rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-[#FF5722]/10 hover:shadow-md lg:col-span-6 flex flex-col justify-between overflow-hidden">
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="text-lg font-extrabold uppercase tracking-wider text-[#1E3A8A]">
+            <div className="flex items-center justify-between pb-3.5 border-b border-slate-100">
+              <h3 className="text-lg sm:text-xl font-extrabold uppercase tracking-wider text-[#1E3A8A]">
                 PRIORITY ISSUES
               </h3>
               <button
                 onClick={() => setShowAllPriorityModal(true)}
-                className="text-sm font-bold text-[#2D7FF9] hover:underline relative z-10"
+                className="text-sm sm:text-base font-bold text-[#2D7FF9] hover:underline relative z-10"
               >
                 View all ({priorityIssues.length})
               </button>
             </div>
 
-            <div className="mt-4 space-y-3.5">
+            <div className="mt-5 space-y-4">
               {loading && priorityIssues.length === 0 ? (
-                <div className="py-8 text-center text-xs font-semibold text-slate-400 animate-pulse">
+                <div className="py-8 text-center text-sm font-semibold text-slate-400 animate-pulse">
                   Loading priority issues from backend...
                 </div>
               ) : priorityIssues.length === 0 ? (
-                <div className="py-8 text-center text-xs font-semibold text-slate-400">
+                <div className="py-8 text-center text-sm font-semibold text-slate-400">
                   No active priority issue clusters found.
                 </div>
               ) : (
@@ -277,21 +277,21 @@ export default function Overview() {
                   <div
                     key={issue.id}
                     onClick={() => setSelectedPriorityIssue(issue)}
-                    className="flex items-center justify-between cursor-pointer group/item hover:bg-slate-50 p-2 rounded-xl transition border border-transparent hover:border-slate-200 relative z-10"
+                    className="flex items-center justify-between cursor-pointer group/item hover:bg-slate-50 p-3 rounded-xl transition border border-transparent hover:border-slate-200 relative z-10"
                   >
-                    <div className="flex items-center gap-3">
-                      <span className={`h-3.5 w-3.5 rounded-full ${issue.dotColor} shrink-0`} />
+                    <div className="flex items-center gap-3.5">
+                      <span className={`h-4 w-4 rounded-full ${issue.dotColor} shrink-0`} />
                       <div>
-                        <span className="text-sm font-extrabold text-slate-800 group-hover/item:text-[#2D7FF9] transition block">
+                        <span className="text-base sm:text-lg font-bold text-slate-800 group-hover/item:text-[#2D7FF9] transition block">
                           {issue.title}
                         </span>
-                        <span className="text-xs text-slate-400 font-semibold block mt-0.5">
+                        <span className="text-xs sm:text-sm text-slate-500 font-medium block mt-0.5">
                           {issue.department}
                         </span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2.5">
-                      <span className={`rounded-lg px-2.5 py-1 text-xs font-extrabold ${
+                    <div className="flex items-center gap-3">
+                      <span className={`rounded-lg px-3 py-1 text-xs sm:text-sm font-bold ${
                         issue.status === "In Progress"
                           ? "bg-blue-50 text-blue-700 border border-blue-200"
                           : issue.status === "Completed" || issue.status === "Resolved"
@@ -300,7 +300,7 @@ export default function Overview() {
                       }`}>
                         {issue.status}
                       </span>
-                      <span className="text-sm font-black text-slate-800">
+                      <span className="text-base sm:text-lg font-extrabold text-slate-800">
                         {issue.count}
                       </span>
                     </div>
@@ -312,34 +312,34 @@ export default function Overview() {
         </div>
 
         {/* Most Common Queries Card */}
-        <div className="group relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-[#2D7FF9]/10 hover:shadow-md lg:col-span-6 flex flex-col justify-between overflow-hidden">
+        <div className="group relative rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-[#2D7FF9]/10 hover:shadow-md lg:col-span-6 flex flex-col justify-between overflow-hidden">
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="text-lg font-extrabold uppercase tracking-wider text-[#1E3A8A]">
+            <div className="flex items-center justify-between pb-3.5 border-b border-slate-100">
+              <h3 className="text-lg sm:text-xl font-extrabold uppercase tracking-wider text-[#1E3A8A]">
                 MOST COMMON QUERIES
               </h3>
               <button
                 onClick={() => setShowAllQueriesModal(true)}
-                className="text-sm font-bold text-[#2D7FF9] hover:underline relative z-10"
+                className="text-sm sm:text-base font-bold text-[#2D7FF9] hover:underline relative z-10"
               >
                 View all ({commonQueries.length})
               </button>
             </div>
 
-            <div className="mt-4 space-y-3.5">
+            <div className="mt-5 space-y-4">
               {commonQueries.length === 0 ? (
-                <div className="py-6 text-center text-xs font-semibold text-slate-400">
+                <div className="py-6 text-center text-sm font-semibold text-slate-400">
                   No common citizen queries logged yet.
                 </div>
               ) : (
                 commonQueries.slice(0, 5).map((query, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center justify-between text-sm text-slate-800 p-2 rounded-xl bg-slate-50/50 border border-slate-100 relative z-10"
+                    className="flex items-center justify-between text-base text-slate-800 p-3 rounded-xl bg-slate-50/70 border border-slate-100 relative z-10"
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3.5">
                       <svg
-                        className="h-4.5 w-4.5 text-[#2D7FF9] shrink-0"
+                        className="h-5 w-5 text-[#2D7FF9] shrink-0"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -351,11 +351,11 @@ export default function Overview() {
                           d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      <span className="font-extrabold text-slate-700">
+                      <span className="font-bold text-slate-800 text-sm sm:text-base">
                         {query.text}
                       </span>
                     </div>
-                    <span className="font-black text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg text-sm shrink-0 ml-2">
+                    <span className="font-extrabold text-slate-800 bg-slate-100 px-3 py-1 rounded-lg text-sm sm:text-base shrink-0 ml-2">
                       {query.count}
                     </span>
                   </div>

@@ -188,16 +188,7 @@ export default function CitizenSidebar({ onLogout }) {
             </button>
           </div>
 
-          {/* Citizen role badge */}
-          <div className="mt-4 mb-1 px-3">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#69A8FF]/30 bg-[#69A8FF]/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#69A8FF]">
-              <svg viewBox="0 0 24 24" aria-hidden="true" className="h-3 w-3 fill-none stroke-current stroke-[2] [stroke-linecap:round]">
-                <circle cx="12" cy="8" r="3.5" />
-                <path d="M5 21a7 7 0 0 1 14 0" />
-              </svg>
-              Citizen Workspace
-            </span>
-          </div>
+
 
           {/* Main navigation */}
           <nav

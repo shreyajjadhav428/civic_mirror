@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { getCitizenRequests } from "../api/citizen.api";
 import { useAuth } from "../context/AuthContext";
+import { normalizeDepartment } from "../constants/departments";
 
 const steps = ["Reported", "In progress", "Resolved"];
 
@@ -111,7 +112,7 @@ export default function TrackRepairs({ onNavigate }) {
               submittedDate: c.date || "Recent",
               status: normStatus,
               currentStep,
-              category: c.category || "General Services",
+              category: normalizeDepartment(c.category || c.department || c.title),
               update: normStatus === "Resolved"
                 ? "Repair work completed and verified by municipal team."
                 : (normStatus === "In progress"

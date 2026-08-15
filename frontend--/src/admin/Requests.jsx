@@ -39,7 +39,7 @@ export default function Requests() {
             id: inq.id || `REQ-10${idx + 1}`,
             request: inq.topic || "Citizen civic issue report.",
             title: inq.topic ? (inq.topic.length > 45 ? inq.topic.slice(0, 45) + "..." : inq.topic) : "Civic Request",
-            category: inq.department || "General",
+            category: normalizeDepartment(inq.department || inq.category || inq.topic),
             pincode: inq.pincode || "110025",
             area: `Pincode ${inq.pincode || "110025"}`,
             status: inq.aiStatus === "Resolved" ? "Resolved" : inq.aiStatus === "In Progress" ? "In Progress" : "Pending",

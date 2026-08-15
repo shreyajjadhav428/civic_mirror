@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCitizenRequests } from "../api/citizen.api";
 import { useAuth } from "../context/AuthContext";
+import { OFFICIAL_DEPARTMENTS, normalizeDepartment } from "../constants/departments";
 
 function statusStyles(status) {
   const stLower = (status || "").toLowerCase();
@@ -57,9 +58,20 @@ export default function Requests() {
   const { user } = useAuth();
   const [requestsList, setRequestsList] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [visibleCount, setVisibleCount] = useState(10);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  // Reset visible pagination count when category filter changes
+  useEffect(() => {
+    setVisibleCount(10);
+  }, [selectedCategory]);
+
+  const filteredRequests = requestsList.filter((request) => {
+    if (selectedCategory === "All") return true;
+    return (request.category || "").toLowerCase() === selectedCategory.toLowerCase();
+  });
 
   useEffect(() => {
     let isMounted = true;
@@ -74,6 +86,7 @@ export default function Requests() {
         if (isMounted && reqRes?.data) {
           const normalized = reqRes.data.map((c) => ({
             ...c,
+            category: normalizeDepartment(c.category || c.department || c.title || c.id),
             status: (() => {
               const s = (c.status || "").toLowerCase();
               if (s.includes("resolved") || s.includes("completed")) return "Resolved";
@@ -103,20 +116,20 @@ export default function Requests() {
   return (
     <div className="space-y-8 text-[#0D1B2A] font-['Inter',sans-serif]">
       {/* HEADER BANNER */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xs relative overflow-hidden">
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-xs relative overflow-hidden">
         {/* Top Accent bar */}
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#2D7FF9]" />
 
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="flex items-center gap-2 text-xs font-black tracking-widest text-[#2D7FF9] uppercase mb-2">
-              <span className="h-[2.5px] w-5 bg-[#2D7FF9] rounded-full inline-block" />
+            <p className="flex items-center gap-2 text-xs sm:text-sm font-bold tracking-widest text-[#2D7FF9] uppercase mb-2">
+              <span className="h-[2.5px] w-4 bg-[#2D7FF9] rounded-full inline-block" />
               CITIZEN WORKSPACE
             </p>
-            <h1 className="text-3xl sm:text-4xl font-black text-[#0D1B2A] tracking-tight flex items-center gap-3">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-[#0D1B2A] tracking-tight">
               My <span className="text-[#2D7FF9]">Complaints & Requests</span>
             </h1>
-            <p className="mt-2 text-base font-semibold text-[#59687A] max-w-2xl">
+            <p className="mt-2 text-base font-normal text-slate-600 leading-relaxed max-w-2xl">
               View and track all your registered civic complaints recorded directly in the municipal database.
             </p>
           </div>
@@ -125,9 +138,9 @@ export default function Requests() {
             <button
               type="button"
               onClick={openNewRequest}
-              className="inline-flex items-center gap-2 rounded-xl bg-[#0D1B2A] px-5 py-3 text-xs font-black text-white hover:bg-[#2D7FF9] transition-all cursor-pointer shadow-xs"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#0D1B2A] px-5 py-3 text-xs sm:text-sm font-bold text-white hover:bg-[#2D7FF9] transition-all cursor-pointer shadow-xs"
             >
-              <span className="text-sm leading-none">+</span>
+              <span className="text-base leading-none">+</span>
               Ask AI / Raise Issue
             </button>
           </div>
@@ -136,23 +149,48 @@ export default function Requests() {
 
       {/* UNIFIED REGISTERED COMPLAINTS SECTION */}
       <section className="space-y-4" aria-label="Your civic requests">
-        <div className="flex items-center justify-between pt-1">
-          <span className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400">
-            <span className="h-[2px] w-4 bg-slate-300 rounded-full" />
-            REGISTERED CIVIC COMPLAINT TICKETS ({requestsList.length})
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-1 border-b border-slate-200/60 pb-3.5">
+          <span className="flex items-center gap-2 text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-500">
+            <span className="h-[2.5px] w-4 bg-slate-400 rounded-full" />
+            REGISTERED CIVIC COMPLAINT TICKETS ({filteredRequests.length})
           </span>
-          <span className="text-xs font-bold text-slate-400">
-            Live Supabase Database Sync
-          </span>
+
+          {/* CATEGORY SORT/FILTER DROPDOWN MENU */}
+          <div className="flex items-center gap-2.5">
+            <span className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-slate-500">
+              Filter by Category:
+            </span>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs sm:text-sm font-semibold text-[#0D1B2A] shadow-2xs outline-none transition focus:border-[#2D7FF9] cursor-pointer"
+            >
+              <option value="All">All Categories ({requestsList.length})</option>
+              {OFFICIAL_DEPARTMENTS.map((dept) => {
+                const count = requestsList.filter(
+                  (r) => (r.category || "").toLowerCase() === dept.name.toLowerCase()
+                ).length;
+                return (
+                  <option key={dept.name} value={dept.name}>
+                    {dept.icon} {dept.name} {count > 0 ? `(${count})` : ""}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
         </div>
 
-        {requestsList.length === 0 ? (
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-12 text-center text-slate-500 font-semibold text-sm">
-            {loading ? "Loading your submitted civic requests..." : "No civic complaints registered yet. Use the chat in Overview to report an issue!"}
+        {filteredRequests.length === 0 ? (
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-12 text-center text-slate-500 font-semibold text-base">
+            {loading
+              ? "Loading your submitted civic requests..."
+              : selectedCategory !== "All"
+              ? `No complaints found matching category "${selectedCategory}".`
+              : "No civic complaints registered yet. Use the chat in Overview to report an issue!"}
           </div>
         ) : (
           <>
-            {requestsList.slice(0, visibleCount).map((request) => {
+            {filteredRequests.slice(0, visibleCount).map((request) => {
               const styles = statusStyles(request.status);
 
               return (
@@ -161,25 +199,25 @@ export default function Requests() {
                   className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-slate-300"
                 >
                   <span
-                    className={`absolute left-0 top-0 h-full w-1 ${styles.accent}`}
+                    className={`absolute left-0 top-0 h-full w-1.5 ${styles.accent}`}
                     aria-hidden="true"
                   />
 
-                  <div className="p-6 pl-7">
+                  <div className="p-6 sm:p-7 pl-7 sm:pl-8">
                     <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                       <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2.5">
                           <span
-                            className={`rounded-full border px-3 py-1 text-[11px] font-black ${styles.badge}`}
+                            className={`rounded-full border px-3 py-1 text-xs font-bold ${styles.badge}`}
                           >
                             {request.status}
                           </span>
 
-                          <span className="text-xs font-bold tracking-wider text-slate-400">
+                          <span className="text-xs sm:text-sm font-semibold tracking-wider text-slate-400">
                             {request.id}
                           </span>
 
-                          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-600">
+                          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
                             {request.category || "General"}
                           </span>
                         </div>
@@ -188,19 +226,19 @@ export default function Requests() {
                           <RequestIcon status={request.status} />
 
                           <div className="min-w-0">
-                            <h2 className="text-base font-black text-[#0D1B2A]">
+                            <h2 className="text-lg sm:text-xl font-bold text-[#0D1B2A] leading-snug">
                               {request.title}
                             </h2>
 
-                            <p className="mt-1.5 max-w-2xl text-xs font-medium leading-relaxed text-slate-600">
+                            <p className="mt-2 max-w-2xl text-base font-normal leading-relaxed text-slate-600">
                               {request.description}
                             </p>
                           </div>
                         </div>
 
-                        <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-bold text-slate-500">
+                        <div className="mt-4.5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs sm:text-sm font-medium text-slate-500">
                           <span>
-                            <strong className="font-black text-[#0D1B2A]">
+                            <strong className="font-bold text-slate-800">
                               Location:
                             </strong>{" "}
                             {request.location}
@@ -211,7 +249,7 @@ export default function Requests() {
                           </span>
 
                           <span>
-                            <strong className="font-black text-[#0D1B2A]">
+                            <strong className="font-bold text-slate-800">
                               Submitted:
                             </strong>{" "}
                             {request.date}
@@ -222,7 +260,7 @@ export default function Requests() {
                       <button
                         type="button"
                         onClick={() => setSelectedRequest(request)}
-                        className="shrink-0 self-start rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-black text-[#0D1B2A] transition-all hover:border-[#2D7FF9] hover:bg-[#EEF5FF] hover:text-[#2D7FF9] cursor-pointer shadow-xs"
+                        className="shrink-0 self-start rounded-xl border border-slate-200 bg-white px-4.5 py-2.5 text-xs sm:text-sm font-semibold text-[#0D1B2A] transition-all hover:border-[#2D7FF9] hover:bg-[#EEF5FF] hover:text-[#2D7FF9] cursor-pointer shadow-xs"
                       >
                         View details
                       </button>
@@ -233,22 +271,22 @@ export default function Requests() {
             })}
 
             {/* SHOW MORE / SHOW LESS PAGINATION */}
-            {requestsList.length > 10 && (
+            {filteredRequests.length > 10 && (
               <div className="flex justify-center pt-4">
-                {visibleCount < requestsList.length ? (
+                {visibleCount < filteredRequests.length ? (
                   <button
                     onClick={() => setVisibleCount((prev) => prev + 10)}
-                    className="group flex items-center gap-2.5 rounded-xl border border-[#2D7FF9] bg-white px-8 py-3.5 text-xs font-black text-[#2D7FF9] hover:bg-[#2D7FF9] hover:text-white transition-all shadow-xs cursor-pointer"
+                    className="group flex items-center gap-2.5 rounded-xl border border-[#2D7FF9] bg-white px-8 py-3.5 text-xs sm:text-sm font-bold text-[#2D7FF9] hover:bg-[#2D7FF9] hover:text-white transition-all shadow-xs cursor-pointer"
                   >
                     <span>Show More Requests</span>
-                    <span className="rounded-full bg-[#2D7FF9]/10 px-2.5 py-0.5 text-[10px] font-black text-[#2D7FF9] group-hover:bg-white group-hover:text-[#2D7FF9] transition">
-                      +{requestsList.length - visibleCount}
+                    <span className="rounded-full bg-[#2D7FF9]/10 px-2.5 py-0.5 text-xs font-bold text-[#2D7FF9] group-hover:bg-white group-hover:text-[#2D7FF9] transition">
+                      +{filteredRequests.length - visibleCount}
                     </span>
                   </button>
                 ) : (
                   <button
                     onClick={() => setVisibleCount(10)}
-                    className="rounded-xl border border-slate-200 bg-white px-6 py-3 text-xs font-black text-slate-600 hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
+                    className="rounded-xl border border-slate-200 bg-white px-6 py-3 text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
                   >
                     Show Less ↑
                   </button>
@@ -262,50 +300,50 @@ export default function Requests() {
       {/* COMPLAINT DETAILS MODAL */}
       {selectedRequest && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-7 shadow-2xl space-y-5">
+          <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-7 sm:p-8 shadow-2xl space-y-6">
             <div className="flex items-start justify-between border-b border-slate-100 pb-4">
               <div>
-                <span className="text-xs font-bold tracking-wider text-[#2D7FF9] uppercase block mb-1">
+                <span className="text-xs sm:text-sm font-semibold tracking-wider text-[#2D7FF9] uppercase block mb-1">
                   Complaint Code: {selectedRequest.id}
                 </span>
-                <h3 className="text-xl font-black text-[#0D1B2A]">
+                <h3 className="text-xl sm:text-2xl font-bold text-[#0D1B2A]">
                   {selectedRequest.title}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedRequest(null)}
-                className="text-slate-400 hover:text-slate-700 text-lg font-bold"
+                className="text-slate-400 hover:text-slate-700 text-xl font-bold p-1"
               >
                 ✕
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                <span className="font-bold text-slate-400 uppercase block mb-0.5">Status</span>
-                <span className="font-black text-[#0D1B2A] text-sm">{selectedRequest.status}</span>
+            <div className="grid grid-cols-2 gap-3.5 text-sm">
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                <span className="font-semibold text-slate-400 uppercase block mb-1 text-xs">Status</span>
+                <span className="font-bold text-[#0D1B2A] text-base">{selectedRequest.status}</span>
               </div>
 
-              <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                <span className="font-bold text-slate-400 uppercase block mb-0.5">Category</span>
-                <span className="font-black text-[#0D1B2A] text-sm">{selectedRequest.category || "General"}</span>
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                <span className="font-semibold text-slate-400 uppercase block mb-1 text-xs">Category</span>
+                <span className="font-bold text-[#0D1B2A] text-base">{selectedRequest.category || "General"}</span>
               </div>
 
-              <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                <span className="font-bold text-slate-400 uppercase block mb-0.5">Location</span>
-                <span className="font-black text-[#0D1B2A] text-sm">{selectedRequest.location || "Local Area"}</span>
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                <span className="font-semibold text-slate-400 uppercase block mb-1 text-xs">Location</span>
+                <span className="font-bold text-[#0D1B2A] text-base">{selectedRequest.location || "Local Area"}</span>
               </div>
 
-              <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                <span className="font-bold text-slate-400 uppercase block mb-0.5">Submitted On</span>
-                <span className="font-black text-[#0D1B2A] text-sm">{selectedRequest.date || "Recent"}</span>
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                <span className="font-semibold text-slate-400 uppercase block mb-1 text-xs">Submitted On</span>
+                <span className="font-bold text-[#0D1B2A] text-base">{selectedRequest.date || "Recent"}</span>
               </div>
             </div>
 
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">Description</span>
-              <p className="text-xs font-medium text-slate-700 leading-relaxed">
+            <div className="bg-slate-50 p-4.5 rounded-xl border border-slate-100 space-y-1.5">
+              <span className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-slate-400 block">Description</span>
+              <p className="text-base font-normal text-slate-700 leading-relaxed">
                 {selectedRequest.description}
               </p>
             </div>
@@ -314,7 +352,7 @@ export default function Requests() {
               <button
                 type="button"
                 onClick={() => setSelectedRequest(null)}
-                className="rounded-xl border border-slate-200 px-5 py-2.5 text-xs font-black text-slate-600 hover:bg-slate-50"
+                className="rounded-xl border border-slate-200 px-6 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50"
               >
                 Close
               </button>
