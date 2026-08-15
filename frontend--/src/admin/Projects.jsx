@@ -113,6 +113,15 @@ export default function Projects() {
       return;
     }
 
+    // Strict Validation: Expected completion cannot be before start date
+    if (newProject.startDate && newProject.expectedCompletion) {
+      if (new Date(newProject.startDate) > new Date(newProject.expectedCompletion)) {
+        setAddErrorMsg("Expected completion cannot be before start date.");
+        setTimeout(() => setAddErrorMsg(""), 4000);
+        return;
+      }
+    }
+
     const citizensNum = Number(newProject.affectedCitizens) || 0;
     const foundStatus = statusOptions.find((opt) => opt.value === newProject.status) || statusOptions[0];
 
@@ -199,17 +208,30 @@ export default function Projects() {
   };
 
   const handleExpectedCompletionChange = (newVal) => {
-    setSelectedProjectModal((prev) => {
-      if (!prev) return prev;
-      const updated = {
-        ...prev,
-        expectedCompletion: newVal,
-      };
-      setProjectsList((list) =>
-        list.map((p) => (p.id === prev.id ? updated : p))
-      );
-      return updated;
-    });
+    if (!selectedProjectModal) return;
+
+    // Check if new completion date is before the start date
+    if (selectedProjectModal.startDate && newVal) {
+      if (new Date(selectedProjectModal.startDate) > new Date(newVal)) {
+        setModalErrorMsg("Expected completion cannot be before start date.");
+        setSelectedProjectModal({
+          ...selectedProjectModal,
+          expectedCompletion: newVal, 
+        });
+        return;
+      }
+    }
+
+    setModalErrorMsg("");
+    const updated = {
+      ...selectedProjectModal,
+      expectedCompletion: newVal,
+    };
+    
+    setSelectedProjectModal(updated);
+    setProjectsList((list) =>
+      list.map((p) => (p.id === updated.id ? updated : p))
+    );
   };
 
   const handleProgressChange = (newProgress) => {
@@ -356,13 +378,11 @@ export default function Projects() {
                 Start Date
               </label>
               <div className="relative h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50/70 focus-within:border-[#2D7FF9] focus-within:bg-white transition-all overflow-hidden cursor-pointer">
-                {/* Visible overlay for exact format */}
                 <div className="absolute inset-0 flex items-center px-3.5 pointer-events-none">
                   <span className={newProject.startDate ? "text-[#0D1B2A] text-sm font-semibold" : "text-slate-400 text-sm font-normal"}>
                     {newProject.startDate || "YYYY-MM-DD"}
                   </span>
                 </div>
-                {/* Hidden native date input that catches clicks */}
                 <input
                   type="date"
                   value={newProject.startDate}
@@ -378,15 +398,14 @@ export default function Projects() {
                 Expected Completion
               </label>
               <div className="relative h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50/70 focus-within:border-[#2D7FF9] focus-within:bg-white transition-all overflow-hidden cursor-pointer">
-                {/* Visible overlay for exact format */}
                 <div className="absolute inset-0 flex items-center px-3.5 pointer-events-none">
                   <span className={newProject.expectedCompletion ? "text-[#0D1B2A] text-sm font-semibold" : "text-slate-400 text-sm font-normal"}>
                     {newProject.expectedCompletion || "YYYY-MM-DD"}
                   </span>
                 </div>
-                {/* Hidden native date input that catches clicks */}
                 <input
                   type="date"
+                  min={newProject.startDate} // Disables picking a date before start date
                   value={newProject.expectedCompletion}
                   onChange={(e) => setNewProject({ ...newProject, expectedCompletion: e.target.value })}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:m-0 [&::-webkit-calendar-picker-indicator]:p-0"
@@ -663,15 +682,14 @@ export default function Projects() {
                     <span className="text-[#2D7FF9] text-xs font-black">✏️ EDITABLE</span>
                   </label>
                   <div className="relative h-6 w-full mt-1 border-b border-dashed border-slate-300 focus-within:border-[#2D7FF9] overflow-hidden cursor-pointer">
-                    {/* Visible overlay */}
                     <div className="absolute inset-0 flex items-center pointer-events-none">
                       <span className={selectedProjectModal.expectedCompletion ? "text-[#0D1B2A] text-sm font-extrabold" : "text-slate-400 text-sm font-normal"}>
                         {selectedProjectModal.expectedCompletion || "YYYY-MM-DD"}
                       </span>
                     </div>
-                    {/* Hidden native input */}
                     <input
                       type="date"
+                      min={selectedProjectModal.startDate}
                       value={selectedProjectModal.expectedCompletion}
                       onChange={(e) => handleExpectedCompletionChange(e.target.value)}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:m-0 [&::-webkit-calendar-picker-indicator]:p-0"
