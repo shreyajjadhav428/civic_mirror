@@ -548,14 +548,6 @@ function Composer({ value, fileName, isProcessing, onChange, onFileChange, onRem
             className="max-h-32 min-w-0 flex-1 resize-none overflow-y-auto border-0 bg-transparent px-2 py-2 text-sm leading-5 text-[#0D1B2A] outline-none placeholder:text-[#8B9EAF]"
           />
 
-          <span title="CivicMirror AI" className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-[#D8D4FA] bg-[#F4F2FF]">
-            <SparkleIcon />
-          </span>
-
-          <button type="button" title="Voice input" aria-label="Voice input" className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-[#60788F] transition-colors hover:bg-[#EDF5FB] hover:text-[#2D7FF9]">
-            <MicIcon />
-          </button>
-
           <button type="submit" disabled={isProcessing || (!value.trim() && !fileName)} title="Send message" aria-label="Send message" className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[#0D1B2A] text-white transition-colors hover:bg-[#183653] disabled:cursor-not-allowed disabled:bg-[#B8C8D6]">
             <SendIcon />
           </button>

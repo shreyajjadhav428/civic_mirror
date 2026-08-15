@@ -6,8 +6,8 @@ export default function Data() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFileType, setSelectedFileType] = useState("All");
 
-  // Pagination / Visible items limit (6 per page)
-  const [visibleCount, setVisibleCount] = useState(6);
+  // Pagination / Visible items limit (10 per page)
+  const [visibleCount, setVisibleCount] = useState(10);
 
   // Modal State for Inspecting Document
   const [selectedFileModal, setSelectedFileModal] = useState(null);
@@ -276,7 +276,7 @@ export default function Data() {
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
-                setVisibleCount(6);
+                setVisibleCount(10);
               }}
               className="w-full rounded-xl border border-slate-200 bg-slate-50/60 px-4.5 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-[#2D7FF9] focus:bg-white transition"
             />
@@ -292,7 +292,7 @@ export default function Data() {
                     key={type}
                     onClick={() => {
                       setSelectedFileType(type);
-                      setVisibleCount(6);
+                      setVisibleCount(10);
                     }}
                     className={`rounded-lg px-2.5 py-1 text-xs font-black transition ${
                       selectedFileType === type
@@ -325,7 +325,7 @@ export default function Data() {
             <div
               key={file.id}
               onClick={() => setSelectedFileModal(file)}
-              className="group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition-all hover:border-[#2D7FF9] hover:shadow-md overflow-hidden cursor-pointer"
+              className="group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition-all hover:border-slate-300 hover:shadow-md overflow-hidden cursor-pointer"
             >
               {/* Top Accent Bar */}
               <div className={`absolute top-0 left-0 w-14 h-1.5 ${file.topAccent} rounded-b`} />
@@ -366,17 +366,26 @@ export default function Data() {
         </div>
 
         {/* SHOW MORE BUTTON IF MORE THAN VISIBLE COUNT */}
-        {visibleCount < filteredFiles.length && (
+        {filteredFiles.length > 10 && (
           <div className="flex justify-center pt-6">
-            <button
-              onClick={() => setVisibleCount((prev) => prev + 6)}
-              className="group flex items-center gap-2.5 rounded-xl border border-[#2D7FF9] bg-white px-8 py-3.5 text-sm font-extrabold text-[#2D7FF9] hover:bg-[#2D7FF9] hover:text-white transition-all shadow-xs"
-            >
-              <span>Show More Documents</span>
-              <span className="rounded-full bg-[#2D7FF9]/10 px-2.5 py-0.5 text-xs font-black text-[#2D7FF9] group-hover:bg-white group-hover:text-[#2D7FF9] transition">
-                +{filteredFiles.length - visibleCount}
-              </span>
-            </button>
+            {visibleCount < filteredFiles.length ? (
+              <button
+                onClick={() => setVisibleCount((prev) => prev + 10)}
+                className="group flex items-center gap-2.5 rounded-xl border border-[#2D7FF9] bg-white px-8 py-3.5 text-sm font-extrabold text-[#2D7FF9] hover:bg-[#2D7FF9] hover:text-white transition-all shadow-xs cursor-pointer"
+              >
+                <span>Show More Documents</span>
+                <span className="rounded-full bg-[#2D7FF9]/10 px-2.5 py-0.5 text-xs font-black text-[#2D7FF9] group-hover:bg-white group-hover:text-[#2D7FF9] transition">
+                  +{filteredFiles.length - visibleCount}
+                </span>
+              </button>
+            ) : (
+              <button
+                onClick={() => setVisibleCount(10)}
+                className="rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-black text-slate-600 hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
+              >
+                Show Less ↑
+              </button>
+            )}
           </div>
         )}
       </div>

@@ -72,7 +72,13 @@ export default function TrackRepairs({ onNavigate }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [status, setStatus] = useState("All");
   const [selectedRepair, setSelectedRepair] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(10);
   const [loading, setLoading] = useState(true);
+
+  // Reset pagination when search or status filter changes
+  useEffect(() => {
+    setVisibleCount(10);
+  }, [searchQuery, status]);
 
   useEffect(() => {
     let isMounted = true;
@@ -405,168 +411,194 @@ export default function TrackRepairs({ onNavigate }) {
             {loading ? "Loading active municipal repairs..." : "No matching civic repairs found."}
           </div>
         ) : (
-          filteredRepairs.map((repair) => (
-          <article
-            key={repair.id}
-            className="overflow-hidden rounded-2xl border border-[#DCE7F1] bg-white shadow-[0_8px_24px_rgba(13,27,42,0.045)] transition-all duration-200 hover:-translate-y-1 hover:border-[#C7D9E9] hover:shadow-[0_12px_30px_rgba(13,27,42,0.065)]"
-          >
-            <div className="p-6 sm:p-7">
-              <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2.5">
-                    <span
-                      className={`rounded-full border px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wide ${statusStyles(
-                        repair.status,
-                      )}`}
-                    >
-                      {repair.status}
-                    </span>
-
-                    <span className="text-xs font-bold text-[#8A9AAA]">
-                      {repair.id}
-                    </span>
-
-                    <span className="hidden text-xs text-[#B0BBC5] sm:inline">
-                      ·
-                    </span>
-
-                    <span className="text-xs font-semibold text-[#8192A2]">
-                      {repair.category}
-                    </span>
-                  </div>
-
-                  <h2 className="mt-3.5 text-lg font-bold tracking-[-0.015em] text-[#18324C] sm:text-xl">
-                    {repair.title}
-                  </h2>
-
-                  <p className="mt-1.5 text-[15px] leading-6 text-[#63768A]">
-                    {repair.location}
-                    <span className="mx-2 text-[#B3BEC8]">·</span>
-                    Submitted {repair.submittedDate}
-                  </p>
-                </div>
-
-                {/* VIEW DETAILS BUTTON */}
-                <button
-                  type="button"
-                  onClick={() => setSelectedRepair(repair)}
-                  className="w-fit shrink-0 rounded-lg border border-[#C9D8E6] px-5 py-2.5 text-sm font-bold text-[#31516E] transition-all duration-150 hover:border-[#9BC5FF] hover:bg-[#EEF5FF] hover:text-[#2D7FF9]"
-                >
-                  View details
-                  <span className="ml-1.5">→</span>
-                </button>
-              </div>
-
-              {/* LATEST UPDATE */}
-              <div className="mt-6 flex gap-3.5 rounded-xl border border-[#E4EBF2] bg-[#F7F9FC] px-5 py-4">
-                <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white text-[#2D7FF9] shadow-sm">
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="h-4 w-4"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M12 8v4l2.5 2" />
-                    <circle cx="12" cy="12" r="8" />
-                  </svg>
-                </span>
-
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-[0.08em] text-[#8293A3]">
-                    Latest update
-                  </p>
-
-                  <p className="mt-1 text-[15px] font-medium leading-6 text-[#536B80]">
-                    {repair.update}
-                  </p>
-                </div>
-              </div>
-
-              {/* PROGRESS */}
-              <div className="mt-7">
-                <div className="flex items-center">
-                  {steps.map((step, index) => {
-                    const colors = getStepColor(
-                      step,
-                      index,
-                      repair.currentStep,
-                    );
-
-                    return (
-                      <div
-                        className={`flex min-w-0 flex-1 items-center ${
-                          index === steps.length - 1
-                            ? "flex-none"
-                            : ""
-                        }`}
-                        key={step}
-                      >
+          <>
+            {filteredRepairs.slice(0, visibleCount).map((repair) => (
+              <article
+                key={repair.id}
+                className="overflow-hidden rounded-2xl border border-[#DCE7F1] bg-white shadow-[0_8px_24px_rgba(13,27,42,0.045)] transition-all duration-200 hover:-translate-y-1 hover:border-[#C7D9E9] hover:shadow-[0_12px_30px_rgba(13,27,42,0.065)]"
+              >
+                <div className="p-6 sm:p-7">
+                  <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2.5">
                         <span
-                          className={`grid h-7 w-7 shrink-0 place-items-center rounded-full border text-xs font-bold ${colors.circle}`}
+                          className={`rounded-full border px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wide ${statusStyles(
+                            repair.status,
+                          )}`}
                         >
-                          {index < repair.currentStep
-                            ? "✓"
-                            : index + 1}
+                          {repair.status}
                         </span>
 
-                        {index < steps.length - 1 && (
-                          <span
-                            className={`mx-2 h-[2.5px] min-w-2 flex-1 rounded-full ${colors.line}`}
-                          />
-                        )}
+                        <span className="text-xs font-bold text-[#8A9AAA]">
+                          {repair.id}
+                        </span>
+
+                        <span className="hidden text-xs text-[#B0BBC5] sm:inline">
+                          ·
+                        </span>
+
+                        <span className="text-xs font-semibold text-[#8192A2]">
+                          {repair.category}
+                        </span>
                       </div>
-                    );
-                  })}
-                </div>
 
-                <div className="mt-2.5 grid grid-cols-3">
-                  {steps.map((step, index) => (
-                    <span
-                      className={`text-[11px] font-bold uppercase tracking-wide ${
-                        index <= repair.currentStep
-                          ? "text-[#526A7F]"
-                          : "text-[#9AAAB9]"
-                      } ${
-                        index === 0
-                          ? "text-left"
-                          : index === steps.length - 1
-                            ? "text-right"
-                            : "text-center"
-                      }`}
-                      key={step}
+                      <h2 className="mt-3.5 text-lg font-bold tracking-[-0.015em] text-[#18324C] sm:text-xl">
+                        {repair.title}
+                      </h2>
+
+                      <p className="mt-1.5 text-[15px] leading-6 text-[#63768A]">
+                        {repair.location}
+                        <span className="mx-2 text-[#B3BEC8]">·</span>
+                        Submitted {repair.submittedDate}
+                      </p>
+                    </div>
+
+                    {/* VIEW DETAILS BUTTON */}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedRepair(repair)}
+                      className="w-fit shrink-0 rounded-lg border border-[#C9D8E6] px-5 py-2.5 text-sm font-bold text-[#31516E] transition-all duration-150 hover:border-[#9BC5FF] hover:bg-[#EEF5FF] hover:text-[#2D7FF9] cursor-pointer"
                     >
-                      {step}
+                      View details
+                      <span className="ml-1.5">→</span>
+                    </button>
+                  </div>
+
+                  {/* LATEST UPDATE */}
+                  <div className="mt-6 flex gap-3.5 rounded-xl border border-[#E4EBF2] bg-[#F7F9FC] px-5 py-4">
+                    <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white text-[#2D7FF9] shadow-sm">
+                      <svg
+                        viewBox="0 0 24 24"
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M12 8v4l2.5 2" />
+                        <circle cx="12" cy="12" r="8" />
+                      </svg>
                     </span>
-                  ))}
+
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-[0.08em] text-[#8293A3]">
+                        Latest update
+                      </p>
+
+                      <p className="mt-1 text-[15px] font-medium leading-6 text-[#536B80]">
+                        {repair.update}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* PROGRESS */}
+                  <div className="mt-7">
+                    <div className="flex items-center">
+                      {steps.map((step, index) => {
+                        const colors = getStepColor(
+                          step,
+                          index,
+                          repair.currentStep,
+                        );
+
+                        return (
+                          <div
+                            className={`flex min-w-0 flex-1 items-center ${
+                              index === steps.length - 1
+                                ? "flex-none"
+                                : ""
+                            }`}
+                            key={step}
+                          >
+                            <span
+                              className={`grid h-7 w-7 shrink-0 place-items-center rounded-full border text-xs font-bold ${colors.circle}`}
+                            >
+                              {index < repair.currentStep
+                                ? "✓"
+                                : index + 1}
+                            </span>
+
+                            {index < steps.length - 1 && (
+                              <span
+                                className={`mx-2 h-[2.5px] min-w-2 flex-1 rounded-full ${colors.line}`}
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="mt-2.5 grid grid-cols-3">
+                      {steps.map((step, index) => (
+                        <span
+                          className={`text-[11px] font-bold uppercase tracking-wide ${
+                            index <= repair.currentStep
+                              ? "text-[#526A7F]"
+                              : "text-[#9AAAB9]"
+                          } ${
+                            index === 0
+                              ? "text-left"
+                              : index === steps.length - 1
+                                ? "text-right"
+                                : "text-center"
+                          }`}
+                          key={step}
+                        >
+                          {step}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* FOOTER */}
+                  <div className="mt-6 flex flex-col gap-3 border-t border-[#E7EEF4] pt-5 sm:flex-row sm:items-center sm:justify-between">
+                    <span className="text-[13px] font-medium text-[#718398]">
+                      Latest status:{" "}
+                      <strong className="font-bold text-[#49647D]">
+                        {repair.status}
+                      </strong>
+                    </span>
+
+                    {/* VIEW REPAIR DETAILS → MODAL */}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedRepair(repair)}
+                      className="w-fit text-[13px] font-bold text-[#2D7FF9] transition-colors hover:text-[#155FC5] cursor-pointer"
+                    >
+                      View repair details
+                      <span className="ml-1.5">→</span>
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </article>
+            ))}
 
-              {/* FOOTER */}
-              <div className="mt-6 flex flex-col gap-3 border-t border-[#E7EEF4] pt-5 sm:flex-row sm:items-center sm:justify-between">
-                <span className="text-[13px] font-medium text-[#718398]">
-                  Latest status:{" "}
-                  <strong className="font-bold text-[#49647D]">
-                    {repair.status}
-                  </strong>
-                </span>
-
-                {/* VIEW REPAIR DETAILS → MODAL */}
-                <button
-                  type="button"
-                  onClick={() => setSelectedRepair(repair)}
-                  className="w-fit text-[13px] font-bold text-[#2D7FF9] transition-colors hover:text-[#155FC5]"
-                >
-                  View repair details
-                  <span className="ml-1.5">→</span>
-                </button>
+            {/* SHOW MORE / SHOW LESS BUTTON */}
+            {filteredRepairs.length > 10 && (
+              <div className="flex justify-center pt-4">
+                {visibleCount < filteredRepairs.length ? (
+                  <button
+                    onClick={() => setVisibleCount((prev) => prev + 10)}
+                    className="group flex items-center gap-2.5 rounded-xl border border-[#2D7FF9] bg-white px-8 py-3.5 text-xs font-black text-[#2D7FF9] hover:bg-[#2D7FF9] hover:text-white transition-all shadow-xs cursor-pointer"
+                  >
+                    <span>Show More Repairs</span>
+                    <span className="rounded-full bg-[#2D7FF9]/10 px-2.5 py-0.5 text-[10px] font-black text-[#2D7FF9] group-hover:bg-white group-hover:text-[#2D7FF9] transition">
+                      +{filteredRepairs.length - visibleCount}
+                    </span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setVisibleCount(10)}
+                    className="rounded-xl border border-slate-200 bg-white px-6 py-3 text-xs font-black text-slate-600 hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
+                  >
+                    Show Less ↑
+                  </button>
+                )}
               </div>
-            </div>
-          </article>
-        ))
-      )}
+            )}
+          </>
+        )}
       </section>
 
       {/* REPAIR DETAILS MODAL */}

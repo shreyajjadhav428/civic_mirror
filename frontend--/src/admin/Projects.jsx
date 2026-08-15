@@ -15,6 +15,14 @@ export default function Projects() {
   const [activeTab, setActiveTab] = useState("all");
   const [loading, setLoading] = useState(true);
 
+  // Pagination state (10 cards per page)
+  const [visibleCount, setVisibleCount] = useState(10);
+
+  // Reset pagination when active tab changes
+  useEffect(() => {
+    setVisibleCount(10);
+  }, [activeTab]);
+
   // New Project Form State
   const [newProject, setNewProject] = useState({
     name: "",
@@ -555,85 +563,111 @@ export default function Projects() {
       </div>
 
       {/* 4. PROJECTS GRID CARDS */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        {filteredProjects.map((project) => (
-          <div
-            key={project.id}
-            className="group flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs hover:border-[#2D7FF9] hover:shadow-md transition-all space-y-5"
-          >
-            <div>
-              <div className="flex items-start justify-between border-b border-slate-100 pb-4">
-                <div>
-                  <span className="text-sm font-black tracking-wider text-[#2D7FF9] uppercase block mb-1">
-                    {project.id}
-                  </span>
-                  <h3 className="text-xl font-black text-[#0D1B2A] group-hover:text-[#2D7FF9] transition-colors">
-                    {project.name}
-                  </h3>
-                  <p className="text-sm font-bold text-slate-500 mt-1">📍 Pincode: {project.pincode} • {project.department}</p>
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {filteredProjects.slice(0, visibleCount).map((project) => (
+            <div
+              key={project.id}
+              className="group flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs hover:border-slate-300 hover:shadow-md transition-all space-y-5"
+            >
+              <div>
+                <div className="flex items-start justify-between border-b border-slate-100 pb-4">
+                  <div>
+                    <span className="text-sm font-black tracking-wider text-[#2D7FF9] uppercase block mb-1">
+                      {project.id}
+                    </span>
+                    <h3 className="text-xl font-black text-[#0D1B2A] group-hover:text-[#2D7FF9] transition-colors">
+                      {project.name}
+                    </h3>
+                    <p className="text-sm font-bold text-slate-500 mt-1">📍 Pincode: {project.pincode} • {project.department}</p>
+                  </div>
+
+                  <select
+                    value={project.status}
+                    onChange={(e) => handleStatusChange(project.id, e.target.value)}
+                    className={`rounded-md border px-2.5 py-1 text-sm font-black uppercase tracking-wider cursor-pointer focus:outline-none transition-all ${project.statusBadge}`}
+                  >
+                    {statusOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value} className="bg-white text-slate-900 font-semibold">
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
-                <select
-                  value={project.status}
-                  onChange={(e) => handleStatusChange(project.id, e.target.value)}
-                  className={`rounded-md border px-2.5 py-1 text-sm font-black uppercase tracking-wider cursor-pointer focus:outline-none transition-all ${project.statusBadge}`}
+                {/* Progress Bar */}
+                <div className="mt-4 space-y-1.5">
+                  <div className="flex items-center justify-between text-sm font-extrabold">
+                    <span className="text-slate-500">Execution Progress</span>
+                    <span className="text-[#2D7FF9] font-black">{project.progress}%</span>
+                  </div>
+                  <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
+                    <div
+                      style={{ width: `${project.progress}%` }}
+                      className="h-full bg-[#2D7FF9] rounded-full transition-all duration-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Budget Summary */}
+                <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                  <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                    <span className="block text-slate-400 font-bold text-sm uppercase mb-1">Total Budget</span>
+                    <span className="text-base font-black text-[#0D1B2A]">{formatINR(project.budget)}</span>
+                  </div>
+
+                  <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                    <span className="block text-slate-400 font-bold text-sm uppercase mb-1">Utilized Budget</span>
+                    <span className="text-base font-black text-[#008D78]">{formatINR(project.utilizedBudget)}</span>
+                  </div>
+
+                  <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                    <span className="block text-slate-400 font-bold text-sm uppercase mb-1">Connected Complaints</span>
+                    <span className="text-base font-black text-[#2D7FF9]">{project.relatedComplaintsCount} tickets</span>
+                  </div>
+
+                  <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+                    <span className="block text-slate-400 font-bold text-sm uppercase mb-1">Impacted Citizens</span>
+                    <span className="text-base font-black text-[#0D1B2A]">{project.affectedCitizens} residents</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center justify-end gap-3 border-t border-slate-100 pt-4">
+                <button
+                  onClick={() => setSelectedProjectModal(project)}
+                  className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-black text-[#2D7FF9] hover:bg-slate-50 transition-all cursor-pointer"
                 >
-                  {statusOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value} className="bg-white text-slate-900 font-semibold">
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Progress Bar */}
-              <div className="mt-4 space-y-1.5">
-                <div className="flex items-center justify-between text-sm font-extrabold">
-                  <span className="text-slate-500">Execution Progress</span>
-                  <span className="text-[#2D7FF9] font-black">{project.progress}%</span>
-                </div>
-                <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
-                  <div
-                    style={{ width: `${project.progress}%` }}
-                    className="h-full bg-[#2D7FF9] rounded-full transition-all duration-500"
-                  />
-                </div>
-              </div>
-
-              {/* Budget Summary */}
-              <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="block text-slate-400 font-bold text-sm uppercase mb-1">Total Budget</span>
-                  <span className="text-base font-black text-[#0D1B2A]">{formatINR(project.budget)}</span>
-                </div>
-
-                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="block text-slate-400 font-bold text-sm uppercase mb-1">Utilized Budget</span>
-                  <span className="text-base font-black text-[#008D78]">{formatINR(project.utilizedBudget)}</span>
-                </div>
-
-                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="block text-slate-400 font-bold text-sm uppercase mb-1">Connected Complaints</span>
-                  <span className="text-base font-black text-[#2D7FF9]">{project.relatedComplaintsCount} tickets</span>
-                </div>
-
-                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="block text-slate-400 font-bold text-sm uppercase mb-1">Impacted Citizens</span>
-                  <span className="text-base font-black text-[#0D1B2A]">{project.affectedCitizens} residents</span>
-                </div>
+                  Project Specs →
+                </button>
               </div>
             </div>
+          ))}
+        </div>
 
-            <div className="mt-4 flex items-center justify-end gap-3 border-t border-slate-100 pt-4">
+        {/* SHOW MORE BUTTON IF MORE THAN VISIBLE COUNT */}
+        {filteredProjects.length > 10 && (
+          <div className="flex justify-center pt-6">
+            {visibleCount < filteredProjects.length ? (
               <button
-                onClick={() => setSelectedProjectModal(project)}
-                className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-black text-[#2D7FF9] hover:bg-slate-50 transition-all cursor-pointer"
+                onClick={() => setVisibleCount((prev) => prev + 10)}
+                className="group flex items-center gap-2.5 rounded-xl border border-[#2D7FF9] bg-white px-8 py-3.5 text-sm font-extrabold text-[#2D7FF9] hover:bg-[#2D7FF9] hover:text-white transition-all shadow-xs cursor-pointer"
               >
-                Project Specs →
+                <span>Show More Projects</span>
+                <span className="rounded-full bg-[#2D7FF9]/10 px-2.5 py-0.5 text-xs font-black text-[#2D7FF9] group-hover:bg-white group-hover:text-[#2D7FF9] transition">
+                  +{filteredProjects.length - visibleCount}
+                </span>
               </button>
-            </div>
+            ) : (
+              <button
+                onClick={() => setVisibleCount(10)}
+                className="rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-black text-slate-600 hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
+              >
+                Show Less ↑
+              </button>
+            )}
           </div>
-        ))}
+        )}
       </div>
 
       {/* 5. FULL PROJECT SPECIFICATIONS MODAL */}

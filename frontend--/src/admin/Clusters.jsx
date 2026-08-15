@@ -361,6 +361,14 @@ export default function Clusters({ onNavigate }) {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedPincode, setSelectedPincode] = useState("All");
 
+  // Pagination state (10 per page)
+  const [visibleCount, setVisibleCount] = useState(10);
+
+  // Reset pagination when search or filters change
+  useEffect(() => {
+    setVisibleCount(10);
+  }, [searchQuery, selectedCategory, selectedPincode]);
+
   // Modal State
   const [selectedCluster, setSelectedCluster] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -582,7 +590,7 @@ export default function Clusters({ onNavigate }) {
             IDENTIFIED CLUSTER CARDS
           </p>
           <span className="text-sm font-bold text-slate-500">
-            Showing {filteredClusters.length} of {clusterData.length} clusters
+            Showing {Math.min(visibleCount, filteredClusters.length)} of {filteredClusters.length} clusters
           </span>
         </div>
 
@@ -595,112 +603,138 @@ export default function Clusters({ onNavigate }) {
             No active complaint clusters found matching your filter criteria.
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {filteredClusters.map((cluster) => {
-              const currentStatus = cluster.status || "Pending";
-              const resolvedCount = cluster.resolvedCount || 0;
-              const percentResolved = cluster.complaintCount > 0 ? Math.round((resolvedCount / cluster.complaintCount) * 100) : 0;
+          <>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              {filteredClusters.slice(0, visibleCount).map((cluster) => {
+                const currentStatus = cluster.status || "Pending";
+                const resolvedCount = cluster.resolvedCount || 0;
+                const percentResolved = cluster.complaintCount > 0 ? Math.round((resolvedCount / cluster.complaintCount) * 100) : 0;
 
-              return (
-                <div
-                  key={cluster.id}
-                  className={`group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition-all ${cluster.cardHoverBorder} hover:shadow-md overflow-hidden`}
-                >
-                  {/* Top Accent line */}
-                  <div className={`absolute top-0 left-0 w-16 h-1.5 ${cluster.topAccent} rounded-b`} />
+                return (
+                  <div
+                    key={cluster.id}
+                    className={`group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition-all ${cluster.cardHoverBorder} hover:shadow-md overflow-hidden`}
+                  >
+                    {/* Top Accent line */}
+                    <div className={`absolute top-0 left-0 w-16 h-1.5 ${cluster.topAccent} rounded-b`} />
 
-                  <div>
-                    {/* Header Row */}
-                    <div className="flex items-start justify-between mb-4 pt-1">
-                      <div>
-                        <span className="text-xs font-black tracking-wider text-slate-400 uppercase block mb-0.5">
-                          {cluster.id}
-                        </span>
-                        <h3 className={`text-xl font-black text-[#0D1B2A] ${cluster.titleHover} transition-colors leading-tight`}>
-                          {cluster.title}
-                        </h3>
-                      </div>
+                    <div>
+                      {/* Header Row */}
+                      <div className="flex items-start justify-between mb-4 pt-1">
+                        <div>
+                          <span className="text-xs font-black tracking-wider text-slate-400 uppercase block mb-0.5">
+                            {cluster.id}
+                          </span>
+                          <h3 className={`text-xl font-black text-[#0D1B2A] ${cluster.titleHover} transition-colors leading-tight`}>
+                            {cluster.title}
+                          </h3>
+                        </div>
 
-                      <span className={`rounded-lg border px-3 py-1 text-xs font-black uppercase tracking-wider ${cluster.priorityStyle}`}>
-                        • {cluster.priority} PRIORITY
-                      </span>
-                    </div>
-
-                    {/* Main Stats Box */}
-                    <div className="rounded-xl bg-slate-50/70 p-4 border border-slate-100 space-y-3">
-                      <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
-                        <span className="text-sm font-bold text-slate-500">Aggregated Complaints</span>
-                        <span className="font-black text-[#0D1B2A] text-lg">
-                          {cluster.complaintCount} complaints
+                        <span className={`rounded-lg border px-3 py-1 text-xs font-black uppercase tracking-wider ${cluster.priorityStyle}`}>
+                          • {cluster.priority} PRIORITY
                         </span>
                       </div>
 
-                      {/* Resolution Progress Bar */}
-                      <div className="border-b border-slate-200/60 pb-2.5">
-                        <div className="flex items-center justify-between text-xs font-bold mb-1.5">
-                          <span className="text-slate-500">Resolution Progress</span>
-                          <span className={`${percentResolved === 100 ? 'text-emerald-700' : 'text-[#2D7FF9]'}`}>
-                            {resolvedCount} / {cluster.complaintCount} Resolved ({percentResolved}%)
+                      {/* Main Stats Box */}
+                      <div className="rounded-xl bg-slate-50/70 p-4 border border-slate-100 space-y-3">
+                        <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
+                          <span className="text-sm font-bold text-slate-500">Aggregated Complaints</span>
+                          <span className="font-black text-[#0D1B2A] text-lg">
+                            {cluster.complaintCount} complaints
                           </span>
                         </div>
-                        <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200">
-                          <div
-                            className={`h-full transition-all duration-500 ${percentResolved === 100 ? 'bg-emerald-500' : 'bg-[#2D7FF9]'}`}
-                            style={{ width: `${percentResolved}%` }}
-                          />
+
+                        {/* Resolution Progress Bar */}
+                        <div className="border-b border-slate-200/60 pb-2.5">
+                          <div className="flex items-center justify-between text-xs font-bold mb-1.5">
+                            <span className="text-slate-500">Resolution Progress</span>
+                            <span className={`${percentResolved === 100 ? 'text-emerald-700' : 'text-[#2D7FF9]'}`}>
+                              {resolvedCount} / {cluster.complaintCount} Resolved ({percentResolved}%)
+                            </span>
+                          </div>
+                          <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200">
+                            <div
+                              className={`h-full transition-all duration-500 ${percentResolved === 100 ? 'bg-emerald-500' : 'bg-[#2D7FF9]'}`}
+                              style={{ width: `${percentResolved}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
+                          <span className="text-sm font-bold text-slate-500">Geographic Location</span>
+                          <span className="font-black text-[#0D1B2A] text-base">
+                            {cluster.location} <span className="text-slate-400 font-medium">({cluster.pincode})</span>
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-bold text-slate-500">Responsible Department</span>
+                          <span className={`font-extrabold ${cluster.deptColor} text-base`}>
+                            {cluster.department}
+                          </span>
                         </div>
                       </div>
-
-                      <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
-                        <span className="text-sm font-bold text-slate-500">Geographic Location</span>
-                        <span className="font-black text-[#0D1B2A] text-base">
-                          {cluster.location} <span className="text-slate-400 font-medium">({cluster.pincode})</span>
-                        </span>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-slate-500">Responsible Department</span>
-                        <span className={`font-extrabold ${cluster.deptColor} text-base`}>
-                          {cluster.department}
-                        </span>
-                      </div>
                     </div>
-                  </div>
 
-                  {/* Card Footer: Status Dropdown & View Button */}
-                  <div className="mt-5 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
-                    {/* Status Dropdown Selector */}
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Cluster Status:</span>
-                      <select
-                        value={currentStatus}
-                        disabled={updatingClusterId === cluster.id}
-                        onChange={(e) => handleStatusChange(cluster, e.target.value)}
-                        className={`rounded-lg border px-3 py-1.5 text-xs font-extrabold outline-none cursor-pointer transition shadow-2xs ${
-                          currentStatus === "Completed"
-                            ? "bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100"
-                            : currentStatus === "In Progress"
-                            ? "bg-blue-50 text-blue-800 border-blue-300 hover:bg-blue-100"
-                            : "bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100"
-                        }`}
+                    {/* Card Footer: Status Dropdown & View Button */}
+                    <div className="mt-5 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                      {/* Status Dropdown Selector */}
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Cluster Status:</span>
+                        <select
+                          value={currentStatus}
+                          disabled={updatingClusterId === cluster.id}
+                          onChange={(e) => handleStatusChange(cluster, e.target.value)}
+                          className={`rounded-lg border px-3 py-1.5 text-xs font-extrabold outline-none cursor-pointer transition shadow-2xs ${
+                            currentStatus === "Completed"
+                              ? "bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100"
+                              : currentStatus === "In Progress"
+                              ? "bg-blue-50 text-blue-800 border-blue-300 hover:bg-blue-100"
+                              : "bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100"
+                          }`}
+                        >
+                          <option value="Pending">⏳ Pending</option>
+                          <option value="In Progress">⚡ In Progress</option>
+                          <option value="Completed">✓ Completed (Resolve All)</option>
+                        </select>
+                      </div>
+
+                      <button
+                        onClick={() => setSelectedCluster(cluster)}
+                        className={`rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-black text-[#0D1B2A] ${cluster.btnHover} transition-all shadow-2xs`}
                       >
-                        <option value="Pending">⏳ Pending</option>
-                        <option value="In Progress">⚡ In Progress</option>
-                        <option value="Completed">✓ Completed (Resolve All)</option>
-                      </select>
+                        View Cluster Details
+                      </button>
                     </div>
-
-                    <button
-                      onClick={() => setSelectedCluster(cluster)}
-                      className={`rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-black text-[#0D1B2A] ${cluster.btnHover} transition-all shadow-2xs`}
-                    >
-                      View Cluster Details
-                    </button>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+
+            {/* SHOW MORE BUTTON IF MORE THAN VISIBLE COUNT */}
+            {filteredClusters.length > 10 && (
+              <div className="flex justify-center pt-6">
+                {visibleCount < filteredClusters.length ? (
+                  <button
+                    onClick={() => setVisibleCount((prev) => prev + 10)}
+                    className="group flex items-center gap-2.5 rounded-xl border border-[#2D7FF9] bg-white px-8 py-3.5 text-sm font-extrabold text-[#2D7FF9] hover:bg-[#2D7FF9] hover:text-white transition-all shadow-xs cursor-pointer"
+                  >
+                    <span>Show More Clusters</span>
+                    <span className="rounded-full bg-[#2D7FF9]/10 px-2.5 py-0.5 text-xs font-black text-[#2D7FF9] group-hover:bg-white group-hover:text-[#2D7FF9] transition">
+                      +{filteredClusters.length - visibleCount}
+                    </span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setVisibleCount(10)}
+                    className="rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-black text-slate-600 hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
+                  >
+                    Show Less ↑
+                  </button>
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
 
