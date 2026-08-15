@@ -664,11 +664,7 @@ export const getAdminInquiries = async (req, res) => {
 
       const statusLower = (c.status || '').toLowerCase();
 
-      if (c.admin_flagged) {
-        aiStatus = 'Flagged';
-        confidence = '87.1%';
-        flaggedCount += 1;
-      } else if (statusLower.includes('resolved') || statusLower.includes('complete') || statusLower.includes('verified')) {
+      if (statusLower.includes('resolved') || statusLower.includes('complete') || statusLower.includes('verified')) {
         aiStatus = 'Resolved';
         confidence = '98.9%';
         verifiedCount += 1;
@@ -676,6 +672,10 @@ export const getAdminInquiries = async (req, res) => {
         aiStatus = 'In Progress';
         confidence = '94.2%';
         inProgressCount += 1;
+      } else if (c.admin_flagged) {
+        aiStatus = 'Flagged';
+        confidence = '87.1%';
+        flaggedCount += 1;
       } else if (c.project_id || c.projects) {
         aiStatus = 'Verified';
         confidence = '95.5%';
@@ -810,7 +810,12 @@ export const updateComplaintStatus = async (req, res) => {
     const { status, admin_flagged } = req.body;
 
     const updates = {};
-    if (status !== undefined) updates.status = status;
+    if (status !== undefined) {
+      updates.status = status;
+      if (admin_flagged === undefined && (status === 'In Progress' || status === 'Resolved')) {
+        updates.admin_flagged = false;
+      }
+    }
     if (admin_flagged !== undefined) updates.admin_flagged = admin_flagged;
 
     // 1. Try update by primary key `id`
