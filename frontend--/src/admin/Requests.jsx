@@ -80,12 +80,8 @@ export default function Requests() {
       req.category.toLowerCase().includes(selectedCategory.toLowerCase()) ||
       selectedCategory.toLowerCase().includes(req.category.toLowerCase());
     const matchesStatus = selectedStatus === "All" || req.status.toLowerCase() === selectedStatus.toLowerCase();
-    const matchesFlagged =
-      selectedFlagged === "All" ||
-      (selectedFlagged === "Flagged" && req.flagged) ||
-      (selectedFlagged === "Unflagged" && !req.flagged);
 
-    return matchesSearch && matchesPincode && matchesCategory && matchesStatus && matchesFlagged;
+    return matchesSearch && matchesPincode && matchesCategory && matchesStatus;
   });
 
   // Paginated display slice
@@ -233,45 +229,14 @@ export default function Requests() {
             </select>
           </div>
 
-          {/* Date Filter */}
-          <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5">
-            <span className="text-slate-500">Date:</span>
-            <select
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="bg-transparent font-extrabold text-[#0D1B2A] outline-none cursor-pointer"
-            >
-              <option value="All Time">All Time</option>
-              <option value="Today">Today</option>
-              <option value="This Week">This Week</option>
-              <option value="This Month">This Month</option>
-            </select>
-          </div>
-
-          {/* Flagged Filter */}
-          <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5">
-            <span className="text-slate-500">Flagged:</span>
-            <select
-              value={selectedFlagged}
-              onChange={(e) => setSelectedFlagged(e.target.value)}
-              className="bg-transparent font-extrabold text-[#0D1B2A] outline-none cursor-pointer"
-            >
-              <option value="All">All Requests</option>
-              <option value="Flagged">Flagged Only</option>
-              <option value="Unflagged">Unflagged</option>
-            </select>
-          </div>
-
           {/* Reset Filters */}
-          {(selectedPincode !== "All" || selectedCategory !== "All" || selectedStatus !== "All" || selectedFlagged !== "All" || searchQuery !== "") && (
+          {(selectedPincode !== "All" || selectedCategory !== "All" || selectedStatus !== "All" || searchQuery !== "") && (
             <button
               onClick={() => {
                 setSearchQuery("");
                 setSelectedPincode("All");
                 setSelectedCategory("All");
                 setSelectedStatus("All");
-                setSelectedDate("All Time");
-                setSelectedFlagged("All");
               }}
               className="text-[#2D7FF9] hover:underline font-extrabold ml-auto"
             >
@@ -322,9 +287,6 @@ export default function Requests() {
                     >
                       <td className="px-5 py-4.5">
                         <div className="flex items-center gap-3">
-                          {item.flagged && (
-                            <span className="text-amber-500 text-sm" title="AI Flagged Request">🚩</span>
-                          )}
                           <div>
                             <span className="font-black text-[#0D1B2A] group-hover:text-[#2D7FF9] transition text-[16px] leading-snug block">
                               {item.title}
@@ -386,7 +348,7 @@ export default function Requests() {
       {/* 4. REQUEST CARD / DETAIL MODAL MATCHING SPECIFICATION */}
       {selectedRequestModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-7 shadow-2xl space-y-6">
+          <div className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-7 shadow-2xl space-y-6">
             {/* Modal Header */}
             <div className="flex items-start justify-between border-b border-slate-100 pb-4">
               <div>

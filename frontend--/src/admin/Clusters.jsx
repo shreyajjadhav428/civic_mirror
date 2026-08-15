@@ -707,7 +707,7 @@ export default function Clusters({ onNavigate }) {
       {/* 4. CLUSTER DETAILS MODAL */}
       {selectedCluster && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 p-4 backdrop-blur-sm">
-          <div className="modal-popup-container w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-7 shadow-2xl space-y-6">
+          <div className="modal-popup-container w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-7 shadow-2xl space-y-6">
             
             {/* Modal Header */}
             <div className="flex items-start justify-between border-b border-slate-100 pb-4">

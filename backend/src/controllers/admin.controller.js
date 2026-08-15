@@ -91,6 +91,18 @@ export const getComplaintClusters = async (req, res) => {
 
     if (error) throw error;
 
+    // Fetch saved cluster status overrides from database
+    const { data: savedClusters } = await supabase
+      .from('clusters')
+      .select('id, status');
+    
+    const savedStatusMap = {};
+    (savedClusters || []).forEach(sc => {
+      if (sc.id && sc.status && sc.status !== 'Active') {
+        savedStatusMap[sc.id] = sc.status;
+      }
+    });
+
     // Group complaints strictly by Pincode + Official Department
     const clustersMap = {};
 
@@ -188,8 +200,10 @@ export const getComplaintClusters = async (req, res) => {
       ).length;
       const pendingCount = Math.max(0, cl.complaintCount - resolvedCount - inProgressCount);
 
-      let clusterStatus = 'Pending';
-      if (resolvedCount === cl.complaintCount && cl.complaintCount > 0) {
+      let clusterStatus = savedStatusMap[cl.id] || 'Pending';
+      if (savedStatusMap[cl.id]) {
+        clusterStatus = savedStatusMap[cl.id];
+      } else if (resolvedCount === cl.complaintCount && cl.complaintCount > 0) {
         clusterStatus = 'Completed';
       } else if (inProgressCount > 0 || resolvedCount > 0) {
         clusterStatus = 'In Progress';
@@ -882,14 +896,34 @@ export const dispatchClusterWorkOrder = async (req, res) => {
 
     if (error) throw error;
 
-    // Update status in clusters table as well
+    // If no existing complaints matched, insert a complaint record so Requests section shows it
+    if (!data || data.length === 0) {
+      const catSlug = (category || 'General').replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 6);
+      await supabase.from('complaints').insert([{
+        id: `cmp-${Date.now()}`,
+        complaint_code: `CMP-${catSlug}-${pincode}`,
+        category: category || 'Roads & Public Works',
+        pincode: pincode,
+        status: complaintStatus,
+        description: `Aggregated ${category || 'civic'} report in Pincode ${pincode}`,
+      }]);
+    }
+
+    // Upsert status in clusters table
     try {
       const catSlug = (category || 'general').replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 6);
       const clusterId = `CLS-${catSlug}-${pincode}`;
       await supabase
         .from('clusters')
-        .update({ status: targetStatus, updated_at: new Date().toISOString() })
-        .eq('id', clusterId);
+        .upsert({
+          id: clusterId,
+          name: `${category} Cluster`,
+          pincode: pincode,
+          category: category,
+          department: category,
+          status: targetStatus,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'id' });
     } catch (dbErr) {
       console.warn('Updating cluster status in database warning:', dbErr?.message);
     }
