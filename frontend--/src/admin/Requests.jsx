@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getAdminInquiries, getComplaintClusters, updateComplaintStatus } from "../api/admin.api";
+import { OFFICIAL_DEPARTMENTS, normalizeDepartment } from "../constants/departments";
 
 export default function Requests() {
   // Search & Filter states
@@ -65,7 +66,11 @@ export default function Requests() {
       req.area.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesPincode = selectedPincode === "All" || req.pincode === selectedPincode;
-    const matchesCategory = selectedCategory === "All" || req.category.toLowerCase().includes(selectedCategory.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "All" ||
+      req.category.toLowerCase() === selectedCategory.toLowerCase() ||
+      req.category.toLowerCase().includes(selectedCategory.toLowerCase()) ||
+      selectedCategory.toLowerCase().includes(req.category.toLowerCase());
     const matchesStatus = selectedStatus === "All" || req.status.toLowerCase() === selectedStatus.toLowerCase();
     const matchesFlagged =
       selectedFlagged === "All" ||
@@ -194,11 +199,11 @@ export default function Requests() {
               className="bg-transparent font-extrabold text-[#0D1B2A] outline-none cursor-pointer"
             >
               <option value="All">All Categories</option>
-              <option value="Streetlight">Streetlight</option>
-              <option value="Road">Road</option>
-              <option value="Water">Water</option>
-              <option value="Sanitation">Sanitation</option>
-              <option value="Electrical">Electrical</option>
+              {OFFICIAL_DEPARTMENTS.map((dept) => (
+                <option key={dept.name} value={dept.name}>
+                  {dept.name}
+                </option>
+              ))}
             </select>
           </div>
 
