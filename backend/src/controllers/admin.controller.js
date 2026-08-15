@@ -438,10 +438,8 @@ export const createAdminProject = async (req, res) => {
       category: department || 'Municipal Works',
       pincode: String(pincode || '110025'),
       status: status || 'In Progress',
-      budget: Number(budget) || 1000000,
-      utilized_budget: Number(utilizedBudget) || 0,
-      expected_completion: expectedCompletion || '2026-11-30',
-      progress: progressVal
+      expected_completion: validDate,
+      progress: status === 'Completed' ? 100 : 15
     };
 
     // Insert into Supabase projects table

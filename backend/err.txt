@@ -1,0 +1,63 @@
+﻿node : file:///C:/Users/AS
+US/OneDrive/Desktop/projec
+ts/civic_mirror/backend/no
+de_modules/@supabase/supab
+ase-js/dist/index.mjs:384
+At line:1 char:1
++ node server.js 2>&1 | 
+Out-File -FilePath 
+err.txt -Encoding utf8; 
+Get- ...
++ ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (f  
+  ile:///C:/User...t/in   
+ dex.mjs:384:String) [    
+], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+	if (!trimmedUrl) throw 
+new Error("supabaseUrl is 
+required.");
+	                       ^
+
+Error: supabaseUrl is 
+required.
+    at 
+validateSupabaseUrl (file:
+///C:/Users/ASUS/OneDrive/
+Desktop/projects/civic_mir
+ror/backend/node_modules/@
+supabase/supabase-js/dist/
+index.mjs:384:25)
+    at new SupabaseClient 
+(file:///C:/Users/ASUS/One
+Drive/Desktop/projects/civ
+ic_mirror/backend/node_mod
+ules/@supabase/supabase-js
+/dist/index.mjs:627:19)
+    at createClient (file:
+///C:/Users/ASUS/OneDrive/
+Desktop/projects/civic_mir
+ror/backend/node_modules/@
+supabase/supabase-js/dist/
+index.mjs:867:9)
+    at file:///C:/Users/AS
+US/OneDrive/Desktop/projec
+ts/civic_mirror/backend/sr
+c/config/supabase.js:8:25
+    at ModuleJob.run (node
+:internal/modules/esm/modu
+le_job:430:25)
+    at async onImport.trac
+ePromise.__proto__ (node:i
+nternal/modules/esm/loader
+:661:26)
+    at async asyncRunEntry
+PointWithESMLoader (node:i
+nternal/modules/run_main:1
+01:5)
+
+Node.js v24.13.1
