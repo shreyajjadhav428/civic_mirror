@@ -27,23 +27,33 @@ export default function Requests() {
       try {
         const res = await getAdminInquiries();
         if (isMounted && res?.data?.inquiries) {
-          const mapped = res.data.inquiries.map((inq, idx) => ({
-            id: inq.id || `REQ-10${idx + 1}`,
-            request: inq.topic || "Citizen civic issue report.",
-            title: inq.topic ? (inq.topic.length > 45 ? inq.topic.slice(0, 45) + "..." : inq.topic) : "Civic Request",
-            category: inq.department || "General",
-            pincode: inq.pincode || "110025",
-            area: `Pincode ${inq.pincode || "110025"}`,
-            status: inq.aiStatus === "Resolved" ? "Resolved" : inq.aiStatus === "In Progress" ? "In Progress" : "Pending",
-            priority: inq.aiStatus === "Flagged" ? "High" : "Medium",
-            submittedDate: inq.date || "Recent",
-            flagged: inq.aiStatus === "Flagged" || Boolean(inq.admin_flagged),
-            aiAnalysis: {
-              relatedProject: `${inq.department || "Municipal Operations"} Project`,
-              evidenceCount: `${inq.evidenceCount || 5} records`,
-              explanation: inq.summary || "AI cross-referenced inquiry log against municipal database records."
-            }
-          }));
+          const mapped = res.data.inquiries.map((inq, idx) => {
+            const rawSt = (inq.status || inq.aiStatus || "").toLowerCase();
+            const normStatus = rawSt.includes("resolved") || rawSt.includes("completed")
+              ? "Resolved"
+              : rawSt.includes("progress")
+              ? "In Progress"
+              : "Pending";
+
+            return {
+              id: inq.id || `REQ-10${idx + 1}`,
+              raw_id: inq.raw_id || inq.id,
+              request: inq.topic || "Citizen civic issue report.",
+              title: inq.topic ? (inq.topic.length > 45 ? inq.topic.slice(0, 45) + "..." : inq.topic) : "Civic Request",
+              category: inq.department || "General",
+              pincode: inq.pincode || "110025",
+              area: `Pincode ${inq.pincode || "110025"}`,
+              status: normStatus,
+              priority: inq.aiStatus === "Flagged" || inq.admin_flagged ? "High" : "Medium",
+              submittedDate: inq.date || "Recent",
+              flagged: inq.aiStatus === "Flagged" || Boolean(inq.admin_flagged),
+              aiAnalysis: {
+                relatedProject: `${inq.department || "Municipal Operations"} Project`,
+                evidenceCount: `${inq.evidenceCount || 5} records`,
+                explanation: inq.summary || "AI cross-referenced inquiry log against municipal database records."
+              }
+            };
+          });
           setRequestsList(mapped);
         }
       } catch (err) {
@@ -106,17 +116,21 @@ export default function Requests() {
     }
   };
 
-  const handleStatusChange = async (reqId, newStatus) => {
+  const handleStatusChange = async (reqId, newStatus, rawId) => {
     setRequestsList((prev) =>
-      prev.map((r) => (r.id === reqId ? { ...r, status: newStatus } : r))
+      prev.map((r) => (r.id === reqId || r.raw_id === reqId || (rawId && r.raw_id === rawId) ? { ...r, status: newStatus } : r))
     );
-    if (selectedRequestModal && selectedRequestModal.id === reqId) {
+    if (selectedRequestModal && (selectedRequestModal.id === reqId || selectedRequestModal.raw_id === reqId || (rawId && selectedRequestModal.raw_id === rawId))) {
       setSelectedRequestModal((prev) => ({ ...prev, status: newStatus }));
     }
     try {
-      await updateComplaintStatus(reqId, { status: newStatus });
+      const primaryId = rawId || reqId;
+      await updateComplaintStatus(primaryId, { status: newStatus });
+      if (reqId && reqId !== primaryId) {
+        await updateComplaintStatus(reqId, { status: newStatus });
+      }
     } catch (e) {
-      console.warn("Backend update status error:", e);
+      console.warn("Backend update status notice:", e);
     }
   };
 
@@ -401,7 +415,7 @@ export default function Requests() {
                   <span className="text-xs font-black text-slate-400 uppercase block mb-1">Status</span>
                   <select
                     value={selectedRequestModal.status}
-                    onChange={(e) => handleStatusChange(selectedRequestModal.id, e.target.value)}
+                    onChange={(e) => handleStatusChange(selectedRequestModal.id, e.target.value, selectedRequestModal.raw_id)}
                     className={`w-full rounded-md border px-2 py-1 text-xs font-black uppercase outline-none cursor-pointer transition focus:ring-2 ${getStatusStyle(selectedRequestModal.status)}`}
                   >
                     <option value="Pending">Pending</option>

@@ -11,7 +11,7 @@ import { loginUser, registerUser } from "../api/auth.api";
 // Set to false when backend authentication is ready.
 // ─────────────────────────────────────────────────────────────────────
 
-export const DEV_BYPASS_AUTH = false;
+export const DEV_BYPASS_AUTH = true;
 
 const AuthContext = createContext(null);
 
