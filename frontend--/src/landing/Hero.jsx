@@ -397,7 +397,7 @@ export default function Hero() {
           justify-content: flex-start !important;
           gap: 0.22em;
           color: #FFFFFF;
-          text-shadow: none !important;
+          text-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.4);
           filter: none !important;
           opacity: 0;
           transform: translateY(28px);
