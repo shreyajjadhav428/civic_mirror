@@ -367,9 +367,8 @@ export default function AiInsights() {
                   </p>
                 </div>
 
-                <div className="pt-2 flex items-center justify-between text-sm font-bold text-slate-400 border-t border-slate-100">
+                <div className="pt-2 flex items-center justify-between text-sm font-semibold text-slate-400 border-t border-slate-100">
                   <span>{doc.records} Records</span>
-                  <span className="text-[#2D7FF9] font-black group-hover:underline">Inspect →</span>
                 </div>
               </button>
             ))}

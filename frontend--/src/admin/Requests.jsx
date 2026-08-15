@@ -65,6 +65,18 @@ export default function Requests() {
     return () => { isMounted = false; };
   }, []);
 
+  // Extract all unique pincodes present in Clusters section and requests list
+  const CLUSTER_PINCODES = ["110001", "110025", "110026", "400001", "400008", "400012", "422001"];
+  const availablePincodes = [
+    "All",
+    ...Array.from(
+      new Set([
+        ...CLUSTER_PINCODES,
+        ...requestsList.map((r) => r.pincode).filter(Boolean)
+      ])
+    ).sort()
+  ];
+
   // Filter Logic
   const filteredRequests = requestsList.filter((req) => {
     const matchesSearch =
@@ -187,13 +199,13 @@ export default function Requests() {
             <select
               value={selectedPincode}
               onChange={(e) => setSelectedPincode(e.target.value)}
-              className="bg-transparent font-extrabold text-[#0D1B2A] outline-none cursor-pointer"
+              className="bg-transparent font-semibold text-[#0D1B2A] outline-none cursor-pointer"
             >
-              <option value="All">All Pincodes</option>
-              <option value="110025">110025</option>
-              <option value="110026">110026</option>
-              <option value="400012">400012</option>
-              <option value="400008">400008</option>
+              {availablePincodes.map((pin) => (
+                <option key={pin} value={pin}>
+                  {pin === "All" ? "All Pincodes" : pin}
+                </option>
+              ))}
             </select>
           </div>
 

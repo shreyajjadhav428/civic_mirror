@@ -6,8 +6,8 @@ export default function Data() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFileType, setSelectedFileType] = useState("All");
 
-  // Pagination / Visible items limit (10 per page)
-  const [visibleCount, setVisibleCount] = useState(10);
+  // Pagination / Visible items limit (6 per page)
+  const [visibleCount, setVisibleCount] = useState(6);
 
   // Modal State for Inspecting Document
   const [selectedFileModal, setSelectedFileModal] = useState(null);
@@ -276,7 +276,7 @@ export default function Data() {
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
-                setVisibleCount(10);
+                setVisibleCount(6);
               }}
               className="w-full rounded-xl border border-slate-200 bg-slate-50/60 px-4.5 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-[#2D7FF9] focus:bg-white transition"
             />
@@ -292,7 +292,7 @@ export default function Data() {
                     key={type}
                     onClick={() => {
                       setSelectedFileType(type);
-                      setVisibleCount(10);
+                      setVisibleCount(6);
                     }}
                     className={`rounded-lg px-2.5 py-1 text-xs font-black transition ${
                       selectedFileType === type
@@ -366,22 +366,22 @@ export default function Data() {
         </div>
 
         {/* SHOW MORE BUTTON IF MORE THAN VISIBLE COUNT */}
-        {filteredFiles.length > 10 && (
+        {filteredFiles.length > 6 && (
           <div className="flex justify-center pt-6">
             {visibleCount < filteredFiles.length ? (
               <button
-                onClick={() => setVisibleCount((prev) => prev + 10)}
-                className="group flex items-center gap-2.5 rounded-xl border border-[#2D7FF9] bg-white px-8 py-3.5 text-sm font-extrabold text-[#2D7FF9] hover:bg-[#2D7FF9] hover:text-white transition-all shadow-xs cursor-pointer"
+                onClick={() => setVisibleCount((prev) => prev + 6)}
+                className="group flex items-center gap-2.5 rounded-xl border border-[#2D7FF9] bg-white px-8 py-3.5 text-sm font-semibold text-[#2D7FF9] hover:bg-[#2D7FF9] hover:text-white transition-all shadow-xs cursor-pointer"
               >
                 <span>Show More Documents</span>
-                <span className="rounded-full bg-[#2D7FF9]/10 px-2.5 py-0.5 text-xs font-black text-[#2D7FF9] group-hover:bg-white group-hover:text-[#2D7FF9] transition">
+                <span className="rounded-full bg-[#2D7FF9]/10 px-2.5 py-0.5 text-xs font-bold text-[#2D7FF9] group-hover:bg-white group-hover:text-[#2D7FF9] transition">
                   +{filteredFiles.length - visibleCount}
                 </span>
               </button>
             ) : (
               <button
-                onClick={() => setVisibleCount(10)}
-                className="rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-black text-slate-600 hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
+                onClick={() => setVisibleCount(6)}
+                className="rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
               >
                 Show Less ↑
               </button>
