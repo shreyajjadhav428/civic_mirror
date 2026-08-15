@@ -23,7 +23,7 @@ export const explainableDecisionSchema = {
     },
     detectedCategory: { 
       type: Type.STRING, 
-      description: "The municipal category identified (e.g., Street Lighting, Roads, Water Supply, Sanitation, Public Parks)." 
+      description: "The official municipal department identified (e.g., Electricity & Street Lighting, Water Supply & Water Works, Sewerage & Sanitation, Roads & Public Works, Solid Waste Management, Storm Water & Drainage, Parks & Horticulture, Building & Urban Development, Traffic & Transportation, Public Health & Sanitation, Animal Welfare & Veterinary, Environment & Pollution Control)." 
     },
     evidence: {
       type: Type.ARRAY,

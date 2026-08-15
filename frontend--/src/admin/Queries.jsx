@@ -16,13 +16,13 @@ export default function Queries({ onNavigate }) {
     {
       id: "Q-101",
       question: "When will Sector 12 road resurfacing be completed?",
-      category: "Road Infrastructure",
+      category: "Roads & Public Works",
       requestCount: 78,
       maxCount: 100,
       topAccent: "bg-[#2D7FF9]",
       badgeStyle: "bg-blue-50 text-[#2D7FF9] border-blue-200",
       barColor: "bg-[#2D7FF9]",
-      departments: ["Engineering & Road Ops"],
+      departments: ["Roads & Public Works"],
       locations: ["Sector 12", "Shanti Nagar"],
       projects: ["PRJ-01 (Sector 12 Resurfacing)"],
       relatedRequests: [
@@ -34,13 +34,13 @@ export default function Queries({ onNavigate }) {
     {
       id: "Q-102",
       question: "Frequent water pressure drop issues during peak hours",
-      category: "Water Supply",
+      category: "Water Supply & Water Works",
       requestCount: 64,
       maxCount: 100,
       topAccent: "bg-[#00A68E]",
       badgeStyle: "bg-teal-50 text-[#00A68E] border-teal-200",
       barColor: "bg-[#00A68E]",
-      departments: ["Water Supply & Hydro Ops"],
+      departments: ["Water Supply & Water Works"],
       locations: ["Ward 3", "Green Park Ward 9"],
       projects: ["PRJ-03 (High-Pressure Pipeline Installation)"],
       relatedRequests: [
@@ -52,13 +52,13 @@ export default function Queries({ onNavigate }) {
     {
       id: "Q-103",
       question: "Broken streetlights along Western Bypass highway corridor",
-      category: "Electrical Works",
+      category: "Electricity & Street Lighting",
       requestCount: 42,
       maxCount: 100,
       topAccent: "bg-[#FFC107]",
       badgeStyle: "bg-amber-50 text-amber-800 border-amber-200",
       barColor: "bg-[#FFC107]",
-      departments: ["Electrical Maintenance"],
+      departments: ["Electricity & Street Lighting"],
       locations: ["Western Highway Bypass", "Outer Ring Ward 14"],
       projects: ["PRJ-02 (Smart LED Streetlight Grid)"],
       relatedRequests: [
@@ -70,7 +70,7 @@ export default function Queries({ onNavigate }) {
     {
       id: "Q-104",
       question: "Timetable for municipal garbage segregation rollout",
-      category: "Sanitation",
+      category: "Solid Waste Management",
       requestCount: 36,
       maxCount: 100,
       topAccent: "bg-[#6366F1]",
@@ -93,7 +93,7 @@ export default function Queries({ onNavigate }) {
       topic: "Road resurfacing progress query for Sector 12 area",
       citizen: "Rajesh Sharma",
       date: "14 Aug 2026",
-      department: "Engineering & Road Ops",
+      department: "Roads & Public Works",
       aiStatus: "Resolved",
       pincode: "400012",
       summary: "Inquiry cross-referenced against PRJ-01 active work order. AI verified contractor status is on schedule."
@@ -103,7 +103,7 @@ export default function Queries({ onNavigate }) {
       topic: "Water supply disruption report for Green Park colony",
       citizen: "Priya Nair",
       date: "14 Aug 2026",
-      department: "Water Supply",
+      department: "Water Supply & Water Works",
       aiStatus: "Resolved",
       pincode: "400009",
       summary: "Matched with pipeline maintenance ticket #WM-204. Supply restoration estimated within 4 hours."
@@ -113,7 +113,7 @@ export default function Queries({ onNavigate }) {
       topic: "Request for street light replacement near Sector 8 main gate",
       citizen: "Amitabh Sen",
       date: "13 Aug 2026",
-      department: "Electrical Works",
+      department: "Electricity & Street Lighting",
       aiStatus: "Pending Review",
       pincode: "400008",
       summary: "Pending verification against streetlight inventory DB. Dispatched to ward inspector."
@@ -123,7 +123,7 @@ export default function Queries({ onNavigate }) {
       topic: "Duplicate complaint regarding drainage overflow in Ward 4",
       citizen: "Sunita Verma",
       date: "13 Aug 2026",
-      department: "Public Works",
+      department: "Roads & Public Works",
       aiStatus: "Flagged",
       pincode: "400004",
       summary: "Flagged by AI as duplicate submission of INQ-9460. Merged into active ticket."
@@ -135,7 +135,7 @@ export default function Queries({ onNavigate }) {
     totalRelatedQueries: 220,
     projectRelationPercent: 68,
     mostAffectedLocations: ["Sector 12", "Green Park Ward 9", "Western Bypass"],
-    primaryDepartments: ["Engineering & Road Ops", "Water Supply"],
+    primaryDepartments: ["Roads & Public Works", "Water Supply & Water Works"],
     verifiedCount: 154,
     pendingCount: 42,
     flaggedCount: 24,

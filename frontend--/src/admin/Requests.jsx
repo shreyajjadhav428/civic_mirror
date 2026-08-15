@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getAdminInquiries, getComplaintClusters, updateComplaintStatus } from "../api/admin.api";
+import { OFFICIAL_DEPARTMENTS, normalizeDepartment } from "../constants/departments";
 
 export default function Requests() {
   // Search & Filter states
@@ -21,7 +22,7 @@ export default function Requests() {
       id: "REQ-1001",
       request: "Streetlight near my house hasn't worked for three days.",
       title: "Streetlight not working",
-      category: "Streetlight",
+      category: "Electricity & Street Lighting",
       pincode: "110025",
       area: "Shanti Nagar",
       status: "Pending",
@@ -38,7 +39,7 @@ export default function Requests() {
       id: "REQ-1002",
       request: "Deep potholes and asphalt erosion near Sector 12 main junction causing traffic jams.",
       title: "Road damage",
-      category: "Road",
+      category: "Roads & Public Works",
       pincode: "110025",
       area: "Sector 12",
       status: "In Progress",
@@ -55,7 +56,7 @@ export default function Requests() {
       id: "REQ-1003",
       request: "Major underground pipeline leak causing water logging in Green Park block C.",
       title: "Water leakage",
-      category: "Water",
+      category: "Water Supply & Water Works",
       pincode: "110026",
       area: "Green Park Ward 9",
       status: "Resolved",
@@ -72,7 +73,7 @@ export default function Requests() {
       id: "REQ-1004",
       request: "Uncollected garbage bins overflowing along market area for over 48 hours.",
       title: "Garbage accumulation",
-      category: "Sanitation",
+      category: "Solid Waste Management",
       pincode: "400012",
       area: "Central Market",
       status: "Pending",
@@ -89,7 +90,7 @@ export default function Requests() {
       id: "REQ-1005",
       request: "Sparking electric transformer near Sector 8 community hall.",
       title: "Transformer hazard",
-      category: "Electrical",
+      category: "Electricity & Street Lighting",
       pincode: "400008",
       area: "Sector 8",
       status: "In Progress",
@@ -116,7 +117,7 @@ export default function Requests() {
             id: inq.id || `REQ-10${idx + 1}`,
             request: inq.topic || "Citizen civic issue report.",
             title: inq.topic ? inq.topic.split(" ").slice(0, 4).join(" ") : "Civic Request",
-            category: inq.department ? inq.department.split(" ")[0] : "General",
+            category: normalizeDepartment(inq.department || ""),
             pincode: inq.pincode || "110025",
             area: inq.citizen ? `${inq.citizen}'s Ward` : "Municipal Area",
             status: inq.aiStatus === "Verified" ? "In Progress" : inq.aiStatus === "Flagged" ? "Pending" : "Pending",
@@ -151,7 +152,11 @@ export default function Requests() {
       req.area.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesPincode = selectedPincode === "All" || req.pincode === selectedPincode;
-    const matchesCategory = selectedCategory === "All" || req.category.toLowerCase().includes(selectedCategory.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "All" ||
+      req.category.toLowerCase() === selectedCategory.toLowerCase() ||
+      req.category.toLowerCase().includes(selectedCategory.toLowerCase()) ||
+      selectedCategory.toLowerCase().includes(req.category.toLowerCase());
     const matchesStatus = selectedStatus === "All" || req.status.toLowerCase() === selectedStatus.toLowerCase();
     const matchesFlagged =
       selectedFlagged === "All" ||
@@ -280,11 +285,11 @@ export default function Requests() {
               className="bg-transparent font-extrabold text-[#0D1B2A] outline-none cursor-pointer"
             >
               <option value="All">All Categories</option>
-              <option value="Streetlight">Streetlight</option>
-              <option value="Road">Road</option>
-              <option value="Water">Water</option>
-              <option value="Sanitation">Sanitation</option>
-              <option value="Electrical">Electrical</option>
+              {OFFICIAL_DEPARTMENTS.map((dept) => (
+                <option key={dept.name} value={dept.name}>
+                  {dept.name}
+                </option>
+              ))}
             </select>
           </div>
 

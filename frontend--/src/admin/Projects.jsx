@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getAdminProjects, createAdminProject, updateAdminProject } from "../api/admin.api";
+import { OFFICIAL_DEPARTMENTS } from "../constants/departments";
 
 export default function Projects() {
   const statusOptions = [
@@ -17,7 +18,7 @@ export default function Projects() {
   // New Project Form State
   const [newProject, setNewProject] = useState({
     name: "",
-    department: "Engineering & Road Ops",
+    department: OFFICIAL_DEPARTMENTS[0].name,
     pincode: "",
     startDate: "",
     expectedCompletion: "",
@@ -25,6 +26,7 @@ export default function Projects() {
     utilizedBudget: "",
     affectedCitizens: "",
     status: "In Progress",
+    progress: "",
   });
   const [addSuccessMsg, setAddSuccessMsg] = useState("");
 
@@ -106,6 +108,10 @@ export default function Projects() {
     const utilNum = Number(newProject.utilizedBudget) || 0;
     const citizensNum = Number(newProject.affectedCitizens) || 0;
     const foundStatus = statusOptions.find((opt) => opt.value === newProject.status) || statusOptions[0];
+    const progressNum =
+      newProject.progress !== "" && newProject.progress !== undefined
+        ? Math.min(100, Math.max(0, Number(newProject.progress) || 0))
+        : (newProject.status === "Completed" ? 100 : 0);
 
     const tempProject = {
       id: `PRJ-${Date.now()}`,
@@ -114,7 +120,7 @@ export default function Projects() {
       pincode: newProject.pincode,
       startDate: newProject.startDate || "01 Aug 2026",
       expectedCompletion: newProject.expectedCompletion || "30 Nov 2026",
-      progress: newProject.status === "Completed" ? 100 : 15,
+      progress: progressNum,
       budget: budgetNum,
       utilizedBudget: utilNum,
       remainingBudget: Math.max(0, budgetNum - utilNum),
@@ -128,7 +134,7 @@ export default function Projects() {
     setProjectsList((prev) => [tempProject, ...prev]);
 
     try {
-      const res = await createAdminProject(newProject);
+      const res = await createAdminProject({ ...newProject, progress: progressNum });
       if (res?.data) {
         setProjectsList((prev) =>
           prev.map((p) => (p.id === tempProject.id ? { ...p, ...res.data } : p))
@@ -140,7 +146,7 @@ export default function Projects() {
 
     setNewProject({
       name: "",
-      department: "Engineering & Road Ops",
+      department: OFFICIAL_DEPARTMENTS[0].name,
       pincode: "",
       startDate: "",
       expectedCompletion: "",
@@ -148,6 +154,7 @@ export default function Projects() {
       utilizedBudget: "",
       affectedCitizens: "",
       status: "In Progress",
+      progress: "",
     });
     setAddSuccessMsg("Project added successfully!");
     setTimeout(() => setAddSuccessMsg(""), 3500);
@@ -290,11 +297,11 @@ export default function Projects() {
                 onChange={(e) => setNewProject({ ...newProject, department: e.target.value })}
                 className="h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-sm font-semibold text-[#0D1B2A] focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all cursor-pointer"
               >
-                <option value="Engineering & Road Ops">Engineering & Road Ops</option>
-                <option value="Electrical Works">Electrical Works</option>
-                <option value="Water Supply & Sanitation">Water Supply & Sanitation</option>
-                <option value="Stormwater Operations">Stormwater Operations</option>
-                <option value="Public Health & Sanitation">Public Health & Sanitation</option>
+                {OFFICIAL_DEPARTMENTS.map((dept) => (
+                  <option key={dept.name} value={dept.name}>
+                    {dept.icon} {dept.name}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -385,28 +392,45 @@ export default function Projects() {
             </div>
           </div>
 
-          {/* Row 3: Status & Action Button */}
+          {/* Row 3: Status, Execution Progress & Action Button */}
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 pt-2 border-t border-slate-100">
-            <div className="w-full sm:w-64">
-              <label className="block text-sm font-black uppercase text-slate-500 tracking-wider mb-1">
-                Initial Status
-              </label>
-              <select
-                value={newProject.status}
-                onChange={(e) => setNewProject({ ...newProject, status: e.target.value })}
-                className="h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-sm font-semibold text-[#0D1B2A] focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all cursor-pointer"
-              >
-                {statusOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
+              <div>
+                <label className="block text-sm font-black uppercase text-slate-500 tracking-wider mb-1">
+                  Initial Status
+                </label>
+                <select
+                  value={newProject.status}
+                  onChange={(e) => setNewProject({ ...newProject, status: e.target.value })}
+                  className="h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-sm font-semibold text-[#0D1B2A] focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all cursor-pointer"
+                >
+                  {statusOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-black uppercase text-slate-500 tracking-wider mb-1">
+                  Execution Progress (%)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={newProject.progress}
+                  onChange={(e) => setNewProject({ ...newProject, progress: e.target.value })}
+                  placeholder="e.g. 0, 25, 50"
+                  className="h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 text-sm font-semibold text-[#0D1B2A] placeholder:text-slate-400 placeholder:font-normal focus:border-[#2D7FF9] focus:bg-white focus:outline-none transition-all"
+                />
+              </div>
             </div>
 
             <button
               type="submit"
-              className="h-[42px] rounded-xl bg-[#2D7FF9] px-6 text-sm font-black text-white hover:bg-[#1E4FA3] active:scale-95 transition-all shadow-xs flex items-center justify-center gap-1.5 shrink-0 cursor-pointer"
+              className="h-[42px] rounded-xl bg-[#2D7FF9] px-6 text-sm font-black text-white hover:bg-[#1E4FA3] active:scale-95 transition-all shadow-xs flex items-center justify-center gap-1.5 shrink-0 cursor-pointer sm:mb-0"
             >
               + Add Project
             </button>

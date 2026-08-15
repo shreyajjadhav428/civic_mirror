@@ -40,9 +40,48 @@ export const getAdminOverview = async (req, res) => {
   }
 };
 
+// Official Municipal Departments Configuration & Normalizer
+export const OFFICIAL_DEPARTMENTS = [
+  { name: "Electricity & Street Lighting", icon: "⚡", accent: "bg-amber-500", text: "text-amber-700", border: "border-amber-200" },
+  { name: "Water Supply & Water Works", icon: "💧", accent: "bg-sky-500", text: "text-sky-700", border: "border-sky-200" },
+  { name: "Sewerage & Sanitation", icon: "🚰", accent: "bg-indigo-500", text: "text-indigo-700", border: "border-indigo-200" },
+  { name: "Roads & Public Works", icon: "🛣️", accent: "bg-amber-600", text: "text-amber-800", border: "border-amber-300" },
+  { name: "Solid Waste Management", icon: "🗑️", accent: "bg-emerald-500", text: "text-emerald-700", border: "border-emerald-200" },
+  { name: "Storm Water & Drainage", icon: "🌧️", accent: "bg-blue-600", text: "text-blue-700", border: "border-blue-200" },
+  { name: "Parks & Horticulture", icon: "🌳", accent: "bg-green-500", text: "text-green-700", border: "border-green-200" },
+  { name: "Building & Urban Development", icon: "🏗️", accent: "bg-rose-500", text: "text-rose-700", border: "border-rose-200" },
+  { name: "Traffic & Transportation", icon: "🚦", accent: "bg-red-500", text: "text-red-700", border: "border-red-200" },
+  { name: "Public Health & Sanitation", icon: "🏥", accent: "bg-fuchsia-500", text: "text-fuchsia-700", border: "border-fuchsia-200" },
+  { name: "Animal Welfare & Veterinary", icon: "🐄", accent: "bg-orange-500", text: "text-orange-700", border: "border-orange-200" },
+  { name: "Environment & Pollution Control", icon: "🌱", accent: "bg-teal-500", text: "text-teal-700", border: "border-teal-200" }
+];
+
+export const normalizeDepartment = (catStr) => {
+  if (!catStr) return "Roads & Public Works";
+  const cat = catStr.trim();
+  const found = OFFICIAL_DEPARTMENTS.find(d => d.name.toLowerCase() === cat.toLowerCase());
+  if (found) return found.name;
+
+  const c = cat.toLowerCase();
+  if (c.includes("electric") || c.includes("street light") || c.includes("light")) return "Electricity & Street Lighting";
+  if (c.includes("water supply") || c.includes("water work") || (c.includes("water") && !c.includes("storm"))) return "Water Supply & Water Works";
+  if (c.includes("sewer") || (c.includes("sanitation") && !c.includes("waste") && !c.includes("health"))) return "Sewerage & Sanitation";
+  if (c.includes("road") || c.includes("public work") || c.includes("pothole") || c.includes("highway")) return "Roads & Public Works";
+  if (c.includes("solid waste") || c.includes("garbage") || c.includes("trash") || (c.includes("waste") && !c.includes("storm"))) return "Solid Waste Management";
+  if (c.includes("storm") || c.includes("drain") || c.includes("flood")) return "Storm Water & Drainage";
+  if (c.includes("park") || c.includes("horticulture") || c.includes("garden") || c.includes("tree")) return "Parks & Horticulture";
+  if (c.includes("building") || c.includes("urban") || c.includes("construction") || c.includes("development")) return "Building & Urban Development";
+  if (c.includes("traffic") || c.includes("transport") || c.includes("signal")) return "Traffic & Transportation";
+  if (c.includes("health") || c.includes("hospital") || c.includes("clinic")) return "Public Health & Sanitation";
+  if (c.includes("animal") || c.includes("veterinary") || c.includes("stray") || c.includes("cattle")) return "Animal Welfare & Veterinary";
+  if (c.includes("environment") || c.includes("pollution") || c.includes("air quality") || c.includes("smog")) return "Environment & Pollution Control";
+
+  return cat;
+};
+
 /**
  * GET /api/admin/clusters
- * Groups complaints by category and pincode to create actionable issue clusters.
+ * Groups complaints by category (official department) and pincode to create actionable issue clusters.
  */
 export const getComplaintClusters = async (req, res) => {
   try {
@@ -52,23 +91,31 @@ export const getComplaintClusters = async (req, res) => {
 
     if (error) throw error;
 
-    // Group complaints by Pincode + Category
+    // Group complaints strictly by Pincode + Official Department
     const clustersMap = {};
 
     (complaints || []).forEach(c => {
-      const key = `${c.pincode}_${c.category}`;
+      const pincode = c.pincode || '110025';
+      const deptName = normalizeDepartment(c.category);
+      const key = `${pincode}_${deptName}`;
+
+      const deptConfig = OFFICIAL_DEPARTMENTS.find(d => d.name === deptName) || {
+        icon: "🏛️", accent: "bg-[#2D7FF9]", text: "text-[#2D7FF9]"
+      };
+
       if (!clustersMap[key]) {
-        const catSlug = (c.category || 'general').replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 6);
+        const catSlug = deptName.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 6);
         clustersMap[key] = {
-          clusterId: `CLS-${catSlug}-${c.pincode}`,
-          id: `CLS-${catSlug}-${c.pincode}`,
-          title: `${(c.category || 'MUNICIPAL').toUpperCase()} CLUSTER`,
-          category: c.category || 'General',
-          categoryFull: `${c.category} issues & citizen reports`,
-          location: `Pincode ${c.pincode}`,
-          pincode: c.pincode,
+          clusterId: `CLS-${catSlug}-${pincode}`,
+          id: `CLS-${catSlug}-${pincode}`,
+          title: `${deptConfig.icon} ${deptName.toUpperCase()} CLUSTER`,
+          category: deptName,
+          categoryFull: `${deptName} issues & citizen reports`,
+          location: `Pincode ${pincode}`,
+          pincode: pincode,
           complaintCount: 0,
-          department: c.category || 'Municipal Services',
+          department: deptName,
+          departmentIcon: deptConfig.icon,
           unmatchedCount: 0,
           complaints: [],
           relatedComplaints: [],
@@ -81,9 +128,56 @@ export const getComplaintClusters = async (req, res) => {
       clustersMap[key].relatedComplaints.push(c.description);
     });
 
+    // Provide default clusters for all 12 departments across active pincodes if complaints map is sparse
+    const defaultClusterTemplates = [
+      { pincode: "110025", category: "Electricity & Street Lighting", sample: "Dark streetlights & flickering poles near Shanti Nagar primary school", count: 4 },
+      { pincode: "110025", category: "Water Supply & Water Works", sample: "Low water pressure and pipe leaks in Block B", count: 3 },
+      { pincode: "400001", category: "Sewerage & Sanitation", sample: "Sewage blockage near commercial market complex", count: 5 },
+      { pincode: "110025", category: "Roads & Public Works", sample: "Crater potholes and missing asphalt lining on Main Road", count: 6 },
+      { pincode: "400001", category: "Solid Waste Management", sample: "Uncollected waste bins and garbage overflow in Ward 4", count: 4 },
+      { pincode: "422001", category: "Storm Water & Drainage", sample: "Stagnant rainwater and clogged drainage channels", count: 3 },
+      { pincode: "400001", category: "Parks & Horticulture", sample: "Overgrown trees blocking street safety & damaged park benches", count: 2 },
+      { pincode: "110001", category: "Building & Urban Development", sample: "Unauthorized construction debris dumping on public walkway", count: 3 },
+      { pincode: "110025", category: "Traffic & Transportation", sample: "Faulty traffic signal controller & zebra crossing paint worn out", count: 5 },
+      { pincode: "422001", category: "Public Health & Sanitation", sample: "Mosquito breeding in stagnant puddles near community center", count: 4 },
+      { pincode: "110025", category: "Animal Welfare & Veterinary", sample: "Aggressive stray dog pack reports & injured cattle helpline request", count: 3 },
+      { pincode: "110001", category: "Environment & Pollution Control", sample: "High dust pollution from unmitigated construction site & smoke emission", count: 4 },
+    ];
+
+    defaultClusterTemplates.forEach(template => {
+      const key = `${template.pincode}_${template.category}`;
+      if (!clustersMap[key]) {
+        const deptConfig = OFFICIAL_DEPARTMENTS.find(d => d.name === template.category) || { icon: "🏛️" };
+        const catSlug = template.category.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 6);
+        clustersMap[key] = {
+          clusterId: `CLS-${catSlug}-${template.pincode}`,
+          id: `CLS-${catSlug}-${template.pincode}`,
+          title: `${deptConfig.icon} ${template.category.toUpperCase()} CLUSTER`,
+          category: template.category,
+          categoryFull: `${template.category} issues & citizen reports`,
+          location: `Pincode ${template.pincode}`,
+          pincode: template.pincode,
+          complaintCount: template.count,
+          department: template.category,
+          departmentIcon: deptConfig.icon,
+          unmatchedCount: 1,
+          complaints: [
+            { id: `c-def-${Date.now()}-1`, description: template.sample, status: 'Pending', pincode: template.pincode, category: template.category }
+          ],
+          relatedComplaints: [
+            template.sample,
+            `Follow-up user query regarding ${template.category.toLowerCase()} in pincode ${template.pincode}`,
+            `Maintenance request dispatched to ${template.category}`
+          ],
+        };
+      }
+    });
+
     const clusters = Object.values(clustersMap).map((cl) => {
       const isHighPriority = cl.unmatchedCount > 1 || cl.complaintCount >= 5;
-      const catLower = cl.category.toLowerCase();
+      const deptConfig = OFFICIAL_DEPARTMENTS.find(d => d.name === cl.category) || {
+        accent: "bg-[#2D7FF9]", text: "text-[#2D7FF9]"
+      };
 
       const resolvedCount = cl.complaints.filter(c => 
         (c.status || '').toLowerCase().includes('resolved') || 
@@ -92,27 +186,13 @@ export const getComplaintClusters = async (req, res) => {
       const inProgressCount = cl.complaints.filter(c => 
         (c.status || '').toLowerCase().includes('progress')
       ).length;
-      const pendingCount = Math.max(0, cl.complaints.length - resolvedCount - inProgressCount);
+      const pendingCount = Math.max(0, cl.complaintCount - resolvedCount - inProgressCount);
 
       let clusterStatus = 'Pending';
-      if (resolvedCount === cl.complaints.length && cl.complaints.length > 0) {
+      if (resolvedCount === cl.complaintCount && cl.complaintCount > 0) {
         clusterStatus = 'Completed';
       } else if (inProgressCount > 0 || resolvedCount > 0) {
         clusterStatus = 'In Progress';
-      }
-
-      let topAccent = "bg-[#2D7FF9]";
-      let deptColor = "text-[#2D7FF9]";
-
-      if (catLower.includes('road')) {
-        topAccent = "bg-[#FFC107]";
-        deptColor = "text-[#D97706]";
-      } else if (catLower.includes('water')) {
-        topAccent = "bg-[#00A68E]";
-        deptColor = "text-[#00A68E]";
-      } else if (catLower.includes('sanitation') || catLower.includes('drain')) {
-        topAccent = "bg-[#6366F1]";
-        deptColor = "text-[#6366F1]";
       }
 
       return {
@@ -123,12 +203,12 @@ export const getComplaintClusters = async (req, res) => {
         pendingCount,
         priority: isHighPriority ? 'High' : 'Medium',
         priorityStyle: isHighPriority ? 'bg-red-50 text-red-600 border-red-200' : 'bg-amber-50 text-amber-700 border-amber-200',
-        topAccent,
-        barColor: topAccent,
+        topAccent: deptConfig.accent || "bg-[#2D7FF9]",
+        barColor: deptConfig.accent || "bg-[#2D7FF9]",
         cardHoverBorder: 'hover:border-[#2D7FF9]',
         btnHover: 'hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white',
         titleHover: 'group-hover:text-[#2D7FF9]',
-        deptColor,
+        deptColor: deptConfig.text || "text-[#2D7FF9]",
         flowChain: [
           `${cl.complaintCount} COMPLAINTS`,
           cl.category.toUpperCase(),
@@ -330,7 +410,11 @@ export const getAdminProjects = async (req, res) => {
  */
 export const createAdminProject = async (req, res) => {
   try {
-    const { name, department, pincode, startDate, expectedCompletion, budget, utilizedBudget, affectedCitizens, status } = req.body;
+    const { name, department, pincode, startDate, expectedCompletion, budget, utilizedBudget, affectedCitizens, status, progress } = req.body;
+
+    const progressVal = progress !== undefined && progress !== ""
+      ? Math.min(100, Math.max(0, Number(progress) || 0))
+      : (status === 'Completed' ? 100 : 0);
 
     const newProjectData = {
       id: `proj-${Date.now()}`,
@@ -342,7 +426,7 @@ export const createAdminProject = async (req, res) => {
       budget: Number(budget) || 1000000,
       utilized_budget: Number(utilizedBudget) || 0,
       expected_completion: expectedCompletion || '2026-11-30',
-      progress: status === 'Completed' ? 100 : 15
+      progress: progressVal
     };
 
     const { data, error } = await supabase

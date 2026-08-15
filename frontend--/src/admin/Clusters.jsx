@@ -1,6 +1,360 @@
 import React, { useState, useEffect } from "react";
 import { getComplaintClusters, dispatchClusterWorkOrder } from "../api/admin.api";
 
+export const OFFICIAL_DEPARTMENTS = [
+  { name: "Electricity & Street Lighting", icon: "⚡" },
+  { name: "Water Supply & Water Works", icon: "💧" },
+  { name: "Sewerage & Sanitation", icon: "🚰" },
+  { name: "Roads & Public Works", icon: "🛣️" },
+  { name: "Solid Waste Management", icon: "🗑️" },
+  { name: "Storm Water & Drainage", icon: "🌧️" },
+  { name: "Parks & Horticulture", icon: "🌳" },
+  { name: "Building & Urban Development", icon: "🏗️" },
+  { name: "Traffic & Transportation", icon: "🚦" },
+  { name: "Public Health & Sanitation", icon: "🏥" },
+  { name: "Animal Welfare & Veterinary", icon: "🐄" },
+  { name: "Environment & Pollution Control", icon: "🌱" },
+];
+
+export const DEFAULT_CLUSTERS = [
+  {
+    id: "CLS-ELEC-110025",
+    clusterId: "CLS-ELEC-110025",
+    title: "⚡ ELECTRICITY & STREET LIGHTING CLUSTER",
+    category: "Electricity & Street Lighting",
+    department: "Electricity & Street Lighting",
+    departmentIcon: "⚡",
+    location: "Shanti Nagar (Pincode 110025)",
+    pincode: "110025",
+    complaintCount: 5,
+    resolvedCount: 1,
+    inProgressCount: 1,
+    pendingCount: 3,
+    status: "Pending",
+    priority: "High",
+    priorityStyle: "bg-red-50 text-red-600 border-red-200",
+    topAccent: "bg-amber-500",
+    deptColor: "text-amber-700",
+    cardHoverBorder: "hover:border-[#2D7FF9]",
+    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    titleHover: "group-hover:text-[#2D7FF9]",
+    relatedComplaints: [
+      "Streetlights on 4th avenue are completely dead in Shanti Nagar",
+      "Pitch black near the primary school, flickering LED poles",
+      "Broken light fixture near community hall",
+      "Transformers humming loudly near block C",
+      "Exposed electrical wiring near street pole #14"
+    ]
+  },
+  {
+    id: "CLS-WATER-110025",
+    clusterId: "CLS-WATER-110025",
+    title: "💧 WATER SUPPLY & WATER WORKS CLUSTER",
+    category: "Water Supply & Water Works",
+    department: "Water Supply & Water Works",
+    departmentIcon: "💧",
+    location: "Shanti Nagar (Pincode 110025)",
+    pincode: "110025",
+    complaintCount: 4,
+    resolvedCount: 2,
+    inProgressCount: 0,
+    pendingCount: 2,
+    status: "In Progress",
+    priority: "High",
+    priorityStyle: "bg-red-50 text-red-600 border-red-200",
+    topAccent: "bg-sky-500",
+    deptColor: "text-sky-700",
+    cardHoverBorder: "hover:border-[#2D7FF9]",
+    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    titleHover: "group-hover:text-[#2D7FF9]",
+    relatedComplaints: [
+      "No water pressure in Block B during peak morning hours",
+      "Pipeline leak leaking onto main roadway",
+      "Low water volume in elevated water tank line",
+      "Contaminated tap water report near ward 5"
+    ]
+  },
+  {
+    id: "CLS-SEWER-400001",
+    clusterId: "CLS-SEWER-400001",
+    title: "🚰 SEWERAGE & SANITATION CLUSTER",
+    category: "Sewerage & Sanitation",
+    department: "Sewerage & Sanitation",
+    departmentIcon: "🚰",
+    location: "Downtown (Pincode 400001)",
+    pincode: "400001",
+    complaintCount: 5,
+    resolvedCount: 0,
+    inProgressCount: 2,
+    pendingCount: 3,
+    status: "Pending",
+    priority: "High",
+    priorityStyle: "bg-red-50 text-red-600 border-red-200",
+    topAccent: "bg-indigo-500",
+    deptColor: "text-indigo-700",
+    cardHoverBorder: "hover:border-[#2D7FF9]",
+    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    titleHover: "group-hover:text-[#2D7FF9]",
+    relatedComplaints: [
+      "Sewage line blockage overflowing near commercial market",
+      "Foul sewage smell rising from open manhole",
+      "Sewer line backing up into basement shops",
+      "Broken manhole cover near pedestrian crossing",
+      "Sanitation drain overflow report"
+    ]
+  },
+  {
+    id: "CLS-ROADS-110025",
+    clusterId: "CLS-ROADS-110025",
+    title: "🛣️ ROADS & PUBLIC WORKS CLUSTER",
+    category: "Roads & Public Works",
+    department: "Roads & Public Works",
+    departmentIcon: "🛣️",
+    location: "Shanti Nagar (Pincode 110025)",
+    pincode: "110025",
+    complaintCount: 6,
+    resolvedCount: 3,
+    inProgressCount: 1,
+    pendingCount: 2,
+    status: "In Progress",
+    priority: "High",
+    priorityStyle: "bg-red-50 text-red-600 border-red-200",
+    topAccent: "bg-amber-600",
+    deptColor: "text-amber-800",
+    cardHoverBorder: "hover:border-[#2D7FF9]",
+    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    titleHover: "group-hover:text-[#2D7FF9]",
+    relatedComplaints: [
+      "Massive crater pothole on Main Road near Ward 4",
+      "Road repaving left heavy gravel and asphalt debris",
+      "Deep rut on bus route causing vehicle damage",
+      "Unfinished road tarring near sector gate 2",
+      "Speed breaker paint faded and dangerous at night",
+      "Curb alignment broken along avenue 3"
+    ]
+  },
+  {
+    id: "CLS-SOLID-400001",
+    clusterId: "CLS-SOLID-400001",
+    title: "🗑️ SOLID WASTE MANAGEMENT CLUSTER",
+    category: "Solid Waste Management",
+    department: "Solid Waste Management",
+    departmentIcon: "🗑️",
+    location: "Downtown (Pincode 400001)",
+    pincode: "400001",
+    complaintCount: 4,
+    resolvedCount: 1,
+    inProgressCount: 0,
+    pendingCount: 3,
+    status: "Pending",
+    priority: "Medium",
+    priorityStyle: "bg-amber-50 text-amber-700 border-amber-200",
+    topAccent: "bg-emerald-500",
+    deptColor: "text-emerald-700",
+    cardHoverBorder: "hover:border-[#2D7FF9]",
+    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    titleHover: "group-hover:text-[#2D7FF9]",
+    relatedComplaints: [
+      "Garbage overflow and uncollected public bins near Sector 8",
+      "Commercial waste dump uncleared for 3 days",
+      "Plastic waste dumping near vegetable market",
+      "Sanitation bin lid broken and scattering litter"
+    ]
+  },
+  {
+    id: "CLS-STORM-422001",
+    clusterId: "CLS-STORM-422001",
+    title: "🌧️ STORM WATER & DRAINAGE CLUSTER",
+    category: "Storm Water & Drainage",
+    department: "Storm Water & Drainage",
+    departmentIcon: "🌧️",
+    location: "Suburban Area (Pincode 422001)",
+    pincode: "422001",
+    complaintCount: 3,
+    resolvedCount: 0,
+    inProgressCount: 1,
+    pendingCount: 2,
+    status: "Pending",
+    priority: "Medium",
+    priorityStyle: "bg-amber-50 text-amber-700 border-amber-200",
+    topAccent: "bg-blue-600",
+    deptColor: "text-blue-700",
+    cardHoverBorder: "hover:border-[#2D7FF9]",
+    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    titleHover: "group-hover:text-[#2D7FF9]",
+    relatedComplaints: [
+      "Stagnant rainwater and blocked stormwater drain flooding street",
+      "Culvert clogged with silt after heavy rainfall",
+      "Drain grate missing on suburban highway stretch"
+    ]
+  },
+  {
+    id: "CLS-PARKS-400001",
+    clusterId: "CLS-PARKS-400001",
+    title: "🌳 PARKS & HORTICULTURE CLUSTER",
+    category: "Parks & Horticulture",
+    department: "Parks & Horticulture",
+    departmentIcon: "🌳",
+    location: "Downtown (Pincode 400001)",
+    pincode: "400001",
+    complaintCount: 3,
+    resolvedCount: 1,
+    inProgressCount: 1,
+    pendingCount: 1,
+    status: "In Progress",
+    priority: "Medium",
+    priorityStyle: "bg-amber-50 text-amber-700 border-amber-200",
+    topAccent: "bg-green-500",
+    deptColor: "text-green-700",
+    cardHoverBorder: "hover:border-[#2D7FF9]",
+    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    titleHover: "group-hover:text-[#2D7FF9]",
+    relatedComplaints: [
+      "Overgrown tree branches blocking street lamps and vision",
+      "Broken park bench in Central Garden",
+      "Dead tree hazard along residential perimeter"
+    ]
+  },
+  {
+    id: "CLS-BUILD-110001",
+    clusterId: "CLS-BUILD-110001",
+    title: "🏗️ BUILDING & URBAN DEVELOPMENT CLUSTER",
+    category: "Building & Urban Development",
+    department: "Building & Urban Development",
+    departmentIcon: "🏗️",
+    location: "Central Zone (Pincode 110001)",
+    pincode: "110001",
+    complaintCount: 3,
+    resolvedCount: 0,
+    inProgressCount: 0,
+    pendingCount: 3,
+    status: "Pending",
+    priority: "Medium",
+    priorityStyle: "bg-amber-50 text-amber-700 border-amber-200",
+    topAccent: "bg-rose-500",
+    deptColor: "text-rose-700",
+    cardHoverBorder: "hover:border-[#2D7FF9]",
+    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    titleHover: "group-hover:text-[#2D7FF9]",
+    relatedComplaints: [
+      "Unauthorized construction material dumped on public sidewalk",
+      "Illegal scaffolding encroaching road clearance",
+      "Unpermitted building excavation without safety barrier"
+    ]
+  },
+  {
+    id: "CLS-TRAFF-110025",
+    clusterId: "CLS-TRAFF-110025",
+    title: "🚦 TRAFFIC & TRANSPORTATION CLUSTER",
+    category: "Traffic & Transportation",
+    department: "Traffic & Transportation",
+    departmentIcon: "🚦",
+    location: "Shanti Nagar (Pincode 110025)",
+    pincode: "110025",
+    complaintCount: 4,
+    resolvedCount: 2,
+    inProgressCount: 1,
+    pendingCount: 1,
+    status: "In Progress",
+    priority: "High",
+    priorityStyle: "bg-red-50 text-red-600 border-red-200",
+    topAccent: "bg-red-500",
+    deptColor: "text-red-700",
+    cardHoverBorder: "hover:border-[#2D7FF9]",
+    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    titleHover: "group-hover:text-[#2D7FF9]",
+    relatedComplaints: [
+      "Traffic signal controller malfunctioning at major intersection",
+      "Faded zebra crossing lines near school zone",
+      "Traffic sign board damaged by storm",
+      "Bus stop shelter light damaged"
+    ]
+  },
+  {
+    id: "CLS-HLTH-422001",
+    clusterId: "CLS-HLTH-422001",
+    title: "🏥 PUBLIC HEALTH & SANITATION CLUSTER",
+    category: "Public Health & Sanitation",
+    department: "Public Health & Sanitation",
+    departmentIcon: "🏥",
+    location: "Suburban Area (Pincode 422001)",
+    pincode: "422001",
+    complaintCount: 4,
+    resolvedCount: 0,
+    inProgressCount: 1,
+    pendingCount: 3,
+    status: "Pending",
+    priority: "High",
+    priorityStyle: "bg-red-50 text-red-600 border-red-200",
+    topAccent: "bg-fuchsia-500",
+    deptColor: "text-fuchsia-700",
+    cardHoverBorder: "hover:border-[#2D7FF9]",
+    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    titleHover: "group-hover:text-[#2D7FF9]",
+    relatedComplaints: [
+      "Mosquito breeding risk in stagnant puddles near ward clinic",
+      "Anti-larval fogging requested in Ward 9",
+      "Public health sanitizer dispenser empty near bus terminus",
+      "Food hygiene concern at open street stall corner"
+    ]
+  },
+  {
+    id: "CLS-ANML-110025",
+    clusterId: "CLS-ANML-110025",
+    title: "🐄 ANIMAL WELFARE & VETERINARY CLUSTER",
+    category: "Animal Welfare & Veterinary",
+    department: "Animal Welfare & Veterinary",
+    departmentIcon: "🐄",
+    location: "Shanti Nagar (Pincode 110025)",
+    pincode: "110025",
+    complaintCount: 3,
+    resolvedCount: 1,
+    inProgressCount: 0,
+    pendingCount: 2,
+    status: "Pending",
+    priority: "Medium",
+    priorityStyle: "bg-amber-50 text-amber-700 border-amber-200",
+    topAccent: "bg-orange-500",
+    deptColor: "text-orange-700",
+    cardHoverBorder: "hover:border-[#2D7FF9]",
+    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    titleHover: "group-hover:text-[#2D7FF9]",
+    relatedComplaints: [
+      "Pack of aggressive stray dogs near residential gate",
+      "Injured stray cow needing veterinary mobile squad",
+      "Stray cattle causing traffic hazard near market road"
+    ]
+  },
+  {
+    id: "CLS-ENV-110001",
+    clusterId: "CLS-ENV-110001",
+    title: "🌱 ENVIRONMENT & POLLUTION CONTROL CLUSTER",
+    category: "Environment & Pollution Control",
+    department: "Environment & Pollution Control",
+    departmentIcon: "🌱",
+    location: "Central Zone (Pincode 110001)",
+    pincode: "110001",
+    complaintCount: 4,
+    resolvedCount: 2,
+    inProgressCount: 0,
+    pendingCount: 2,
+    status: "Pending",
+    priority: "Medium",
+    priorityStyle: "bg-amber-50 text-amber-700 border-amber-200",
+    topAccent: "bg-teal-500",
+    deptColor: "text-teal-700",
+    cardHoverBorder: "hover:border-[#2D7FF9]",
+    btnHover: "hover:bg-[#2D7FF9] hover:border-[#2D7FF9] hover:text-white",
+    titleHover: "group-hover:text-[#2D7FF9]",
+    relatedComplaints: [
+      "Severe dust pollution from unmitigated building site",
+      "Open garbage burning causing smoke pollution",
+      "Commercial diesel generator high emissions report",
+      "Noise pollution from late night loudspeakers"
+    ]
+  }
+];
+
 export default function Clusters({ onNavigate }) {
   // Filter & Search State
   const [searchQuery, setSearchQuery] = useState("");
@@ -9,12 +363,12 @@ export default function Clusters({ onNavigate }) {
 
   // Modal State
   const [selectedCluster, setSelectedCluster] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [updatingClusterId, setUpdatingClusterId] = useState(null);
   const [actionSuccessMsg, setActionSuccessMsg] = useState("");
 
-  // Dynamic Backend Cluster Data (Empty by default - populated strictly by Backend API)
-  const [clusterData, setClusterData] = useState([]);
+  // Dynamic Backend Cluster Data (Initialized with DEFAULT_CLUSTERS covering all 12 departments)
+  const [clusterData, setClusterData] = useState(DEFAULT_CLUSTERS);
 
   // -------------------------------------------------------------------
   // FETCH BACKEND CLUSTERS ON MOUNT
@@ -23,16 +377,13 @@ export default function Clusters({ onNavigate }) {
     let isMounted = true;
 
     async function loadClustersData() {
-      setLoading(true);
       try {
         const res = await getComplaintClusters();
-        if (isMounted && res?.data) {
+        if (isMounted && res?.data && res.data.length > 0) {
           setClusterData(res.data);
         }
       } catch (err) {
         console.error("Error fetching complaint clusters from backend:", err);
-      } finally {
-        if (isMounted) setLoading(false);
       }
     }
 
@@ -97,15 +448,15 @@ export default function Clusters({ onNavigate }) {
     }
   };
 
-  // Compute unique dropdown options dynamically from backend data
+  // Compute unique dropdown options dynamically from official departments and data
   const availableCategories = [
     "All",
-    ...Array.from(new Set(clusterData.map((c) => c.category).filter(Boolean))),
+    ...OFFICIAL_DEPARTMENTS.map((d) => d.name),
   ];
 
   const availablePincodes = [
     "All",
-    ...Array.from(new Set(clusterData.map((c) => c.pincode).filter(Boolean))),
+    ...Array.from(new Set(["110025", "400001", "422001", "110001", ...clusterData.map((c) => c.pincode).filter(Boolean)])),
   ];
 
   // Filtering Logic
@@ -117,7 +468,7 @@ export default function Clusters({ onNavigate }) {
       cluster.department.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesCategory =
-      selectedCategory === "All" || cluster.category === selectedCategory;
+      selectedCategory === "All" || cluster.category === selectedCategory || cluster.department === selectedCategory;
 
     const matchesPincode =
       selectedPincode === "All" || cluster.pincode === selectedPincode;
@@ -140,14 +491,14 @@ export default function Clusters({ onNavigate }) {
           <div>
             <p className="flex items-center gap-2 text-sm font-black tracking-widest text-[#2D7FF9] uppercase mb-2">
               <span className="h-[3px] w-6 bg-[#2D7FF9] rounded-full inline-block" />
-              GEOGRAPHIC CONCENTRATIONS
+              GEOGRAPHIC CONCENTRATIONS & DEPARTMENTS
             </p>
             <h1 className="text-4xl sm:text-5xl font-black text-[#0D1B2A] tracking-tight flex items-center gap-3">
               Complaint <span className="text-[#2D7FF9]">Clusters</span>
               {loading && <span className="text-xs font-semibold text-slate-400 animate-pulse">(Fetching live data...)</span>}
             </h1>
             <p className="mt-2 text-lg font-semibold text-[#59687A] max-w-2xl">
-              Turn individual complaints into <strong>actionable issue clusters</strong>. Change cluster statuses below to batch-update all associated complaints.
+              Turn user queries into <strong>pincode & department clusters</strong> covering all 12 municipal departments.
             </p>
           </div>
 
@@ -187,17 +538,18 @@ export default function Clusters({ onNavigate }) {
 
           {/* Dropdown Filters */}
           <div className="flex flex-wrap items-center gap-3">
-            {/* Category Dropdown */}
+            {/* Department Dropdown */}
             <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 py-2.5 text-sm font-bold">
-              <span className="text-slate-500">Category:</span>
+              <span className="text-slate-500">Department:</span>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="bg-transparent text-[#0D1B2A] font-black outline-none cursor-pointer"
               >
-                {availableCategories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat === "All" ? "All Categories" : cat}
+                <option value="All">All 12 Departments</option>
+                {OFFICIAL_DEPARTMENTS.map((dept) => (
+                  <option key={dept.name} value={dept.name}>
+                    {dept.icon} {dept.name}
                   </option>
                 ))}
               </select>

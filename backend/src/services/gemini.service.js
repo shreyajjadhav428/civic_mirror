@@ -106,8 +106,21 @@ Never classify a genuine civic request as spam simply because location, category
 4. CIVIC CATEGORY DETECTION
 ==================================================
 
-For genuine civic requests, identify the most appropriate category (Roads, Street Lighting, Water Supply, Drainage, Sanitation, Traffic, Parks, Public Health, Other Municipal Infrastructure).
-Set detectedCategory to the best-supported category.
+For genuine civic requests, identify the most appropriate official department from the following 12 departments:
+1. Electricity & Street Lighting
+2. Water Supply & Water Works
+3. Sewerage & Sanitation
+4. Roads & Public Works
+5. Solid Waste Management
+6. Storm Water & Drainage
+7. Parks & Horticulture
+8. Building & Urban Development
+9. Traffic & Transportation
+10. Public Health & Sanitation
+11. Animal Welfare & Veterinary
+12. Environment & Pollution Control
+
+Set detectedCategory to the exact matching department name.
 
 ==================================================
 5. PINCODE DETECTION
