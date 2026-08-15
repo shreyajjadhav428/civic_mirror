@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import hero1Image from "../assets/hero1.jpg";
+import hero1Image from "../assets/hero1.webp";
 import { Link, useNavigate } from "react-router-dom";
 
 const HAS_LOADED_KEY = "cm_hero_loaded";
@@ -107,9 +107,10 @@ export default function Hero() {
           position: absolute;
           inset: -4%;
           z-index: 0;
-          background-size: cover;
-          background-position: center 30%;
-          background-repeat: no-repeat;
+          width: 108%;
+          height: 108%;
+          object-fit: cover;
+          object-position: center 30%;
           opacity: 1;
           transition: opacity 0.4s ease-out;
         }
@@ -581,6 +582,17 @@ export default function Hero() {
           }
         }
 
+        /* ── MOBILE: Instant render for LCP ────────────── */
+        @media (max-width: 767px) {
+          .cm-hero__wordmark,
+          .cm-hero__tagline,
+          .cm-hero__cta {
+            opacity: 1 !important;
+            transform: none !important;
+            transition: none !important;
+          }
+        }
+
         /* ── REDUCED MOTION ──────────────────────────────── */
         @media (prefers-reduced-motion: reduce) {
           .cm-hero__bg {
@@ -603,11 +615,15 @@ export default function Hero() {
 
       <section id="hero" className="cm-hero" aria-label="CivicMirror landing hero">
         {/* Cinematic background */}
-        <div
+        <img
+          src={hero1Image}
+          alt="CivicMirror civic transparency platform"
           className={`cm-hero__bg ${isLoaded ? "cm-hero__bg--visible" : ""}`}
-          role="presentation"
-          aria-hidden="true"
-          style={{ backgroundImage: `url(${hero1Image})` }}
+          fetchpriority="high"
+          loading="eager"
+          width="1200"
+          height="800"
+          decoding="async"
         />
 
         {/* Floating transparent Header */}

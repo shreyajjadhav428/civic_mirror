@@ -28,11 +28,13 @@ export default function Loader({ onComplete }) {
       return () => window.clearTimeout(finishTimer);
     }
 
+    const isMobile = window.innerWidth < 768;
+
     let frameId;
     let pauseTimer;
     let fadeTimer;
 
-    const duration = 4000;
+    const duration = isMobile ? 1000 : 4000;
     const startTime = performance.now();
 
     const animate = (time) => {
@@ -53,8 +55,8 @@ export default function Loader({ onComplete }) {
           fadeTimer = window.setTimeout(() => {
             setIsDestroyed(true);
             onComplete?.();
-          }, 400);
-        }, 200);
+          }, isMobile ? 100 : 400);
+        }, isMobile ? 50 : 200);
       }
     };
 
@@ -305,6 +307,23 @@ export default function Loader({ onComplete }) {
         /* ==============================
            MOBILE
         ============================== */
+
+        /* Mobile: speed up animations to reduce TBT */
+        @media (max-width: 767px) {
+          .civicmirror-loader__content {
+            animation-duration: 200ms;
+          }
+          .civicmirror-loader__progress-area {
+            animation-duration: 200ms;
+            animation-delay: 50ms;
+          }
+          .civicmirror-loader__fill {
+            transition: width 40ms linear;
+          }
+          .civicmirror-loader {
+            transition: opacity 200ms ease;
+          }
+        }
 
         @media (max-width: 600px) {
 
