@@ -824,6 +824,51 @@ export default function Projects() {
                   ))}
                 </div>
               </div>
+
+              {/* CONNECTED CITIZEN COMPLAINTS SECTION */}
+              <div className="rounded-xl bg-slate-50 p-4.5 border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black uppercase tracking-wider text-slate-500">
+                    Connected Citizen Inquiries ({selectedProjectModal.connectedComplaints?.length || 0})
+                  </span>
+                  <span className="text-xs font-bold text-[#2D7FF9]">Realtime Database Sync</span>
+                </div>
+
+                {(!selectedProjectModal.connectedComplaints || selectedProjectModal.connectedComplaints.length === 0) ? (
+                  <div className="rounded-lg bg-white p-4 text-center text-xs font-medium text-slate-400 border border-slate-100">
+                    No citizen inquiries or complaints linked to this project yet.
+                  </div>
+                ) : (
+                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                    {selectedProjectModal.connectedComplaints.map((c, cIdx) => (
+                      <div
+                        key={c.id || cIdx}
+                        className="rounded-lg bg-white p-3 border border-slate-200/80 shadow-2xs flex items-start justify-between gap-3 text-xs"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-black text-[#2D7FF9] text-[11px]">{c.id}</span>
+                            <span className="text-slate-400 font-bold text-[10px]">{c.citizen || "Citizen"}</span>
+                          </div>
+                          <p className="font-semibold text-slate-700 line-clamp-2 leading-relaxed">
+                            {c.title || c.description || "Inquiry recorded for this project."}
+                          </p>
+                        </div>
+
+                        <span className={`shrink-0 px-2 py-0.5 rounded-md font-bold text-[10px] uppercase border ${
+                          (c.status || "").toLowerCase().includes("resolved")
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            : (c.status || "").toLowerCase().includes("progress")
+                            ? "bg-blue-50 text-[#2D7FF9] border-blue-200"
+                            : "bg-amber-50 text-amber-800 border-amber-200"
+                        }`}>
+                          {c.status || "In Progress"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="flex justify-end pt-4 border-t border-slate-100">

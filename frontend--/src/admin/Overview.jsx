@@ -54,7 +54,7 @@ export default function Overview() {
             id: c.clusterId || `ISS-0${idx + 1}`,
             title: c.category ? `${c.category} Issues` : `Pincode ${c.pincode}`,
             count: c.complaintCount || 0,
-            dotColor: c.status === "In Progress" ? "bg-blue-500" : (c.status === "Completed" || c.status === "Resolved") ? "bg-[#008D78]" : c.unmatchedCount > 0 ? "bg-rose-500" : "bg-amber-500",
+            dotColor: c.status === "In Progress" ? "bg-blue-500" : c.status === "Resolved" ? "bg-[#008D78]" : c.unmatchedCount > 0 ? "bg-rose-500" : "bg-amber-500",
             urgency: c.unmatchedCount > 0 ? "High Priority" : "Moderate Priority",
             department: c.category || "Municipal Dept",
             location: `Pincode ${c.pincode}`,
@@ -118,7 +118,7 @@ export default function Overview() {
       {
         title: "RESOLVED",
         value: Number(overviewMetrics.resolved ?? 0).toLocaleString(),
-        trend: loading ? "Loading..." : "✓ Completed",
+        trend: loading ? "Loading..." : "✓ Resolved",
         titleColor: "text-[#008D78]",
         valColor: "text-[#008D78]",
         strokeColor: "#008D78",
@@ -169,7 +169,7 @@ export default function Overview() {
         await dispatchClusterWorkOrder({
           pincode: issue.pincode,
           category: issue.category || issue.department,
-          status: "Completed",
+          status: "Resolved",
         });
         if (issue.complaints && issue.complaints.length > 0) {
           await Promise.all(
@@ -304,7 +304,7 @@ export default function Overview() {
                       <span className={`rounded-md border px-3 py-1 text-xs font-bold uppercase ${
                         issue.status === "In Progress"
                           ? "bg-blue-50 text-[#2D7FF9] border-blue-200"
-                          : issue.status === "Completed" || issue.status === "Resolved"
+                          : issue.status === "Resolved"
                           ? "bg-teal-50 text-[#008D78] border-teal-200"
                           : "bg-amber-50 text-amber-800 border-amber-200"
                       }`}>
@@ -403,7 +403,7 @@ export default function Overview() {
                   <span className={`inline-block rounded-md border px-3 py-1 text-xs font-bold uppercase ${
                     selectedPriorityIssue.status === "In Progress"
                       ? "bg-blue-50 text-[#2D7FF9] border-blue-200"
-                      : selectedPriorityIssue.status === "Resolved" || selectedPriorityIssue.status === "Completed"
+                      : selectedPriorityIssue.status === "Resolved"
                       ? "bg-teal-50 text-[#008D78] border-teal-200"
                       : "bg-amber-50 text-amber-800 border-amber-200"
                   }`}>

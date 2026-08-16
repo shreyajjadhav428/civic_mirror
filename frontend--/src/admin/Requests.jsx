@@ -42,7 +42,7 @@ export default function Requests() {
             category: normalizeDepartment(inq.department || inq.category || inq.topic),
             pincode: inq.pincode || "110025",
             area: `Pincode ${inq.pincode || "110025"}`,
-            status: inq.aiStatus === "Resolved" ? "Resolved" : inq.aiStatus === "In Progress" ? "In Progress" : "Pending",
+            status: (inq.status || "").toLowerCase().includes("resolved") ? "Resolved" : (inq.status || "").toLowerCase().includes("progress") ? "In Progress" : "Pending",
             priority: inq.aiStatus === "Flagged" ? "High" : "Medium",
             submittedDate: inq.date || "Recent",
             flagged: inq.aiStatus === "Flagged" || Boolean(inq.admin_flagged),

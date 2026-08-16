@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getComplaintClusters, dispatchClusterWorkOrder } from "../api/admin.api";
+import { getComplaintClusters, dispatchClusterWorkOrder, updateComplaintStatus } from "../api/admin.api";
 
 export const OFFICIAL_DEPARTMENTS = [
   { name: "Electricity & Street Lighting", icon: "⚡" },
@@ -402,20 +402,31 @@ export default function Clusters({ onNavigate }) {
   }, []);
 
   // -------------------------------------------------------------------
-  // HANDLE CLUSTER STATUS CHANGE (PENDING -> IN PROGRESS -> COMPLETED)
+  // HANDLE CLUSTER STATUS CHANGE (PENDING -> IN PROGRESS -> RESOLVED)
   // -------------------------------------------------------------------
   const handleStatusChange = async (cluster, newStatus) => {
     setUpdatingClusterId(cluster.id);
     setActionSuccessMsg("");
     try {
+      const isResolved = newStatus === "Resolved";
+      const isInProgress = newStatus === "In Progress";
+      const complaintStatus = isResolved ? "Resolved" : isInProgress ? "In Progress" : "Pending";
+
+      // 1. Bulk update by pincode+category (best-effort)
       const res = await dispatchClusterWorkOrder({
         pincode: cluster.pincode,
         category: cluster.category,
         status: newStatus,
       });
 
-      const isResolved = newStatus === "Completed" || newStatus === "Resolved";
-      const isInProgress = newStatus === "In Progress";
+      // 2. Also update each complaint individually by ID for reliability
+      if (cluster.complaints && cluster.complaints.length > 0) {
+        await Promise.all(
+          cluster.complaints.map((c) =>
+            updateComplaintStatus(c.id, { status: complaintStatus, admin_flagged: isResolved ? false : undefined })
+          )
+        );
+      }
 
       setClusterData((prev) =>
         prev.map((item) => {
@@ -426,7 +437,7 @@ export default function Clusters({ onNavigate }) {
 
             return {
               ...item,
-              status: isResolved ? "Completed" : isInProgress ? "In Progress" : "Pending",
+              status: isResolved ? "Resolved" : isInProgress ? "In Progress" : "Pending",
               resolvedCount: newResolvedCount,
               inProgressCount: newInProgressCount,
               pendingCount: newPendingCount,
@@ -439,7 +450,7 @@ export default function Clusters({ onNavigate }) {
       if (selectedCluster && selectedCluster.id === cluster.id) {
         setSelectedCluster((prev) => ({
           ...prev,
-          status: isResolved ? "Completed" : isInProgress ? "In Progress" : "Pending",
+          status: isResolved ? "Resolved" : isInProgress ? "In Progress" : "Pending",
           resolvedCount: isResolved ? prev.complaintCount : 0,
         }));
       }
@@ -677,7 +688,7 @@ export default function Clusters({ onNavigate }) {
                           disabled={updatingClusterId === cluster.id}
                           onChange={(e) => handleStatusChange(cluster, e.target.value)}
                           className={`rounded-lg border px-3 py-1.5 text-xs sm:text-sm font-bold outline-none cursor-pointer transition shadow-2xs ${
-                            currentStatus === "Completed"
+                            currentStatus === "Resolved"
                               ? "bg-emerald-50 text-[#008D78] border-emerald-200 hover:bg-emerald-100"
                               : currentStatus === "In Progress"
                               ? "bg-blue-50 text-[#2D7FF9] border-blue-200 hover:bg-blue-100"
@@ -686,7 +697,7 @@ export default function Clusters({ onNavigate }) {
                         >
                           <option value="Pending">⏳ Pending</option>
                           <option value="In Progress">⚡ In Progress</option>
-                          <option value="Completed">✓ Completed (Resolve All)</option>
+                          <option value="Resolved">✓ Resolved (Resolve All)</option>
                         </select>
                       </div>
 
@@ -771,7 +782,7 @@ export default function Clusters({ onNavigate }) {
                   disabled={updatingClusterId === selectedCluster.id}
                   onChange={(e) => handleStatusChange(selectedCluster, e.target.value)}
                   className={`rounded-xl border px-3.5 py-2 text-xs sm:text-sm font-bold outline-none cursor-pointer transition shadow-xs ${
-                    selectedCluster.status === "Completed"
+                    selectedCluster.status === "Resolved"
                       ? "bg-emerald-50 text-[#008D78] border-emerald-200"
                       : selectedCluster.status === "In Progress"
                       ? "bg-blue-50 text-[#2D7FF9] border-blue-200"
@@ -780,7 +791,7 @@ export default function Clusters({ onNavigate }) {
                 >
                   <option value="Pending">⏳ Pending</option>
                   <option value="In Progress">⚡ In Progress</option>
-                  <option value="Completed">✓ Completed (Resolve All)</option>
+                  <option value="Resolved">✓ Resolved (Resolve All)</option>
                 </select>
               </div>
             </div>

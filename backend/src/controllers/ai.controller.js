@@ -73,11 +73,13 @@ export const askCivicMirror = async (req, res) => {
 
         let query = supabase
           .from('projects')
-          .select('project_code, title, category, status, progress, expected_completion, departments(name), budgets(total_allocated, spent)')
+          .select('id, project_code, title, category, status, progress, expected_completion, department_id, departments(name, code), budgets(total_allocated, spent, people_affected)')
           .eq('pincode', detectedPincode)
           .in('status', ['In Progress', 'Planning']);
           
-        if (detectedCategory) query = query.ilike('category', `%${detectedCategory}%`);
+        if (detectedCategory) {
+          query = query.ilike('category', `%${detectedCategory}%`);
+        }
         
         const { data } = await query;
         localProjects = data || [];
@@ -85,11 +87,13 @@ export const askCivicMirror = async (req, res) => {
     } else if (detectedPincode) {
       let query = supabase
         .from('projects')
-        .select('project_code, title, category, status, progress, expected_completion, departments(name), budgets(total_allocated, spent)')
+        .select('id, project_code, title, category, status, progress, expected_completion, department_id, departments(name, code), budgets(total_allocated, spent, people_affected)')
         .eq('pincode', detectedPincode)
         .in('status', ['In Progress', 'Planning']);
         
-      if (detectedCategory) query = query.ilike('category', `%${detectedCategory}%`);
+      if (detectedCategory) {
+        query = query.ilike('category', `%${detectedCategory}%`);
+      }
 
       const { data } = await query;
       localProjects = data || [];

@@ -79,6 +79,26 @@ export const normalizeDepartment = (catStr) => {
   return cat;
 };
 
+export const DEPARTMENT_ID_MAP = {
+  "Electricity & Street Lighting": "dept-elec",
+  "Water Supply & Water Works": "dept-water",
+  "Sewerage & Sanitation": "dept-sew",
+  "Roads & Public Works": "dept-roads",
+  "Solid Waste Management": "dept-waste",
+  "Storm Water & Drainage": "dept-storm",
+  "Parks & Horticulture": "dept-parks",
+  "Building & Urban Development": "dept-build",
+  "Traffic & Transportation": "dept-traffic",
+  "Public Health & Sanitation": "dept-health",
+  "Animal Welfare & Veterinary": "dept-animal",
+  "Environment & Pollution Control": "dept-env"
+};
+
+export const getDepartmentId = (deptName) => {
+  const norm = normalizeDepartment(deptName);
+  return DEPARTMENT_ID_MAP[norm] || "dept-roads";
+};
+
 /**
  * GET /api/admin/clusters
  * Groups complaints by category (official department) and pincode to create actionable issue clusters.
@@ -91,17 +111,6 @@ export const getComplaintClusters = async (req, res) => {
 
     if (error) throw error;
 
-    // Fetch saved cluster status overrides from database
-    const { data: savedClusters } = await supabase
-      .from('clusters')
-      .select('id, status');
-    
-    const savedStatusMap = {};
-    (savedClusters || []).forEach(sc => {
-      if (sc.id && sc.status && sc.status !== 'Active') {
-        savedStatusMap[sc.id] = sc.status;
-      }
-    });
 
     // Group complaints strictly by Pincode + Official Department
     const clustersMap = {};
@@ -200,11 +209,9 @@ export const getComplaintClusters = async (req, res) => {
       ).length;
       const pendingCount = Math.max(0, cl.complaintCount - resolvedCount - inProgressCount);
 
-      let clusterStatus = savedStatusMap[cl.id] || 'Pending';
-      if (savedStatusMap[cl.id]) {
-        clusterStatus = savedStatusMap[cl.id];
-      } else if (resolvedCount === cl.complaintCount && cl.complaintCount > 0) {
-        clusterStatus = 'Completed';
+      let clusterStatus = 'Pending';
+      if (resolvedCount === cl.complaintCount && cl.complaintCount > 0) {
+        clusterStatus = 'Resolved';
       } else if (inProgressCount > 0 || resolvedCount > 0) {
         clusterStatus = 'In Progress';
       }
@@ -451,6 +458,8 @@ export const createAdminProject = async (req, res) => {
       }
     }
 
+    const deptId = getDepartmentId(department);
+
     const coreProjectData = {
       id: projectId,
       project_code: projectCode,
@@ -458,8 +467,9 @@ export const createAdminProject = async (req, res) => {
       category: department || 'Municipal Works',
       pincode: String(pincode || '110025'),
       status: status || 'In Progress',
+      department_id: deptId,
       expected_completion: validDate,
-      progress: status === 'Completed' ? 100 : 15
+      progress: status === 'Completed' ? 100 : (progressVal || 15)
     };
 
     // Insert into Supabase projects table
@@ -884,7 +894,7 @@ export const dispatchClusterWorkOrder = async (req, res) => {
     let complaintStatus = targetStatus;
     if (targetStatus.toLowerCase().includes('complete') || targetStatus.toLowerCase().includes('resolve')) {
       complaintStatus = 'Resolved';
-      targetStatus = 'Completed';
+      targetStatus = 'Resolved';
     } else if (targetStatus.toLowerCase().includes('progress')) {
       complaintStatus = 'In Progress';
       targetStatus = 'In Progress';
@@ -923,24 +933,6 @@ export const dispatchClusterWorkOrder = async (req, res) => {
       }]);
     }
 
-    // Upsert status in clusters table
-    try {
-      const catSlug = (category || 'general').replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 6);
-      const clusterId = `CLS-${catSlug}-${pincode}`;
-      await supabase
-        .from('clusters')
-        .upsert({
-          id: clusterId,
-          name: `${category} Cluster`,
-          pincode: pincode,
-          category: category,
-          department: category,
-          status: targetStatus,
-          updated_at: new Date().toISOString()
-        }, { onConflict: 'id' });
-    } catch (dbErr) {
-      console.warn('Updating cluster status in database warning:', dbErr?.message);
-    }
 
     return res.status(200).json({
       status: 'success',

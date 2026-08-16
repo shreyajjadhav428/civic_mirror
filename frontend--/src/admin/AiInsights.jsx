@@ -76,21 +76,28 @@ export default function AiInsights() {
       const res = await getClusterInsights(activeCluster.pincode, activeCluster.category);
       if (res?.data?.insights) {
         const ins = res.data.insights;
-        setActiveCluster((prev) => ({
-          ...prev,
-          rootCause: ins.root_cause || prev.rootCause,
-          recommendation: ins.recommendation || prev.recommendation,
-          reasoning: ins.reasoning || prev.reasoning,
-        }));
+        const updated = {
+          ...activeCluster,
+          rootCause: ins.root_cause || ins.rootCauseAnalysis || activeCluster.rootCause,
+          recommendation: ins.recommendation || ins.recommendedAction || activeCluster.recommendation,
+          reasoning: ins.reasoning || activeCluster.reasoning,
+          whyFactors: (Array.isArray(ins.why_factors) && ins.why_factors.length > 0)
+            ? ins.why_factors
+            : activeCluster.whyFactors,
+          priorityLevel: ins.priority_level || activeCluster.priorityLevel || "High"
+        };
+
+        setActiveCluster(updated);
+        setClustersList((prev) =>
+          prev.map((c) => (c.id === activeCluster.id ? updated : c))
+        );
+        setAnalyzedSuccess(true);
+        setTimeout(() => setAnalyzedSuccess(false), 3500);
       }
     } catch (err) {
       console.warn("Backend cluster insights warning, using calculated analysis:", err);
     } finally {
-      const found = clustersList.find((c) => c.id === selectedClusterId);
-      if (found) setActiveCluster(found);
       setIsAnalyzing(false);
-      setAnalyzedSuccess(true);
-      setTimeout(() => setAnalyzedSuccess(false), 3000);
     }
   };
 
@@ -227,8 +234,16 @@ export default function AiInsights() {
                   Cluster Ref: {activeCluster.id} • {activeCluster.department}
                 </p>
               </div>
-              <span className="rounded-md border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-bold text-[#2D7FF9] uppercase tracking-wider">
-                HIGH PRIORITY CORRELATION
+              <span className={`rounded-md border px-3 py-1 text-xs font-bold uppercase tracking-wider ${
+                (activeCluster.priorityLevel || "").toLowerCase() === "critical"
+                  ? "border-red-300 bg-red-50 text-red-700"
+                  : (activeCluster.priorityLevel || "").toLowerCase() === "medium"
+                  ? "border-amber-300 bg-amber-50 text-amber-800"
+                  : (activeCluster.priorityLevel || "").toLowerCase() === "low"
+                  ? "border-slate-300 bg-slate-100 text-slate-700"
+                  : "border-blue-200 bg-blue-50 text-[#2D7FF9]"
+              }`}>
+                {(activeCluster.priorityLevel || "HIGH").toUpperCase()} PRIORITY CORRELATION
               </span>
             </div>
 
