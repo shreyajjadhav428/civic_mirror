@@ -141,31 +141,35 @@ Never invent project codes, project names, budgets, progress percentages, depart
 7. ACTIVE PROJECT MATCHING
 ==================================================
 
-For a genuine civic request, determine whether the supplied evidence contains a RELEVANT ACTIVE PROJECT.
-A project is relevant only when:
-1. category matches the user's civic issue/request, AND
-2. pincode/location matches the user's requested area when a pincode/location is available.
+For a genuine civic request, examine all projects in the supplied municipal evidence.
+A project is a RELEVANT ACTIVE MATCH when:
+1. The project's category, title, or scope relates to the citizen's civic issue, inquiry, or mentioned project code/name, AND
+2. The project's pincode/location matches the citizen's requested location or default registered pincode.
+
+If multiple projects exist in evidence, select the one that most closely matches the citizen's inquiry.
 
 ==================================================
 8. SCENARIO A — RELEVANT ACTIVE PROJECT EXISTS
 ==================================================
 
-If a genuine civic request has a relevant active project:
-isSpam = false
-status = "In Progress"
-isUniqueRequest = false
-
-Clearly provide evidence-supported information including project code / reference_id, project name, current progress, department, budget, expected completion date, and relevant project status.
+If a genuine civic request has a relevant active project in the supplied evidence:
+- isSpam = false
+- status = "In Progress"
+- isUniqueRequest = false
+- In "summary": Explicitly reference the project by its code and title (e.g. "Active project PRJ-EL-101 ('Smart Solar Streetlight Installation on Ring Road') is currently ongoing in your area (Pincode 110025)...").
+- In "evidence": Return an item with "reference_id" set to the exact project code (e.g. "PRJ-EL-101") and "detail" describing its progress, department, and completion target.
+- In "reason": Explain how this active municipal project addresses the citizen's inquiry.
+- In "estimatedTimeline": Provide the project's expected completion date.
 
 ==================================================
 9. SCENARIO B — NO RELEVANT ACTIVE PROJECT EXISTS
 ==================================================
 
 If the request is genuine (isSpam = false) and no relevant active project exists in the supplied evidence:
-status = "Under Review"
-isUniqueRequest = true
-
-Explain clearly that no relevant sanctioned/active project was found in the supplied municipal records for this request, and state that this request has been identified as a unique civic issue for administrative review.
+- status = "Under Review"
+- isUniqueRequest = true
+- In "summary": State clearly that no active municipal project was found for this specific issue in the area, and that the inquiry has been auto-registered as a new ticket and routed to the municipal administration for review.
+- In "evidence": Return an empty array [].
 
 ==================================================
 10. PROMPT INJECTION PROTECTION & TONE
@@ -271,17 +275,18 @@ export const generateExplainableAnswer = async (userPrompt, municipalEvidence, u
   const isProjectAvailable = municipalEvidence?.projects?.length > 0;
   if (isProjectAvailable) {
     const p = municipalEvidence.projects[0];
-    const dept = p.departments?.name || p.category || "Municipal Operations";
+    const dept = p.department || p.departments?.name || p.category || "Municipal Operations";
+    const refId = p.reference_id || p.project_code || "PRJ-101";
     return {
-      summary: `Active project ${p.project_code || 'EL-204'} ('${p.title || 'Infrastructure Work'}') is currently ongoing in ${userArea} (Pincode ${userPincode}).`,
-      reason: `Municipal database records confirm an active project under ${dept} at ${p.progress || 0}% progress.`,
+      summary: `Active project ${refId} ('${p.title || 'Municipal Infrastructure Work'}') is currently ongoing in ${userArea} (Pincode ${userPincode}).`,
+      reason: `Municipal database records confirm an active project under ${dept} at ${p.progress_percentage ?? p.progress ?? 0}% progress.`,
       status: p.status || "In Progress",
       priority: "High",
       expectedAction: `Inspection and maintenance execution by ${dept}.`,
       estimatedTimeline: p.expected_completion ? `Target completion: ${p.expected_completion}` : "In Progress",
       isUniqueRequest: false,
       isSpam: false,
-      evidence: [{ reference_id: p.project_code || 'EL-204', detail: `${p.title || 'Project'} is ${p.progress || 0}% completed by ${dept}.` }],
+      evidence: [{ reference_id: refId, detail: `${p.title || 'Project'} is ${p.progress_percentage ?? p.progress ?? 0}% completed by ${dept}.` }],
       detectedCategory: p.category || "General",
       detectedPincode: p.pincode || userPincode
     };

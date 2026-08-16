@@ -61,43 +61,35 @@ export const askCivicMirror = async (req, res) => {
 
     const effectivePrompt = pincodeMatch ? prompt : `${prompt} (Citizen Location Context: Area ${userArea}, Pincode ${userPincode})`;
 
-    const analysisResponse = await analyzePromptForTools(effectivePrompt);
-
-    if (analysisResponse.functionCalls && analysisResponse.functionCalls.length > 0) {
-      const call = analysisResponse.functionCalls[0];
-      
-      if (call.name === 'search_projects') {
-        const { pincode, category } = call.args;
-        if (pincode) detectedPincode = pincode;
-        if (category) detectedCategory = category;
-
-        let query = supabase
-          .from('projects')
-          .select('id, project_code, title, category, status, progress, expected_completion, department_id, departments(name, code), budgets(total_allocated, spent, people_affected)')
-          .eq('pincode', detectedPincode)
-          .in('status', ['In Progress', 'Planning']);
-          
-        if (detectedCategory) {
-          query = query.ilike('category', `%${detectedCategory}%`);
-        }
-        
-        const { data } = await query;
-        localProjects = data || [];
-      }
-    } else if (detectedPincode) {
-      let query = supabase
+    // 1. Direct project code search if citizen references a code (e.g. PRJ-EL-101, PRJ-999)
+    const codeMatch = prompt.match(/\b(PRJ-[A-Z0-9-]+|[A-Z]{2,4}-\d+)\b/i);
+    let directProject = null;
+    if (codeMatch) {
+      const { data: codeData } = await supabase
         .from('projects')
-        .select('id, project_code, title, category, status, progress, expected_completion, department_id, departments(name, code), budgets(total_allocated, spent, people_affected)')
-        .eq('pincode', detectedPincode)
-        .in('status', ['In Progress', 'Planning']);
-        
-      if (detectedCategory) {
-        query = query.ilike('category', `%${detectedCategory}%`);
+        .select('id, project_code, title, category, pincode, status, progress, expected_completion, department_id, departments(name, code), budgets(total_allocated, spent, people_affected)')
+        .ilike('project_code', `%${codeMatch[0]}%`)
+        .limit(1);
+      if (codeData && codeData.length > 0) {
+        directProject = codeData[0];
       }
-
-      const { data } = await query;
-      localProjects = data || [];
     }
+
+    // 2. Query all active & ongoing municipal projects in citizen's area
+    let query = supabase
+      .from('projects')
+      .select('id, project_code, title, category, pincode, status, progress, expected_completion, department_id, departments(name, code), budgets(total_allocated, spent, people_affected)')
+      .eq('pincode', detectedPincode)
+      .in('status', ['In Progress', 'Planning', 'Completed']);
+
+    const { data: areaProjects } = await query;
+    let allAreaProjects = areaProjects || [];
+
+    if (directProject && !allAreaProjects.some(p => p.id === directProject.id)) {
+      allAreaProjects = [directProject, ...allAreaProjects];
+    }
+
+    localProjects = allAreaProjects;
 
     // RAG Document Similarity Search (pgvector)
     if (detectedPincode) {
@@ -184,17 +176,23 @@ export const askCivicMirror = async (req, res) => {
     const complaintId = `cmp-${Date.now()}`;
 
     let matchedProjectId = null;
+    let matchedProject = null;
     let initialStatus = 'Pending';
     let adminFlagged = true;
     let defaultSummary = `Unique citizen prompt via AI agent. No active project found in pincode ${finalPincode}. Flagged for administrative review.`;
 
     if (!isUnique && localProjects.length > 0) {
-      const activeProj = localProjects[0];
-      matchedProjectId = activeProj.id || null;
-      initialStatus = activeProj.status || 'In Progress';
+      const refId = decisionCardData.evidence?.[0]?.reference_id;
+      matchedProject = (refId && localProjects.find(p => p.project_code === refId || p.id === refId)) || localProjects[0];
+      matchedProjectId = matchedProject.id || null;
+      initialStatus = matchedProject.status || 'In Progress';
       adminFlagged = false;
-      defaultSummary = `Associated with active project ${activeProj.project_code || 'Ongoing'} (${activeProj.title || 'Work'}). Scheduled completion: ${activeProj.expected_completion || 'Ongoing'}.`;
+      defaultSummary = `Associated with active project ${matchedProject.project_code || 'Ongoing'} (${matchedProject.title || 'Work'}). Scheduled completion: ${matchedProject.expected_completion || 'Ongoing'}.`;
     }
+
+    const sortedProjects = matchedProject
+      ? [matchedProject, ...localProjects.filter(p => p.id !== matchedProject.id)]
+      : localProjects;
 
     const newComplaintData = {
       id: complaintId,
@@ -236,7 +234,7 @@ export const askCivicMirror = async (req, res) => {
         complaint: createdComplaint,
         explanation: decisionCardData,
         raw_sources: {
-          projects: localProjects,
+          projects: sortedProjects,
           documents: localDocuments
         }
       }
