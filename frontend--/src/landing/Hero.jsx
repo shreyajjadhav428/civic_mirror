@@ -102,13 +102,13 @@ export default function Hero() {
           background-color: #0D1B2A;
         }
 
-        /* ── CINEMATIC BACKGROUND LAYER ──────────────────── */
+        /* ── CINEMATIC BACKGROUND LAYER (Fixed sizing to eliminate side gaps) ──── */
         .cm-hero__bg {
           position: absolute;
-          inset: -4%;
+          inset: 0;
           z-index: 0;
-          width: 108%;
-          height: 108%;
+          width: 100%;
+          height: 100%;
           object-fit: cover;
           object-position: center 30%;
           opacity: 1;
@@ -544,7 +544,7 @@ export default function Hero() {
 
         @keyframes cm-bounce {
           0%, 100% { transform: translateY(0); }
-          50%       { transform: translateY(6px); }
+          50%      { transform: translateY(6px); }
         }
 
         /* ── RESPONSIVE ──────────────────────────────────── */
